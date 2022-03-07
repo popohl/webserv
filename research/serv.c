@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <string.h>
 
-#define PORT 8083
+#define PORT 8080
 int main(int argc, char const *argv[])
 {
 	int server_fd, new_socket; long valread;

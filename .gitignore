@@ -3,3 +3,6 @@ tags
 a.out*
 objs/
 deps/
+.cache
+compile_commands.json
+webserv

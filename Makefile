@@ -11,7 +11,8 @@ D		= deps/
 NAME	= webserv
 
 # list of your source files
-SRCS	=
+SRCS	= main.cpp parsing/Lexer.cpp parsing/Token.cpp testing/lexer_tests.cpp \
+		  testing/test_main.cpp testing/token_tests.cpp
 
 # Compiler
 CC		= clang++
@@ -20,8 +21,8 @@ CFLAGS	+= -Wall -Wextra -g -std=c++98
 # Linker flags
 LDFLAGS	=
 
-# Run command for tests
-RUN_COMMAND = ./$(NAME)
+# Run command
+RUN_COMMAND	= ./webserv ./config_files/default_config
 
 # The rest is automatic
 
