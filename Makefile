@@ -40,7 +40,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	@echo "Linking $(NAME)"
-	$(CC) $^ -o $@
+	@$(CC) $^ -o $@
 
 # Object directory generation
 $O:

@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:04:35 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/07 11:17:38 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/08 11:13:16 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	token_tests( void )
 {
 	Token	empty_constructor;
-	Token	standard_constructor(Token::name, "bonjour");
+	Token	standard_constructor(Token::word, "bonjour");
 	Token	copy_constructor(standard_constructor);
 
 	if (standard_constructor != copy_constructor)
