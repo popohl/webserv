@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/10 16:44:12 by paulohl          ###   ########.fr       */
+/*   Updated: 2022/03/12 18:21:09 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ public:
 
 	ServerRules	&operator=( const ServerRules &rhs );
 
+	bool	is_error_code_valid( int error_code ) const;
 	void	reset_location_rules( void );
 
 	static bool	verbose;
