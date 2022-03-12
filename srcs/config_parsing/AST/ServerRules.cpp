@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/12 18:27:33 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/12 19:00:09 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ ServerRules &	ServerRules::operator=( ServerRules const & src )
 	return *this;
 }
 
-bool	ServerRules::is_error_code_valid( int error_code ) const
+bool	ServerRules::is_error_code_valid( int error_code )
 {
 	(void)error_code;
 	return true;
