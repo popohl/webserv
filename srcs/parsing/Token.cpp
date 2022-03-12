@@ -6,13 +6,13 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:13 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/08 12:31:29 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/08 14:34:44 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing/Token.hpp"
+#include "config_parsing/Token.hpp"
 
-Token::Token( void ): _type(Token::error), _value("")
+Token::Token( void ): _type(Token::end_of_file), _value("")
 {
 	/* if (Token::verbose) */
 	/* 	std::cout << "Default constructor for Token called" << std::endl; */
@@ -56,8 +56,6 @@ Token::token_type	Token::getType( void ) const { return this->_type; }
 
 std::string		Token::getTypeName( void ) const
 {
-		if (this->_type == error)
-			return std::string("error");
 		if (this->_type == end_of_file)
 			return std::string("end_of_file");
 		if (this->_type == opening_bracket)

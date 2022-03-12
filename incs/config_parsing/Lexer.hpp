@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:51:05 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/08 14:29:12 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/08 14:34:16 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include <iostream>
 # include <fstream>
-# include "parsing/Token.hpp"
+# include "config_parsing/Token.hpp"
 
 class Lexer
 {

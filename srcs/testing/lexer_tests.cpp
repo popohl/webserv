@@ -6,11 +6,11 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:00:56 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/08 13:31:00 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/08 14:34:51 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing/Lexer.hpp"
+#include "config_parsing/Lexer.hpp"
 
 void	test_file_opening( std::string filename )
 {

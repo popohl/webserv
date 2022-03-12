@@ -6,14 +6,14 @@ server			= "server" [ space ] "{" *( server_rule | both_rule | location )
 location		= "location" space path space "{" *[ both_rule|location_rule ]
 					[ space ] "}" [ space ] .
 
-server_rule		= [ space ] ( r_listen | r_server_name | r_error_page )
+server_rule		= [ space ] ( r_listen | r_server_name )
 					[ space ] ";" .
 
 location_rule	= [ space ] ( r_root | r_method | r_index | r_upload_enable
 					| r_upload_path | r_autoindex | r_cgi_ext | r_cgi_path )
 					[ space ] ";" .
 
-both_rule		= [ space ] r_max_size [ space ] ";" .
+both_rule		= [ space ] ( r_max_size | r_error_page ) [ space ] ";" .
 
 r_listen		= "listen" space port space ip_address .
 

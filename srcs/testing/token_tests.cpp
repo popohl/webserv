@@ -6,11 +6,11 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:04:35 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/08 11:13:16 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/08 14:34:55 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing/Token.hpp"
+#include "config_parsing/Token.hpp"
 
 void	token_tests( void )
 {
