@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:11 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/07 14:21:40 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/08 14:32:54 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,12 @@ public:
 
 	enum	Types
 	{
-		error = -1,
 		end_of_file = 0,
-		obracket,
-		cbracket,
+		opening_bracket,
+		closing_bracket,
 		semicolon,
-		dot,
-		slash,
-		on,
-		off,
+		path,
+		ip_address,
 		word,
 		number,
 	};
@@ -46,6 +43,7 @@ public:
 	Token	&operator=( const Token &src );
 
 	token_type	getType( void ) const;
+	std::string getTypeName( void ) const;
 	token_value getValue( void ) const;
 
 	bool	operator==( const Token& other ) const;

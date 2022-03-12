@@ -1,23 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test_main.cpp                                      :+:      :+:    :+:   */
+/*   RuleNode.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/07 10:30:46 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/08 11:21:04 by pohl             ###   ########.fr       */
+/*   Created: 2022/03/08 14:59:23 by pohl              #+#    #+#             */
+/*   Updated: 2022/03/08 15:49:35 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "testing.hpp"
+#ifndef RULENODE_HPP
+# define RULENODE_HPP
 
-int		test_main( int argc, char **argv )
+# include "config_parsing/AST/AstNode.hpp"
+# include <vector>
+
+class RuleNode: public AstNode
 {
-	(void)argc;(void)argv;
-	/* if (argc != 2) */
-	/* 	throw std::invalid_argument("usage: ./webserv [config file]"); */
-	/* token_tests(); */
-	lexer_tests();
-	return 0;
-}
+
+public:
+
+	RuleNode( void );
+	RuleNode( const RuleNode &src );
+	~RuleNode( void );
+
+	RuleNode	&operator=( const RuleNode &src );
+
+	static bool	verbose;
+
+};
+
+#endif

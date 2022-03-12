@@ -11,8 +11,8 @@ D		= deps/
 NAME	= webserv
 
 # list of your source files
-SRCS	= main.cpp parsing/Lexer.cpp parsing/Token.cpp testing/lexer_tests.cpp \
-		  testing/test_main.cpp testing/token_tests.cpp
+SRCS	= LocationRule.cpp main.cpp parsing/Lexer.cpp parsing/Token.cpp \
+		  testing/lexer_tests.cpp testing/test_main.cpp testing/token_tests.cpp
 
 # Compiler
 CC		= clang++
@@ -40,7 +40,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	@echo "Linking $(NAME)"
-	$(CC) $^ -o $@
+	@$(CC) $^ -o $@
 
 # Object directory generation
 $O:
