@@ -10,25 +10,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LOCATIONRULE_HPP
-# define LOCATIONRULE_HPP
+#ifndef LOCATIONRULES_HPP
+# define LOCATIONRULES_HPP
 
 # include <iostream>
 # include <vector>
 # include <map>
+# include "ServerRules.hpp"
 
-class LocationRule
+class LocationRules
 {
 
 public:
 
-	LocationRule( void );
-	LocationRule( const LocationRule &src );
-	~LocationRule( void );
+	LocationRules( void );
+	LocationRules( const LocationRules& src );
+	LocationRules( const ServerRules& src );
+	~LocationRules( void );
 
-	LocationRule	&operator=( const LocationRule &rhs );
+	LocationRules	&operator=( const LocationRules &rhs );
 
 	void	reset_location_rules( void );
+
+	bool 	is_method_allowed( char selected_method ) const;
 
 	static bool	verbose;
 
@@ -39,18 +43,19 @@ public:
 private:
 
 	char						_allowed_method;
-	int							_client_max_body_size;
-	std::map<int, std::string>	_error_page;
-	std::string					_root;
-	std::vector<std::string>	_index;
-	std::string					_upload_path;
 	bool						_autoindex;
 	std::string					_cgi_extension;
 	std::string					_cgi_path;
-	std::pair<int, std::string>	_redirect;
+	int							_client_max_body_size;
+	std::map<int, std::string>	_error_page;
+	std::vector<std::string>	_index;
+	int							_redirect_code;
+	std::string					_redirect_uri;
+	std::string					_root;
+	std::string					_upload_path;
 
 };
 
-std::ostream	&operator<<( std::ostream &ostr, const LocationRule &instance );
+std::ostream	&operator<<( std::ostream &ostr, const LocationRules &instance );
 
 #endif
