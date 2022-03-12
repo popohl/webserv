@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# before running this script, you need to make
+# compilation is made using the objs directory and the files contained in testing
+
 gtest_dir='gtest_incs/'
 gtest_lib='libgtest.a'
 
