@@ -11,8 +11,9 @@ D		= deps/
 NAME	= webserv
 
 # list of your source files
-SRCS	= config_parsing/AST/LocationRules.cpp \
-		  config_parsing/AST/ServerRules.cpp \
+SRCS	= config_parsing/AST/ConfigFileNode.cpp \
+		  config_parsing/AST/LocationRules.cpp \
+		  config_parsing/AST/ServerNode.cpp config_parsing/AST/ServerRules.cpp \
 		  config_parsing/Lexer.cpp config_parsing/Token.cpp \
 		  main.cpp testing/lexer_tests.cpp testing/test_main.cpp \
 		  testing/token_tests.cpp

@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:51:05 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/08 14:34:16 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/13 17:22:53 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ private:
 
 	bool	reached_eof( void ) const;
 	bool	is_path_special_char( char c ) const;
+	bool	is_size_prefix( char c ) const;
 	void	skip_whitespaces_and_comments( void );
 	void	request_whitespace( void ) const;
 	void	skip_comments( void );
@@ -68,8 +69,9 @@ private:
 	Token	tokenize_single_character( Token::token_type type );
 	Token	tokenize_path( void );
 	Token	tokenize_word( void );
-	Token	tokenize_number_or_ip( void );
-	Token	tokenize_ip( std::string first_number );
+	Token	differentiate_digit_tokens( void );
+	Token	differentiate_number_size( std::string &beginning );
+	Token	tokenize_size( std::string &beginning );
 
 	Lexer( const Lexer &src );
 	Lexer	&operator=( const Lexer &rhs );

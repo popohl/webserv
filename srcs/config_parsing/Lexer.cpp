@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 10:00:33 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/08 14:34:11 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/13 17:29:55 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ Token	Lexer::get_next_token( void )
 	if (isalpha(_current_char))
 		return tokenize_word();
 	if (isdigit(_current_char))
-		return tokenize_number_or_ip();
+		return differentiate_digit_tokens();
 	throw Lexer::token_exception();
 }
 
@@ -74,33 +74,59 @@ Token	Lexer::tokenize_word( void )
 	return Token(Token::word, word);
 }
 
-Token	Lexer::tokenize_number_or_ip( void )
+Token	Lexer::differentiate_digit_tokens( void )
 {
 	std::string	number;
 
 	number += get_number();
 	if (_current_char == '.')
-		return tokenize_ip(number);
+		return differentiate_number_size(number);
 	request_whitespace();
 	return Token(Token::number, number);
 }
 
-Token	Lexer::tokenize_ip( std::string first_number = "" )
+Token	Lexer::differentiate_number_size( std::string &beginning )
 {
-	std::string	ip(first_number);
+	std::string	ip(beginning);
 
-	if (first_number == "")
-		ip += get_number();
-	for (int i = 0; i < 3; i++)
-	{
-		if (_current_char == '.')
-			ip += advance();
-		else
-			throw Lexer::token_exception();
-		ip += get_number();
-	}
-	request_whitespace();
+	if (_current_char == '.')
+		ip += advance();
+	else
+		throw Lexer::token_exception();
+	ip += get_number();
+	if (_current_char == '.')
+		ip += advance();
+	else
+		return tokenize_size(ip);
+	ip += get_number();
+	if (_current_char == '.')
+		ip += advance();
+	else
+		throw Lexer::token_exception();
+	ip += get_number();
 	return Token(Token::ip_address, ip);
+}
+
+Token	Lexer::tokenize_size( std::string &number_part )
+{
+	std::string	size(number_part);
+
+	if (is_size_prefix(_current_char))
+		size += advance();
+	else if (_current_char == 'b' || _current_char == 'B')
+	{
+		size += advance();
+		return Token(Token::size, size);
+	}
+	else
+		throw Lexer::token_exception();
+	if (_current_char == 'i')
+		size += advance();
+	if (_current_char == 'b' || _current_char == 'B')
+		size += advance();
+	else
+		throw Lexer::token_exception();
+	return Token(Token::size, size);
 }
 
 Token	Lexer::tokenize_path( void )
@@ -166,6 +192,12 @@ void	Lexer::read_first_character( void )
 bool	Lexer::reached_eof( void ) const
 {
 	return _config_file.eof();
+}
+
+bool	Lexer::is_size_prefix( char c ) const
+{
+	return c == 'm' || c == 'M' || c == 'k' || c == 'K' || c == 'g' || c == 'G'
+		|| c == 't' || c == 'T';
 }
 
 bool	Lexer::is_path_special_char( char c ) const
