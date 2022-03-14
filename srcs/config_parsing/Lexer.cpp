@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 10:00:33 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/14 12:00:45 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/14 16:04:13 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Lexer::Lexer( void )
 	return;
 }
 
-Lexer::Lexer( std::string& file_name )
+Lexer::Lexer( std::string file_name )
 {
 	if (Lexer::verbose)
 		std::cout << "Standard constructor for Lexer called" << std::endl;
@@ -69,8 +69,7 @@ Token	Lexer::tokenize_word( void )
 	do
 	{
 		word += advance();
-	} while (isalpha(_current_char));
-	request_whitespace();
+	} while (isalpha(_current_char) || _current_char == '.' || _current_char == '_');
 	return Token(Token::word, word);
 }
 
@@ -81,7 +80,9 @@ Token	Lexer::differentiate_digit_tokens( void )
 	number += get_number();
 	if (_current_char == '.')
 		return differentiate_number_size(number);
-	request_whitespace();
+	else if (is_size_prefix(_current_char) || _current_char == 'b'
+			|| _current_char == 'B')
+		return tokenize_size(number);
 	return Token(Token::number, number);
 }
 
@@ -112,21 +113,30 @@ Token	Lexer::tokenize_size( std::string &number_part )
 	std::string	size(number_part);
 
 	if (is_size_prefix(_current_char))
-		size += advance();
+		size += get_size_multiplier();
 	else if (_current_char == 'b' || _current_char == 'B')
 	{
-		size += advance();
+		advance();
 		return Token(Token::size, size);
 	}
 	else
 		throw Lexer::token_exception();
 	if (_current_char == 'i')
-		size += advance();
+		advance();
 	if (_current_char == 'b' || _current_char == 'B')
-		size += advance();
-	else
-		throw Lexer::token_exception();
+		advance();
 	return Token(Token::size, size);
+}
+
+char	Lexer::get_size_multiplier( void )
+{
+	char		tmp_uppercase;
+
+	tmp_uppercase = advance();
+	if (tmp_uppercase == 'k' || tmp_uppercase == 'm' || tmp_uppercase == 'g'
+			|| tmp_uppercase == 't')
+		tmp_uppercase -= 32;
+	return tmp_uppercase;
 }
 
 Token	Lexer::tokenize_path( void )
@@ -137,14 +147,7 @@ Token	Lexer::tokenize_path( void )
 	{
 		path += advance();
 	} while (isalnum(_current_char) || is_path_special_char(_current_char));
-	request_whitespace();
 	return Token(Token::path, path);
-}
-
-void	Lexer::request_whitespace( void ) const
-{
-	if (!isspace(_current_char))
-		throw Lexer::token_exception();
 }
 
 std::string	Lexer::get_number( void )
@@ -156,7 +159,7 @@ std::string	Lexer::get_number( void )
 	return number;
 }
 
-void	Lexer::open_file( std::string& file_name )
+void	Lexer::open_file( std::string file_name )
 {
 	this->close_file();
 	if (Lexer::verbose)

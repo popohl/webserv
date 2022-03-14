@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 16:06:20 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/13 16:17:26 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/14 16:01:50 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,5 +55,9 @@ const std::vector<ServerNode>	&ConfigFileNode::getServerList( void ) const
 	return serverList;
 }
 
+void	ConfigFileNode::addServer( ServerNode new_server )
+{
+	serverList.push_back(new_server);
+}
 
 bool	ConfigFileNode::verbose = false;

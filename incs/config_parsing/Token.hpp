@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:11 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/13 17:05:16 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/14 14:50:53 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,9 @@ public:
 	token_type	getType( void ) const;
 	std::string getTypeName( void ) const;
 	token_value getValue( void ) const;
+
+	size_t		size_atoi( void ) const;
+	size_t		get_size_multiplier( char c ) const;
 
 	bool	operator==( const Token& other ) const;
 	bool	operator!=( const Token& other ) const;

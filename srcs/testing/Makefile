@@ -12,7 +12,7 @@ CXXFLAGS += $(INCLUDE)
 
 MAIN = gtest_main.cpp
 
-FILES = lexer_gtests
+FILES = lexer_tests ast_tests
 
 WEBSERV_OBJS_PATH = ../../objs/
 
@@ -29,8 +29,8 @@ all: $(NAME)
 	./$(NAME)
 
 $(NAME): $(OBJS)
-	echo $(WEBSERV_OBJS)
-	echo $(WEBSERV_GOOD)
+	# echo $(WEBSERV_OBJS)
+	# echo $(WEBSERV_GOOD)
 	$(CXX) $(CXXFLAGS) $(MAIN) $(WEBSERV_GOOD) $(OBJS) $(LIBGTEST) -o $(NAME)
 
 clean:

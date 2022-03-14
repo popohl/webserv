@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:51:05 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/13 17:22:53 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/14 15:15:42 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@ class Lexer
 public:
 
 	Lexer( void );
-	Lexer( std::string& file_name );
+	Lexer( std::string file_name );
 	~Lexer( void );
 
 	Token	get_next_token( void );
 
-	void	open_file( std::string& file_name );
+	void	open_file( std::string file_name );
 	char	advance( void );
 
 	static bool	verbose;
@@ -61,10 +61,10 @@ private:
 	bool	is_path_special_char( char c ) const;
 	bool	is_size_prefix( char c ) const;
 	void	skip_whitespaces_and_comments( void );
-	void	request_whitespace( void ) const;
 	void	skip_comments( void );
 
 	std::string	get_number( void );
+	char		get_size_multiplier( void );
 
 	Token	tokenize_single_character( Token::token_type type );
 	Token	tokenize_path( void );

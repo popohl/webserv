@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/12 19:03:40 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/14 16:14:13 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,17 @@ LocationRules &	LocationRules::operator=( LocationRules const & src )
 		std::cout << "Assignement operator for LocationRules called" << std::endl;
 	if (this == &src)
 		return *this;
-
+	this->_allowed_method = src._allowed_method;
+	this->_autoindex = src._autoindex;
+	this->_cgi_extension = src._cgi_extension;
+	this->_cgi_path = src._cgi_path;
+	this->_client_max_body_size = src._client_max_body_size;
+	this->_error_page = src._error_page;
+	this->_index = src._index;
+	this->_redirect_code = src._redirect_code;
+	this->_redirect_uri = src._redirect_uri;
+	this->_root = src._root;
+	this->_upload_path = src._upload_path;
 	return *this;
 }
 
