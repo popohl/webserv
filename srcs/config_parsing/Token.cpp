@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:13 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/08 14:34:44 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/14 12:01:15 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,4 +93,4 @@ std::ostream &	operator<<( std::ostream & ostr, Token const & instance)
 	return ostr;
 }
 
-bool	Token::verbose = true;
+bool	Token::verbose = false;

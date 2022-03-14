@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 10:00:33 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/13 17:29:55 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/14 12:00:45 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,4 +220,4 @@ void	Lexer::skip_whitespaces_and_comments( void )
 		skip_comments();
 }
 
-bool	Lexer::verbose = true;
+bool	Lexer::verbose = false;
