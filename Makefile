@@ -25,7 +25,7 @@ CFLAGS	+= -Wall -Wextra -g -std=c++98
 LDFLAGS	=
 
 # Run command
-RUN_COMMAND	= ./webserv ./config_files/default_config
+RUN_COMMAND	= # For the moment, make run is alias to make test
 
 # The rest is automatic
 
@@ -74,7 +74,7 @@ fclean: clean
 re: fclean all
 
 .PHONY: run
-run: $(NAME)
+run: test
 	$(RUN_COMMAND)
 
 valgrind: $(NAME)

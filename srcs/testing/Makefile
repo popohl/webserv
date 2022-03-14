@@ -29,9 +29,10 @@ all: $(NAME)
 	./$(NAME)
 
 $(NAME): $(OBJS)
-	# echo $(WEBSERV_OBJS)
-	# echo $(WEBSERV_GOOD)
-	$(CXX) $(CXXFLAGS) $(MAIN) $(WEBSERV_GOOD) $(OBJS) $(LIBGTEST) -o $(NAME)
+	@# echo $(WEBSERV_OBJS)
+	@# echo $(WEBSERV_GOOD)
+	@echo "Linking $(NAME)"
+	@$(CXX) $(CXXFLAGS) $(MAIN) $(WEBSERV_GOOD) $(OBJS) $(LIBGTEST) -o $(NAME)
 
 clean:
 	$(RM) $(OBJS)
