@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/14 15:23:51 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/14 16:38:06 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ void	recv_and_send(int link)
 		std::perror("Recv failed:");
 		return ;
 	}
-	std::cout << "===HEADER OF THE CLIENT===" << std::endl;
 	temp = buff;
 	std::cout << temp << std::endl;
 	if ((ret = send(link,  hello.c_str() , hello.size(), 0)) < 0) // send() don't always send all the data at once
@@ -66,11 +65,11 @@ static void	port_listening(std::vector<Socket*> & socket, struct pollfd* poll_fd
 	while (1)
 	{
 		std::cout << "\n+++++++ Waiting for new connection ++++++++\n" << std::endl;
-		std::cout << "poll fd " << poll_fd[0].fd << std::endl;
-		std::cout << "socket fd " << socket[0]->getSocketFd() << std::endl;
-		std::cout << "socket size " << socket.size() << std::endl;
+		// std::cout << "poll fd " << poll_fd[0].fd << std::endl;
+		// std::cout << "socket fd " << socket[0]->getSocketFd() << std::endl;
+		// std::cout << "socket size " << socket.size() << std::endl;
 		poll_ret = poll(poll_fd, socket.size(), 10000); // with negative number poll never time out
-		std::cout << "result of poll_ret : " << poll_ret << std::endl;
+		// std::cout << "result of poll_ret : " << poll_ret << std::endl;
 
 		if (poll_ret == 0)
 			std::cout << " Server Time out" << std::endl; // related to the timeout parameter of poll
