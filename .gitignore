@@ -7,3 +7,4 @@ deps/
 compile_commands.json
 webserv
 *~
+.vscode

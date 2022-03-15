@@ -13,12 +13,11 @@
 #ifndef SERVERNODE_HPP
 # define SERVERNODE_HPP
 
-# include "config_parsing/AST/AstNode.hpp"
-# include "config_parsing/AST/LocationNode.hpp"
-# include "config_parsing/AST/RuleNode.hpp"
+# include "config_parsing/AST/LocationRules.hpp"
+# include "config_parsing/AST/ServerRules.hpp"
 # include <vector>
 
-class ServerNode: public AstNode
+class ServerNode
 {
 
 public:
@@ -33,8 +32,8 @@ public:
 
 private:
 
-	std::vector<LocationNode>	locationList;
-	std::vector<RuleNode>		serverRules;
+	std::vector<LocationRules>	locationList;
+	std::vector<ServerRules>	serverRules;
 
 };
 

@@ -11,7 +11,7 @@ D		= deps/
 NAME	= webserv
 
 # list of your source files
-SRCS	= LocationRule.cpp main.cpp parsing/Lexer.cpp parsing/Token.cpp \
+SRCS	= LocationRule.cpp main.cpp config_parsing/Lexer.cpp config_parsing/Token.cpp \
 		  testing/lexer_tests.cpp testing/test_main.cpp testing/token_tests.cpp
 
 # Compiler

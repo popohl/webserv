@@ -13,11 +13,10 @@
 #ifndef CONFIGFILENODE_HPP
 # define CONFIGFILENODE_HPP
 
-# include "config_parsing/AST/AstNode.hpp"
 # include "config_parsing/AST/ServerNode.hpp"
 # include <vector>
 
-class ConfigFileNode: public AstNode
+class ConfigFileNode
 {
 
 public:
