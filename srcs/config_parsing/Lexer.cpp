@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 10:00:33 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/08 14:34:11 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/14 16:04:13 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Lexer::Lexer( void )
 	return;
 }
 
-Lexer::Lexer( std::string& file_name )
+Lexer::Lexer( std::string file_name )
 {
 	if (Lexer::verbose)
 		std::cout << "Standard constructor for Lexer called" << std::endl;
@@ -52,7 +52,7 @@ Token	Lexer::get_next_token( void )
 	if (isalpha(_current_char))
 		return tokenize_word();
 	if (isdigit(_current_char))
-		return tokenize_number_or_ip();
+		return differentiate_digit_tokens();
 	throw Lexer::token_exception();
 }
 
@@ -69,38 +69,74 @@ Token	Lexer::tokenize_word( void )
 	do
 	{
 		word += advance();
-	} while (isalpha(_current_char));
-	request_whitespace();
+	} while (isalpha(_current_char) || _current_char == '.' || _current_char == '_');
 	return Token(Token::word, word);
 }
 
-Token	Lexer::tokenize_number_or_ip( void )
+Token	Lexer::differentiate_digit_tokens( void )
 {
 	std::string	number;
 
 	number += get_number();
 	if (_current_char == '.')
-		return tokenize_ip(number);
-	request_whitespace();
+		return differentiate_number_size(number);
+	else if (is_size_prefix(_current_char) || _current_char == 'b'
+			|| _current_char == 'B')
+		return tokenize_size(number);
 	return Token(Token::number, number);
 }
 
-Token	Lexer::tokenize_ip( std::string first_number = "" )
+Token	Lexer::differentiate_number_size( std::string &beginning )
 {
-	std::string	ip(first_number);
+	std::string	ip(beginning);
 
-	if (first_number == "")
-		ip += get_number();
-	for (int i = 0; i < 3; i++)
-	{
-		if (_current_char == '.')
-			ip += advance();
-		else
-			throw Lexer::token_exception();
-		ip += get_number();
-	}
-	request_whitespace();
+	if (_current_char == '.')
+		ip += advance();
+	else
+		throw Lexer::token_exception();
+	ip += get_number();
+	if (_current_char == '.')
+		ip += advance();
+	else
+		return tokenize_size(ip);
+	ip += get_number();
+	if (_current_char == '.')
+		ip += advance();
+	else
+		throw Lexer::token_exception();
+	ip += get_number();
 	return Token(Token::ip_address, ip);
+}
+
+Token	Lexer::tokenize_size( std::string &number_part )
+{
+	std::string	size(number_part);
+
+	if (is_size_prefix(_current_char))
+		size += get_size_multiplier();
+	else if (_current_char == 'b' || _current_char == 'B')
+	{
+		advance();
+		return Token(Token::size, size);
+	}
+	else
+		throw Lexer::token_exception();
+	if (_current_char == 'i')
+		advance();
+	if (_current_char == 'b' || _current_char == 'B')
+		advance();
+	return Token(Token::size, size);
+}
+
+char	Lexer::get_size_multiplier( void )
+{
+	char		tmp_uppercase;
+
+	tmp_uppercase = advance();
+	if (tmp_uppercase == 'k' || tmp_uppercase == 'm' || tmp_uppercase == 'g'
+			|| tmp_uppercase == 't')
+		tmp_uppercase -= 32;
+	return tmp_uppercase;
 }
 
 Token	Lexer::tokenize_path( void )
@@ -111,14 +147,7 @@ Token	Lexer::tokenize_path( void )
 	{
 		path += advance();
 	} while (isalnum(_current_char) || is_path_special_char(_current_char));
-	request_whitespace();
 	return Token(Token::path, path);
-}
-
-void	Lexer::request_whitespace( void ) const
-{
-	if (!isspace(_current_char))
-		throw Lexer::token_exception();
 }
 
 std::string	Lexer::get_number( void )
@@ -130,7 +159,7 @@ std::string	Lexer::get_number( void )
 	return number;
 }
 
-void	Lexer::open_file( std::string& file_name )
+void	Lexer::open_file( std::string file_name )
 {
 	this->close_file();
 	if (Lexer::verbose)
@@ -168,6 +197,12 @@ bool	Lexer::reached_eof( void ) const
 	return _config_file.eof();
 }
 
+bool	Lexer::is_size_prefix( char c ) const
+{
+	return c == 'm' || c == 'M' || c == 'k' || c == 'K' || c == 'g' || c == 'G'
+		|| c == 't' || c == 'T';
+}
+
 bool	Lexer::is_path_special_char( char c ) const
 {
 	return c == '.' || c == '/';
@@ -188,4 +223,4 @@ void	Lexer::skip_whitespaces_and_comments( void )
 		skip_comments();
 }
 
-bool	Lexer::verbose = true;
+bool	Lexer::verbose = false;

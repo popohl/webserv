@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/11 17:50:10 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/15 14:38:22 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	Socket::bindSocket() const
 	{
 		std::perror("Bind failed");
 		exit(EXIT_FAILURE);
-		}
+	}
 }
 
 void	Socket::listenSocket() const

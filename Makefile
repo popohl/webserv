@@ -11,8 +11,11 @@ D		= deps/
 NAME	= webserv
 
 # list of your source files
-SRCS	= LocationRule.cpp main.cpp config_parsing/Lexer.cpp config_parsing/Token.cpp \
-		  testing/lexer_tests.cpp testing/test_main.cpp testing/token_tests.cpp
+SRCS	= config_parsing/AST/ConfigFileNode.cpp \
+		  config_parsing/AST/LocationRules.cpp \
+		  config_parsing/AST/ServerNode.cpp config_parsing/AST/ServerRules.cpp \
+		  config_parsing/Lexer.cpp config_parsing/Token.cpp \
+		  main.cpp
 
 # Compiler
 CC		= c++
@@ -22,7 +25,7 @@ CFLAGS	+= -Wall -Wextra -g -std=c++98
 LDFLAGS	=
 
 # Run command
-RUN_COMMAND	= ./webserv ./config_files/default_config
+RUN_COMMAND	= # For the moment, make run is alias to make test
 
 # The rest is automatic
 
@@ -71,8 +74,13 @@ fclean: clean
 re: fclean all
 
 .PHONY: run
-run: $(NAME)
+run: test
 	$(RUN_COMMAND)
 
 valgrind: $(NAME)
 	valgrind --leak-check=full $(RUN_COMMAND)
+
+test: all
+	-@make -C srcs/testing all #- before a command allows make to ignore error code
+	# @make -C srcs/testing fclean
+

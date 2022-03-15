@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/14 18:01:51 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/15 16:27:03 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ static struct pollfd*	createPollfd(std::vector<Socket*> & socket) //create struc
 	for(int i = 0; i < socket.size(); i++)
 	{
 		poll[i].fd = socket[i]->getSocketFd();
-		poll[i].events = POLLIN;
+		poll[i].events = POLLIN;  //TODO do we have to change POLLIN to POLLOUT when we are ready to send something to client ?
 	}
 	return (poll);
 }
 
-void	recv_and_send(int link)
+void	recvAndSend(int link)
 {
 	char	buff[90000];
 	std::string	temp;
@@ -54,10 +54,17 @@ void	recv_and_send(int link)
 		std::perror("Send failed:");
 		return ;
 	}
+	//Have a special file send to
+	// while (ret < hello.size()) //TODO resent the data if not everything have been sent
+	// {
+	// 	ret += send(link,  hello.c_str()[size() - ret] , hello.size(), 0)
+	// }
+		std::cout << "Send =" << ret << "Message size =" << hello.size() << std::endl;
+
 	std::cout << "\n======== Message sent to client ========\n" << std::endl;
 }
 
-static void	port_listening(std::vector<Socket*> & socket, struct pollfd* poll_fd)
+static void	portListening(std::vector<Socket*> & socket, struct pollfd* poll_fd)
 {
 	int	poll_ret;
 	int	link;
@@ -68,8 +75,8 @@ static void	port_listening(std::vector<Socket*> & socket, struct pollfd* poll_fd
 		// std::cout << "poll fd " << poll_fd[0].fd << std::endl;
 		// std::cout << "socket fd " << socket[0]->getSocketFd() << std::endl;
 		// std::cout << "socket size " << socket.size() << std::endl;
-		poll_ret = poll(poll_fd, socket.size(), 10000); // with negative number poll never time out
-		// std::cout << "result of poll_ret : " << poll_ret << std::endl;
+		poll_ret = poll(poll_fd, socket.size(), -1); // with negative number poll never time out
+		std::cout << "result of poll_ret : " << poll_ret << std::endl;
 
 		if (poll_ret == 0)
 			std::cout << " Server Time out" << std::endl; // related to the timeout parameter of poll
@@ -77,12 +84,12 @@ static void	port_listening(std::vector<Socket*> & socket, struct pollfd* poll_fd
 		{
 			for(int i = 0; poll_ret > 0; i++)
 			{
-				if (poll_fd[i].revents & POLLIN) //TODO We have to check POLLOUT (write) and POLLIN (read) at the same time but why ??
+				if (poll_fd[i].revents & POLLIN) //TODO we have to listen the read And the write, but why ?
 				{
 					poll_ret--;
 					if ((link = accept(socket[i]->getSocketFd(), (struct sockaddr *)&socket[i]->_address, (socklen_t*)&socket[i]->_addrlen))<0)
 						std::perror("Accept failed:");
-					recv_and_send(link);
+					recvAndSend(link);
 					close(link);
 				}
 			}
@@ -94,9 +101,9 @@ int main()
 {
 	// Get all the port to listen from Paul's Parsing
 	std::vector<int>	allPort;
-	allPort.push_back(8081);
-	allPort.push_back(8002);
-	allPort.push_back(9035);
+	allPort.push_back(8082);
+	allPort.push_back(8042);
+	allPort.push_back(9052);
 
 	//Create a containers of Socket pointer. The Class Socket initialize the bind and the listening for every Socket
 	std::vector<Socket*>	socket;
@@ -107,5 +114,5 @@ int main()
 	struct pollfd*	poll_fd;
 
 	poll_fd = createPollfd(socket);
-	port_listening(socket, poll_fd);
+	portListening(socket, poll_fd);
 }
