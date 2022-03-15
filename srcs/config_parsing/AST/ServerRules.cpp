@@ -6,11 +6,11 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/10 16:55:19 by paulohl          ###   ########.fr       */
+//   Updated: 2022/03/15 12:01:16 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ServerRules.hpp"
+#include "config_parsing/AST/ServerRules.hpp"
 
 ServerRules::ServerRules( void )
 {

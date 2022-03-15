@@ -6,12 +6,12 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/10 16:55:19 by paulohl          ###   ########.fr       */
+//   Updated: 2022/03/15 12:00:06 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "LocationRules.hpp"
+#include "config_parsing/AST/LocationRules.hpp"
 
 LocationRules::LocationRules( void )
 {
