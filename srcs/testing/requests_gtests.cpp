@@ -30,7 +30,8 @@ TEST(RequestSuite, createRequestTests)
 {
 	const char * validTests[] = {"GET www.doug.fr HTTP/1.0\b\n", "POST * HTTP/0.0\b\n", NULL};
 	char * invalidTests[] = {"hello this is the place", "hohoho", "bip boup", "",
-							 "POST * HTTP/0.0\b", "GEt www.tamer.fr HTTP/1.0\b\n", NULL};
+							 "POST * HTTP/0.0\b", "GEt www.tamer.fr HTTP/1.0\b\n",
+							 "HEAD * HTTP/1.1\b\n", NULL};
 	for (int i = 0; validTests[i]; i++)
 	{
 		iRequest * result = iRequest::createRequest(std::string(validTests[i]));

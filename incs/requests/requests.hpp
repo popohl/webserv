@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/15 20:24:07 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/15 20:37:26 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -26,6 +26,7 @@ class iRequest
 
 class getRequest : public iRequest
 {
+	//get request has no body !
 public:
 	getRequest();
 	~getRequest() {};
