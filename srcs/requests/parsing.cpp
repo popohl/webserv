@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 12:39:47 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/15 13:38:31 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/15 15:15:43 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,6 +15,8 @@
 const char *methodTable[] = { "GET", "POST", "DELETE", NULL };
 
 //these functions are not NULL safe
+
+
 
 //RequestLine parsing
 
@@ -27,6 +29,7 @@ const char *parseMethod(const char * input)
 }
 
 //expect array of the form "HTTP/1.1\b\n
+// HTTP_version = "HTPP" "/" 1*digit "." 1*digit
 
 const char *parseHttpVersion(const char *input)
 {
@@ -44,9 +47,18 @@ const char *parseHttpVersion(const char *input)
 			
 bool isCRLF(const char *input)
 {
-	std::cout << "paf" << std::endl;
 	if (!strcmp("\b\n", input))
 		return (true);
 	else
 		return (false);
+}
+
+//Request-URI = "*" | absoluteURI | abs_path | authority
+
+const char *parseRequestURI(const char * input)
+{
+	if ((strlen(input) == 1) && (*input == '*'))
+		return (input);
+	
+	return (NULL);
 }

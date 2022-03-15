@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "requests/parsing.hpp"
+#include "requests/requests.hpp"
 
 TEST(RequestSuite, parseMethodTests)
 {
@@ -23,6 +24,23 @@ TEST(RequestSuite, parseHttpVersionTests)
 	
 	for (int i = 0; invalidTests[i]; i++)
 		EXPECT_TRUE( parseHttpVersion( invalidTests[i ]) == NULL );
+}
 
-
+TEST(RequestSuite, createRequestTests)
+{
+	const char * validTests[] = {"GET www.doug.fr HTTP/1.0\b\n", "POST * HTTP/0.0\b\n", NULL};
+	char * invalidTests[] = {"hello this is the place", "hohoho", "bip boup", "",
+							 "POST * HTTP/0.0\b", "GEt www.tamer.fr HTTP/1.0\b\n", NULL};
+	for (int i = 0; validTests[i]; i++)
+	{
+		iRequest * result = iRequest::createRequest(std::string(validTests[i]));
+		EXPECT_TRUE( result != NULL) << "fail for input : " << validTests[i];
+		delete result;
+	}
+	for (int i = 0; invalidTests[i]; i++)
+	{
+		iRequest * result = iRequest::createRequest(std::string(invalidTests[i]));
+		EXPECT_TRUE( result == NULL) << "fail for input : " << invalidTests[i];
+		delete result;
+	}
 }
