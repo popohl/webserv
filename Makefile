@@ -15,7 +15,7 @@ SRCS	= LocationRule.cpp main.cpp config_parsing/Lexer.cpp config_parsing/Token.c
 		  testing/lexer_tests.cpp testing/test_main.cpp testing/token_tests.cpp
 
 # Compiler
-CC		= clang++
+CC		= c++
 # Compiler flags
 CFLAGS	+= -Wall -Wextra -g -std=c++98
 # Linker flags
