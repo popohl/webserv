@@ -12,11 +12,11 @@ CXXFLAGS += $(INCLUDE)
 
 MAIN = gtest_main.cpp
 
-FILES = lexer_gtests
+FILES = lexer_gtests requests_gtests
 
 WEBSERV_OBJS_PATH = ../../objs/
 
-WEBSERV_DIR = config_parsing
+WEBSERV_DIR = config_parsing requests
 WEBSERV_PATH = $(addprefix $(WEBSERV_OBJS_PATH), $(WEBSERV_DIR))
 WEBSERV_OBJS = $(foreach dir, $(WEBSERV_PATH) ,$(wildcard $(dir)/*.o))
 SRCS = $(addsuffix .cpp, $(FILES))
@@ -36,4 +36,3 @@ fclean: clean
 	$(RM) $(NAME)
 
 re: fclean all
-
