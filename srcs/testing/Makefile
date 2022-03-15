@@ -17,8 +17,8 @@ FILES = lexer_gtests
 WEBSERV_OBJS_PATH = ../../objs/
 
 WEBSERV_DIR = parsing
-WEBSERV_OBJS = $(wildcard $(addprefix $(WEBSERV_OBJS_PATH), $(WEBSERV_DIR))/*.o) #taking all the objects without the main
-
+WEBSERV_PATH = $(addprefix $(WEBSERV_OBJS_PATH), $(WEBSERV_DIR))
+WEBSERV_OBJS = $(foreach dir, $(WEBSERV_PATH) ,$(wildcard $(dir)/*.o))
 SRCS = $(addsuffix .cpp, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))
 
