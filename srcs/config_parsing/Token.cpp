@@ -115,6 +115,7 @@ size_t		Token::size_atoi( void ) const
 	return result * multiplier;
 }
 
+
 bool	Token::operator==( const Token& other ) const
 {
 	return (other.getType() == this->getType()

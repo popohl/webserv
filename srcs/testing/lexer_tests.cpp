@@ -203,3 +203,4 @@ TEST(LexerSuite, Reading)
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::closing_bracket, ""));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::end_of_file, ""));
 }
+

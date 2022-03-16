@@ -18,7 +18,7 @@ SRCS	= config_parsing/AST/ConfigFileNode.cpp \
 		  config_parsing/Token.cpp main.cpp
 
 # Compiler
-CC		= clang++
+CC		= c++
 # Compiler flags
 CFLAGS	+= -Wall -Wextra -g -std=c++98
 # Linker flags
@@ -82,5 +82,5 @@ valgrind: $(NAME)
 
 test: all
 	-@make -C srcs/testing all #- before a command allows make to ignore error code
-	@make -C srcs/testing fclean
+	# @make -C srcs/testing fclean
 

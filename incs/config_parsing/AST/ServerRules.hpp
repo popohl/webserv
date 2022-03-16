@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/15 10:49:13 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/16 19:55:15 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ struct ServerRules
 	static bool	verbose;
 
 	void	add_error_page( int error_code, std::string error_page_path );
+	void	set_index( std::vector<std::string> new_index );
 	void	add_index( std::string new_index );
 	void	add_server_name( std::string new_server_name );
 

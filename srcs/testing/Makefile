@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-CXX = clang++
+CXX = c++
 CXXFLAGS = -Wall -Wextra
 
 NAME = gtests
