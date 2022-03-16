@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 14:54:43 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/16 17:10:29 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/16 20:00:42 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ public:
 private:
 
 	std::vector<LocationRules>	locationList;
-	std::vector<ServerRules>	serverRules;
+	ServerRules					serverRules;
 
 };
 
