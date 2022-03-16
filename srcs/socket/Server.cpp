@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/16 14:39:17 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/16 15:15:11 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,5 @@ int main()
 
 
 //TODO faire des tests avec google test
-//TODO bien comprendre leur Makefile
 
-
-//Cookie : 
+//Cookie :
