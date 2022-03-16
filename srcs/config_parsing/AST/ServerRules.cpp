@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/16 16:03:39 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/16 16:08:38 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,6 @@ ServerRules &	ServerRules::operator=( ServerRules const & src )
 		return *this;
 
 	return *this;
-}
-
-bool	ServerRules::is_error_code_valid( int error_code )
-{
-	(void)error_code;
-	return true;
 }
 
 void	ServerRules::reset_location_rules( void )
@@ -114,8 +108,6 @@ void	ServerRules::set_error_page( std::map<int, std::string> new_error_page )
 
 void	ServerRules::add_error_page( int error_code, std::string error_page_path )
 {
-	if (!is_error_code_valid(error_code))
-		throw std::exception();
 	this->_error_page[error_code] = error_page_path;
 }
 
@@ -131,8 +123,6 @@ void	ServerRules::add_index( std::string new_index )
 
 void	ServerRules::set_listen_port( int new_listen_port )
 {
-	if (new_listen_port <= 0)
-		throw std::exception();
 	this->_listen_port = new_listen_port;
 }
 
