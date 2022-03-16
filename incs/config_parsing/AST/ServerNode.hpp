@@ -40,7 +40,7 @@ public:
 private:
 
 	std::vector<LocationRules>	locationList;
-	ServerRules					serverRules;
+	std::vector<ServerRules>	serverRules;
 
 };
 

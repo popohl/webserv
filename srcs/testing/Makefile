@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-CXX = clang++
+CXX = c++
 CXXFLAGS = -Wall -Wextra
 
 NAME = gtests
@@ -15,6 +15,7 @@ MAIN = gtest_main.cpp
 FILES = lexer_tests ast_tests
 
 WEBSERV_OBJS_PATH = ../../objs/
+
 
 WEBSERV_DIR = config_parsing config_parsing/AST
 WEBSERV_PATH = $(addprefix $(WEBSERV_OBJS_PATH), $(WEBSERV_DIR))

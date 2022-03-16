@@ -52,6 +52,7 @@ Token	Lexer::get_next_token( void )
 	if (isalpha(_current_char))
 		return tokenize_word();
 	if (isdigit(_current_char))
+
 		return differentiate_digit_tokens();
 	throw Lexer::token_exception();
 }
@@ -224,3 +225,4 @@ void	Lexer::skip_whitespaces_and_comments( void )
 }
 
 bool	Lexer::verbose = false;
+

@@ -70,6 +70,8 @@ private:
 	void	set_error_page( std::map<int, std::string> );
 	void	set_allowed_method( char new_allowed_method );
 
+private:
+
 	char						_allowed_method;
 	bool						_autoindex;
 	std::string					_cgi_extension;

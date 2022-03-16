@@ -54,6 +54,7 @@ LocationRules &	LocationRules::operator=( LocationRules const & src )
 		std::cout << "Assignement operator for LocationRules called" << std::endl;
 	if (this == &src)
 		return *this;
+
 	this->_allowed_method = src._allowed_method;
 	this->_autoindex = src._autoindex;
 	this->_cgi_extension = src._cgi_extension;
@@ -65,6 +66,7 @@ LocationRules &	LocationRules::operator=( LocationRules const & src )
 	this->_redirect_uri = src._redirect_uri;
 	this->_root = src._root;
 	this->_upload_path = src._upload_path;
+
 	return *this;
 }
 
