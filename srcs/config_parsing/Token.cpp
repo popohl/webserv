@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:13 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/14 15:02:38 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/15 10:42:21 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ std::string		Token::getTypeName( void ) const
 			return std::string("closing_bracket");
 		else if (this->_type == semicolon)
 			return std::string("semicolon");
+		else if (this->_type == colon)
+			return std::string("colon");
 		else if (this->_type == path)
 			return std::string("path");
 		else if (this->_type == ip_address)

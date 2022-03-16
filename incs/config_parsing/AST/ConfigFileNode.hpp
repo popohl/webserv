@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 14:52:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/14 16:00:37 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/16 17:10:36 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,9 @@ public:
 
 	std::vector<ServerNode>			&getServerList( void );
 	const std::vector<ServerNode>	&getServerList( void ) const;
+	ServerNode						&LatestServer( void );
 
-	void	addServer( ServerNode new_server );
+	ServerNode&	createNewServerNode( void );
 
 	static bool	verbose;
 
