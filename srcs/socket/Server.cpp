@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.cpp                                         :+:      :+:    :+:   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/15 16:27:03 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/16 14:39:17 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Socket.hpp"
+#include "Server.hpp"
 
 //TODO think to free socket at the end
 
@@ -34,12 +35,11 @@ static struct pollfd*	createPollfd(std::vector<Socket*> & socket) //create struc
 	return (poll);
 }
 
-void	recvAndSend(int link)
+static void	receiveMessage(int link)
 {
 	char	buff[90000];
 	std::string	temp;
 	int		ret;
-	std::string hello= "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!"; //TODO we need to change this string to communicate with the client
 
 	memset((void*)buff, 0, 90000);
 	if ((ret = recv(link, buff, 90000, 0)) < 0)
@@ -49,19 +49,7 @@ void	recvAndSend(int link)
 	}
 	temp = buff;
 	std::cout << temp << std::endl;
-	if ((ret = send(link,  hello.c_str() , hello.size(), 0)) < 0) // send() don't always send all the data at once
-	{
-		std::perror("Send failed:");
-		return ;
-	}
-	//Have a special file send to
-	// while (ret < hello.size()) //TODO resent the data if not everything have been sent
-	// {
-	// 	ret += send(link,  hello.c_str()[size() - ret] , hello.size(), 0)
-	// }
-		std::cout << "Send =" << ret << "Message size =" << hello.size() << std::endl;
-
-	std::cout << "\n======== Message sent to client ========\n" << std::endl;
+	sendMessage(link, buff);
 }
 
 static void	portListening(std::vector<Socket*> & socket, struct pollfd* poll_fd)
@@ -72,9 +60,6 @@ static void	portListening(std::vector<Socket*> & socket, struct pollfd* poll_fd)
 	while (1)
 	{
 		std::cout << "\n----------- Waiting for new connection -----------\n" << std::endl;
-		// std::cout << "poll fd " << poll_fd[0].fd << std::endl;
-		// std::cout << "socket fd " << socket[0]->getSocketFd() << std::endl;
-		// std::cout << "socket size " << socket.size() << std::endl;
 		poll_ret = poll(poll_fd, socket.size(), -1); // with negative number poll never time out
 		std::cout << "result of poll_ret : " << poll_ret << std::endl;
 
@@ -89,7 +74,7 @@ static void	portListening(std::vector<Socket*> & socket, struct pollfd* poll_fd)
 					poll_ret--;
 					if ((link = accept(socket[i]->getSocketFd(), (struct sockaddr *)&socket[i]->_address, (socklen_t*)&socket[i]->_addrlen))<0)
 						std::perror("Accept failed:");
-					recvAndSend(link);
+					receiveMessage(link);
 					close(link);
 				}
 			}
@@ -116,3 +101,10 @@ int main()
 	poll_fd = createPollfd(socket);
 	portListening(socket, poll_fd);
 }
+
+
+//TODO faire des tests avec google test
+//TODO bien comprendre leur Makefile
+
+
+//Cookie : 

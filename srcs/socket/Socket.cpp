@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/15 14:38:22 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/16 14:13:09 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@
 //   CONSTRUCTOR OVERLOAD 					    //
 // +------------------------------------------+ //
 
-Socket::Socket(int const & port) : _port(port), _addrlen(sizeof(_address))
+Socket::Socket(int const & port) :
+	_port(port), _addrlen(sizeof(_address)),
+	_socket_fd(socket(AF_INET, SOCK_STREAM, 0))
 {
-	if ((_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) //AF_INET pour utilisation en IPV4
+	if (_socket_fd == 0) //AF_INET pour utilisation en IPV4
 	{
 		std::perror("Socket creation failed");
 		exit(EXIT_FAILURE);
@@ -54,7 +56,6 @@ Socket &Socket::operator=(const Socket & rhs)
 {
 	if (this != &rhs)
 	{
-		_socket_fd = rhs._socket_fd;
 		_address = rhs._address;
 		_addrlen = rhs._addrlen;
 	}

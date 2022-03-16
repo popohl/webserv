@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/14 14:25:50 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/16 14:13:01 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ class Socket
 {
 	protected:
 
-		const int			_port;
-		int					_socket_fd;
+		const int	_port;
+		const int	_socket_fd;
 		Socket();
 
 	public:
@@ -47,7 +47,7 @@ class Socket
 		int	getSocketFd() const;
 		int	getPort() const;
 
-		struct sockaddr_in	_address; // it's public otherwise we have do make a geter fucntion on is address
+		struct sockaddr_in	_address; // it's public otherwise we have do make a geter function on is address
 		int					_addrlen;
 };
 
