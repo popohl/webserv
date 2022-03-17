@@ -15,7 +15,7 @@ SRCS	= config_parsing/AST/ConfigFileNode.cpp \
 		  config_parsing/AST/LocationRules.cpp \
 		  config_parsing/AST/ServerNode.cpp config_parsing/AST/ServerRules.cpp \
 		  config_parsing/Lexer.cpp config_parsing/Token.cpp  config_parsing/Parser.cpp \
-		  requests/parsing.cpp requests/requests.cpp \
+		  requests/parsing.cpp requests/requests.cpp requests/requestHeaderToken.cpp \
 		  main.cpp
 
 # Compiler
@@ -83,5 +83,5 @@ valgrind: $(NAME)
 
 test: all
 	-@make -C srcs/testing all #- before a command allows make to ignore error code
-	# @make -C srcs/testing fclean
+	 @make -C srcs/testing fclean
 

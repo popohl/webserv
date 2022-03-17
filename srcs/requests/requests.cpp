@@ -6,19 +6,19 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/15 20:29:08 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/17 18:01:38 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "requests/requests.hpp"
+#include "requests/requestHeaderToken.hpp"
+#include <cstddef>
 #include <cstring>
 #include <string.h>
 
-#include <iostream>
 getRequest::getRequest() {}
 postRequest::postRequest() {}
 deleteRequest::deleteRequest() {}
-
 
 iRequest * iRequest::createRequest(std::string firstLine)
 {
@@ -26,13 +26,11 @@ iRequest * iRequest::createRequest(std::string firstLine)
 
 	method = strtok(const_cast<char *>(firstLine.c_str()), " ");
 	requestUri = strtok(NULL, " ");
-	httpVersion = strtok(NULL, " ");
-
+	httpVersion = strtok(NULL, "\b\n");
 	if (method && requestUri && httpVersion)
 	{
 		if (parseMethod(method) && parseHttpVersion(httpVersion))
 		{
-
 			if (!strcmp(method, "GET"))
 				return (new getRequest);
 			if (!strcmp(method, "POST"))
@@ -43,4 +41,5 @@ iRequest * iRequest::createRequest(std::string firstLine)
 	}
 	return (NULL);
 }
+
 

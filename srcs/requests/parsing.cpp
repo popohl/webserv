@@ -6,18 +6,19 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 12:39:47 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/15 15:15:43 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/17 16:46:48 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "requests/parsing.hpp"
+	
 
 const char *methodTable[] = { "GET", "POST", "DELETE", NULL };
 
 //these functions are not NULL safe
 
 
-
+#include <iostream>
 //RequestLine parsing
 
 const char *parseMethod(const char * input)
@@ -28,18 +29,18 @@ const char *parseMethod(const char * input)
 	return (NULL);
 }
 
-//expect array of the form "HTTP/1.1\b\n
-// HTTP_version = "HTPP" "/" 1*digit "." 1*digit
+//expect array of the form "HTTP/1.1
+// HTTP_version = "HTTP" "/" 1*digit "." 1*digit
 
 const char *parseHttpVersion(const char *input)
 {
-	if (strlen(input) == 10)
+	if (strlen(input) == 8)
 	{
 		if (!strncmp("HTTP/", &input[0], 5)
 			&& isdigit(input[5])
 			&& (input[6] == '.')
-			&& isdigit(input[7])
-			&& isCRLF(&input[8]))
+			&& isdigit(input[7]))
+//			&& isCRLF(&input[8]))
 			return (input);
 	}
 	return (NULL);

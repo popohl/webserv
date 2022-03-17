@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 12:23:52 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/15 13:18:51 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/17 16:47:29 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -30,6 +30,10 @@
        <">            = <US-ASCII double-quote mark (34)>
 */
 
+/*
+
+ */
+
 # include <cstddef>
 # include <string>
 # include <cstring>
@@ -41,5 +45,7 @@ const char *parseRequestURI(const char *);
 const char *parseHttpVersion(const char *);
 
 bool isCRLF(const char *input);
+
+
 
 #endif
