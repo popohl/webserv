@@ -89,6 +89,7 @@ TEST(LexerSuite, Reading)
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::opening_bracket, ""));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::closing_bracket, ""));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::semicolon, ""));
+	EXPECT_EQ(single_elements.get_next_token(), Token(Token::colon, ""));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::path, "."));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::path, "/"));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::path, "./"));
@@ -113,6 +114,14 @@ TEST(LexerSuite, Reading)
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::ip_address, "255.255.255.255"));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::ip_address, "555.555.555.555"));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::ip_address, "1245.12.12.12"));
+	EXPECT_EQ(single_elements.get_next_token(), Token(Token::ip_address, "127.0.0.1"));
+	EXPECT_EQ(single_elements.get_next_token(), Token(Token::colon, ""));
+	EXPECT_EQ(single_elements.get_next_token(), Token(Token::number, "8000"));
+	EXPECT_EQ(single_elements.get_next_token(), Token(Token::colon, ""));
+	EXPECT_EQ(single_elements.get_next_token(), Token(Token::number, "8000"));
+	EXPECT_EQ(single_elements.get_next_token(), Token(Token::word, "localhost"));
+	EXPECT_EQ(single_elements.get_next_token(), Token(Token::colon, ""));
+	EXPECT_EQ(single_elements.get_next_token(), Token(Token::number, "8000"));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::size, "12"));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::size, "12"));
 	EXPECT_EQ(single_elements.get_next_token(), Token(Token::size, "12K"));

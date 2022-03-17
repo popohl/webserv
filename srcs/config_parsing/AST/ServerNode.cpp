@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 15:32:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/13 16:14:27 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/16 17:10:28 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,16 @@ ServerNode &	ServerNode::operator=( ServerNode const & src )
 	return *this;
 }
 
-LocationRules	&ServerNode::addLocation( void )
+LocationRules	&ServerNode::createNewLocationNode( void )
 {
 	LocationRules	newLocation(serverRules);
 
 	locationList.push_back(newLocation);
+	return locationList.back();
+}
+
+LocationRules	&ServerNode::LatestLocation( void )
+{
 	return locationList.back();
 }
 
