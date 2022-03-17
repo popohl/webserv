@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/17 16:14:01 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/17 17:13:57 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static void	receiveMessage(int link)
 		temp = buff;
 		std::cout << temp << std::endl;
 	// }
-	sendMessage(link, buff);
+	// sendMessage(link, buff);
 }
 
 void	receiveConnectToClient(int i, std::vector<Socket*> & socket, struct pollfd* poll_fd)
@@ -43,5 +43,11 @@ void	receiveConnectToClient(int i, std::vector<Socket*> & socket, struct pollfd*
 	if ((link = accept(socket[i]->getSocketFd(), (struct sockaddr *)&socket[i]->_address, (socklen_t*)&socket[i]->_addrlen))<0)
 		std::perror("Accept failed:");
 	receiveMessage(link);
+	poll_fd[i].events = POLLOUT;
+	poll_fd[i].revents = 0;
 	close(link);
 }
+
+//For accept()ed socket in non-blocking mode you first try write()ing or
+// send()ing data and only when they return EAGAIN or EWOULDBLOCK you
+// wait for POLLOUT on that socket.

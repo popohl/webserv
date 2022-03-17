@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/17 15:27:58 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/17 17:13:52 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,16 @@ void	sendMessage(int link, char *buff)
 	}
 
 	std::cout << "\n======== Message sent to client ========\n" << std::endl;
+}
+
+void	sendConnectToClient(int i, std::vector<Socket*> & socket, struct pollfd* poll_fd)
+{
+	int	link;
+
+	if ((link = accept(socket[i]->getSocketFd(), (struct sockaddr *)&socket[i]->_address, (socklen_t*)&socket[i]->_addrlen))<0)
+		std::perror("Accept failed:");
+	sendMessage(link, NULL);
+	poll_fd[i].events = POLLIN;
+	poll_fd[i].revents = 0;
+	close(link);
 }

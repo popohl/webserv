@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/17 16:13:46 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/17 17:35:36 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,16 @@ static void	portListening(std::vector<Socket*> & socket, struct pollfd* poll_fd)
 		{
 			for(int i = 0; poll_ret > 0; i++)
 			{
-				if (poll_fd[i].revents & POLLIN) //TODO we have to listen the read And the write.
+
+				if (poll_fd[i].revents & POLLIN)
 				{
-					poll_ret--;
 					receiveConnectToClient(i, socket, poll_fd);
+					poll_ret--;
+				}
+					if (poll_fd[i].revents & POLLOUT)
+				{
+					sendConnectToClient(i, socket, poll_fd); //Créer une classe fd client avec le buffer dedans, rajouter une interface ou une classe abstraite
+					poll_ret--;
 				}
 			}
 		}
@@ -72,7 +78,7 @@ int main()
 {
 	// Get all the port to listen from Paul's Parsing
 	std::vector<int>	allPort;
-	allPort.push_back(8082);
+	allPort.push_back(8080);
 	// allPort.push_back(8046);
 	// allPort.push_back(9056);
 
@@ -89,6 +95,5 @@ int main()
 }
 
 
-//TODO faire des tests avec google test
-
-//Cookie :
+//Pour que tout se passe bien il faut rajouter le fd du client dans la structure et il faut aussi pouvoir le remove quand il a fini
+//Checker avec le flag POLLHUP permet de close le fd du client car il sait qu'il a été fermé ailleurs.
