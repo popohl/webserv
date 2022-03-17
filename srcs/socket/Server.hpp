@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/16 12:12:35 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/17 16:04:50 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define SERVER_HPP
 
 void	sendMessage(int link, char *buff);
+void	receiveConnectToClient(int i, std::vector<Socket*> & socket, struct pollfd* poll_fd);
 
 
 #endif

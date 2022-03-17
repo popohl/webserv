@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/16 15:15:11 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/17 16:13:46 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,14 @@
 
 static Socket*	createSocket(int port)
 {
+	int flag = 1;
 	Socket *new_sock = new Socket(port);
 	fcntl(new_sock->getSocketFd(), F_SETFL, O_NONBLOCK);
+	if (setsockopt(new_sock->getSocketFd(),SOL_SOCKET, SO_REUSEADDR, &flag, sizeof flag) == -1)
+	{
+		std::perror("setsockopt");
+		exit(1);
+	}
 	new_sock->bindSocket();
 	new_sock->listenSocket();
 	return (new_sock);
@@ -35,27 +41,10 @@ static struct pollfd*	createPollfd(std::vector<Socket*> & socket) //create struc
 	return (poll);
 }
 
-static void	receiveMessage(int link)
-{
-	char	buff[90000];
-	std::string	temp;
-	int		ret;
-
-	memset((void*)buff, 0, 90000);
-	if ((ret = recv(link, buff, 90000, 0)) < 0)
-	{
-		std::perror("Recv failed:");
-		return ;
-	}
-	temp = buff;
-	std::cout << temp << std::endl;
-	sendMessage(link, buff);
-}
-
 static void	portListening(std::vector<Socket*> & socket, struct pollfd* poll_fd)
 {
 	int	poll_ret;
-	int	link;
+
 
 	while (1)
 	{
@@ -69,13 +58,10 @@ static void	portListening(std::vector<Socket*> & socket, struct pollfd* poll_fd)
 		{
 			for(int i = 0; poll_ret > 0; i++)
 			{
-				if (poll_fd[i].revents & POLLIN) //TODO we have to listen the read And the write, but why ?
+				if (poll_fd[i].revents & POLLIN) //TODO we have to listen the read And the write.
 				{
 					poll_ret--;
-					if ((link = accept(socket[i]->getSocketFd(), (struct sockaddr *)&socket[i]->_address, (socklen_t*)&socket[i]->_addrlen))<0)
-						std::perror("Accept failed:");
-					receiveMessage(link);
-					close(link);
+					receiveConnectToClient(i, socket, poll_fd);
 				}
 			}
 		}
@@ -87,8 +73,8 @@ int main()
 	// Get all the port to listen from Paul's Parsing
 	std::vector<int>	allPort;
 	allPort.push_back(8082);
-	allPort.push_back(8042);
-	allPort.push_back(9052);
+	// allPort.push_back(8046);
+	// allPort.push_back(9056);
 
 	//Create a containers of Socket pointer. The Class Socket initialize the bind and the listening for every Socket
 	std::vector<Socket*>	socket;
