@@ -14,8 +14,8 @@ NAME	= webserv
 SRCS	= config_parsing/AST/ConfigFileNode.cpp \
 		  config_parsing/AST/LocationRules.cpp \
 		  config_parsing/AST/ServerNode.cpp config_parsing/AST/ServerRules.cpp \
-		  config_parsing/Lexer.cpp config_parsing/Token.cpp \
-		  main.cpp
+		  config_parsing/Lexer.cpp config_parsing/Parser.cpp \
+		  config_parsing/Token.cpp main.cpp
 
 # Compiler
 CC		= c++

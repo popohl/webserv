@@ -8,11 +8,11 @@ TEST(ASTSuite, Constructors)
 	LocationRules	locationRules;
 	ServerRules		serverRules;
 
-	serverRules.set_autoindex(!locationRules.get_autoindex());
+	serverRules.autoindex = !locationRules.autoindex;
 	locationRules = LocationRules(serverRules);
 
-	EXPECT_EQ(serverRules.get_autoindex(), locationRules.get_autoindex());
+	EXPECT_EQ(serverRules.autoindex, locationRules.autoindex);
 
-	configFile.addServer(serverNode);
+	configFile.createNewServerNode();
 	EXPECT_EQ(configFile.getServerList().size(), (size_t)1);
 }

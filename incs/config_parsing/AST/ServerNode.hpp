@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 14:54:43 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/13 16:11:26 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/16 20:00:42 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,18 @@ public:
 
 	static bool	verbose;
 
-	LocationRules	&addLocation( void );
+	LocationRules	&createNewLocationNode( void );
 
 	std::vector<LocationRules>			&getLocationList( void );
 	const std::vector<LocationRules>	&getLocationList( void ) const;
 	ServerRules							&getServerRules( void );
 	const ServerRules					&getServerRules( void ) const;
+	LocationRules						&LatestLocation( void );
 
 private:
 
 	std::vector<LocationRules>	locationList;
-	std::vector<ServerRules>	serverRules;
+	ServerRules					serverRules;
 
 };
 
