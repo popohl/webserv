@@ -39,5 +39,48 @@ TEST(ParserSuite, EveryRightPossibilityFile)
 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].error_page[401], "./server401.html");
 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].error_page[403], "./location403.html");
 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].error_page[412], "./location412.html");
+}
 
+bool checkErrorParsing( std::string fileName )
+{
+	try {
+		Parser parser(fileName);
+		return false;
+	}
+	catch ( std::exception &e ) {
+		return true;
+	}
+}
+
+TEST(ParserSuite, ErrorParsing)
+{
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen1.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen2.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen3.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen4.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen5.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen6.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_allowed_method1.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_allowed_method2.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_autoindex1.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_autoindex2.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_cgi_extension1.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_cgi_extension2.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_cgi_extension3.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_cgi_path.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_client_max_body_size.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_forgot_semicolon.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_index.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_redirect.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_root.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_listen_upload_path.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_server_autoindex1.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_server_autoindex2.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_server_client_max_body_size.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_server_empty_rule.conf"));
+	/* EXPECT_TRUE(checkErrorParsing("./config_files/error_server_error_page.conf")); Error codes checks must be implemented before adding this test */
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_server_index1.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_server_index2.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_server_name1.conf"));
+	EXPECT_TRUE(checkErrorParsing("./config_files/error_server_name2.conf"));
 }
