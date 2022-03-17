@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:56 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/16 18:49:54 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/17 11:49:46 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ private:
 	void	afterParseLocations( std::vector<Token> &locationTokens );
 	Token	setIteratorModeAndSaveCurrent( std::vector<Token>& tokenVector );
 	Token	setTokenModeAndRestoreCurrent( Token& svg );
+	void	checkCgiValidity( void );
 
 	void	parseConfigFile( void );
 	void	parseServer( void );

@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/16 19:51:07 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/17 11:51:35 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,14 @@ void	Parser::open_file( const std::string input_file_name )
 	lexer.open_file(input_file_name);
 	this->current_token = this->lexer.get_next_token();
 	this->parseConfigFile();
+}
+
+void	Parser::checkCgiValidity( void )
+{
+	LocationRules	&locationRules = configFile.LatestServer().LatestLocation();
+
+	if (locationRules.cgi_extension != "" && locationRules.cgi_path == "")
+		throw std::exception();
 }
 
 void	Parser::parseConfigFile( void )
@@ -153,6 +161,7 @@ void	Parser::parseLocation( void )
 	while (current_token.getType() != Token::closing_bracket)
 		parseLocationRule();
 	eat(Token::closing_bracket);
+	checkCgiValidity();
 }
 
 void	Parser::parseLocationRule( void )
