@@ -28,6 +28,12 @@ TEST(ParserSuite, EveryRightPossibilityFile)
 	EXPECT_EQ(result.getServerList()[1].getServerRules().listen_port, 8000);
 	EXPECT_EQ(result.getServerList()[1].getServerRules().server_name[0], "www.example.fr");
 	EXPECT_EQ(result.getServerList()[1].getServerRules().server_name.size(), (size_t)3);
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].is_method_allowed(LocationRules::GET), true);
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].is_method_allowed(LocationRules::POST), true);
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].is_method_allowed(LocationRules::DELETE), true);
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].is_method_allowed(LocationRules::GET), true);
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].is_method_allowed(LocationRules::POST), false);
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].is_method_allowed(LocationRules::DELETE), true);
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].redirect_code, 302);
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].redirect_uri, "www.archlinux.org");
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].root, "/www/rootsite/");
