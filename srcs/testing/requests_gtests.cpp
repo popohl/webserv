@@ -85,8 +85,29 @@ TEST(requestHeaderTokenSuite, FirefoxGetRequestTest)
 {
 	const char * request_line = { "GET / HTTP/1.1\b\n" };
 	const char * request_header = { "Host: localhost:8080\nConnection: keep-alive\nCache-Control: max-age=0\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\nsec-ch-ua-mobile: ?0\nsec-ch-ua-platform: \"Linux\"\nUpgrade-Insecure-Requests: 1\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\nSec-Fetch-Site: none\nSec-Fetch-Mode: navigate\nSec-Fetch-User: ?1\nSec-Fetch-Dest: document\nAccept-Encoding: gzip, deflate, br\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\b\n\b\n"};
+
 	iRequest * result = iRequest::createRequest(request_line);
+
 	std::vector<requestHeaderToken> vec = parseRequestHeader(request_header);
+
 	iRequest * check = dynamic_cast<getRequest *>(result);
 	EXPECT_TRUE(check != NULL);
+
+
+	const char *small_request_header = {"Host: localhost:8080\nConnection: keep-alive\nCache-Control: max-age=0\n"};
+	const char *expected_field[] = {"Host", "Connection", "Cache-Control", NULL};
+	const char *expected_field_2[] = {"localhost:8080", "keep-alive", "max-age=0", NULL};
+	
+	std::vector<requestHeaderToken> vec1 = parseRequestHeader(small_request_header);
+	std::cout << vec1.size() << std::endl;
+	EXPECT_TRUE(vec1.size() == 3);
+	for (size_t i = 0; i < vec1.size(); i++)
+	{
+		EXPECT_TRUE((vec1[i]._type) == std::string(expected_field[i])) << "got " << vec1[i]._type << " instead of " << expected_field[i];
+		std::cout << vec1[i]._type << std::endl;// << "|" << vec1[i]._input[0] << std::endl;
+		ASSERT_EQ(vec1[i]._input.size(), size_t(1));
+
+		EXPECT_TRUE((vec1[i]._input[0]) == std::string(expected_field_2[i]));
+	}
+	
 }

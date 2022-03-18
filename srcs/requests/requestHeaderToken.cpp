@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/17 18:05:58 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/18 10:59:53 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -70,36 +70,49 @@ const char *field_table[] = {
 requestHeaderToken::requestHeaderToken() : _type(), _input() {};
 requestHeaderToken::requestHeaderToken(std::string type) : _type(type), _input() {};
 
+std::vector<std::string>split_header_to_lines(const char *input);
+requestHeaderToken treatLine(std::string line);
+	
 std::vector<requestHeaderToken> parseRequestHeader(const char *input)
 {
 	std::vector<requestHeaderToken> requestHeader;
+	std::vector<std::string> lineByLineHeader = split_header_to_lines(input);
 
-	char *line = NULL;
-	line = strtok(const_cast<char *>(input), "\n");
-	requestHeader.push_back(treatLine(line));
-	while (line)
-	{
-		line = strtok(NULL, "\n");
-		requestHeader.push_back(treatLine(line));
-	}
-	for (size_t i = 0; i < requestHeader.size(); i++)
-		std::cout << requestHeader[i]._type << std::endl;
+	for (size_t i = 0; i < lineByLineHeader.size(); i++)
+		requestHeader.push_back(treatLine(std::string(lineByLineHeader[i])));
 	return requestHeader;
 }
 
-requestHeaderToken treatLine(const char *line)
+requestHeaderToken treatLine(std::string line)
 {
-	char * field = strtok(const_cast<char *>(line), ":");
+	//parse first field
+	char * field = strtok(const_cast<char *>(line.c_str()), ":");
 	requestHeaderToken token((std::string(field)));
+
 	do {
 		field = strtok(NULL, " \n");
-		token._input.push_back(std::string(field));
+		if (field)
+			token._input.push_back(std::string(field));
 	} while (field);
 	return (token);
 }
-/*
-requestHeaderToken::field findField(const char *)
+
+std::vector<std::string>split_header_to_lines(const char *input)
 {
+	std::vector<std::string> hold;
+	std::string copy(input);
+	char *line = strtok(const_cast<char *>(copy.c_str()), "\n");
+	do {
+		hold.push_back(std::string(line));
+		line = strtok(NULL, "\n");
+	}
+	while (line);
+	return (hold);
+}
+
+/*
+  requestHeaderToken::field findField(const char *)
+  {
 	
 
 }
