@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 14:52:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/16 17:10:36 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 11:50:01 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "config_parsing/AST/ServerNode.hpp"
 # include <vector>
+# include <set>
 
 class ConfigFileNode
 {
@@ -29,6 +30,7 @@ public:
 
 	std::vector<ServerNode>			&getServerList( void );
 	const std::vector<ServerNode>	&getServerList( void ) const;
+	std::set<int>					getListeningPorts( void ) const;
 	ServerNode						&LatestServer( void );
 
 	ServerNode&	createNewServerNode( void );
@@ -36,6 +38,8 @@ public:
 	static bool	verbose;
 
 private:
+
+	bool	alreadyContains( std::vector<int> listeningPorts, int port ) const;
 
 	std::vector<ServerNode>	serverList;
 
