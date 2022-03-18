@@ -6,11 +6,12 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:13 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 13:58:09 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 14:45:29 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configParsing/Token.hpp"
+#include "configParsing/Exception.hpp"
 
 Token::Token( void ): _type(Token::endOfFile), _value("")
 {
@@ -116,7 +117,8 @@ size_t		Token::sizeAtoi( void ) const
 	if (_type == Token::size )
 		multiplier = (i != _value.end()) ? getSizeMultiplier(*i) : 1;
 	else if (_type != Token::number)
-		throw std::exception();
+		throw ParsingException("Invalid element found, tried to convert a non "
+				"numeric value into an int");
 	return result * multiplier;
 }
 

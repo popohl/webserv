@@ -1,4 +1,5 @@
 #include "configParsing/Parser.hpp"
+#include "configParsing/Exception.hpp"
 #include "gtest/gtest.h"
 
 TEST(ParserSuite, EmptyFile)
@@ -60,8 +61,11 @@ bool checkErrorParsing( std::string fileName )
 		Parser parser(fileName);
 		return false;
 	}
-	catch ( std::exception &e ) {
+	catch ( ParsingException& e ) {
 		return true;
+	}
+	catch ( std::exception &e ) {
+		return false;
 	}
 }
 

@@ -6,13 +6,14 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 10:00:33 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 12:18:00 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 14:43:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "configParsing/Lexer.hpp"
 #include <limits>
 #include <cctype>
+#include "configParsing/Lexer.hpp"
+#include "configParsing/Exception.hpp"
 
 Lexer::Lexer( void )
 {
@@ -56,7 +57,7 @@ Token	Lexer::getNextToken( void )
 	if (isdigit(_currentChar))
 
 		return differentiateDigitTokens();
-	throw Lexer::tokenException();
+	throw ParsingException("Invalid character encountered");
 }
 
 Token	Lexer::tokenizeSingleCharacter( Token::tokenType type )
@@ -96,7 +97,7 @@ Token	Lexer::differentiateNumberSize( std::string &beginning )
 	if (_currentChar == '.')
 		ip += advance();
 	else
-		throw Lexer::tokenException();
+		throw ParsingException("Invalid character encountered");
 	ip += getNumber();
 	if (_currentChar == '.')
 		ip += advance();
@@ -106,7 +107,7 @@ Token	Lexer::differentiateNumberSize( std::string &beginning )
 	if (_currentChar == '.')
 		ip += advance();
 	else
-		throw Lexer::tokenException();
+		throw ParsingException("Invalid character encountered");
 	ip += getNumber();
 	return Token(Token::ipAddress, ip);
 }
@@ -123,7 +124,7 @@ Token	Lexer::tokenizeSize( std::string &numberPart )
 		return Token(Token::size, size);
 	}
 	else
-		throw Lexer::tokenException();
+		throw ParsingException("Invalid character encountered");
 	if (_currentChar == 'i')
 		advance();
 	if (_currentChar == 'b' || _currentChar == 'B')
@@ -169,7 +170,7 @@ void	Lexer::openFile( std::string fileName )
 		std::cout << "Opening file: " << fileName << std::endl;
 	this->_configFile.open(fileName.c_str());
 	if (this->_configFile.fail())
-		throw Lexer::fileException();
+		throw ParsingException("Could not read file");
 	else if (Lexer::verbose)
 		std::cout << "Success opening file" << std::endl;
 	readFirstCharacter();

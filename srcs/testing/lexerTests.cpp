@@ -1,5 +1,6 @@
 #include "configParsing/Token.hpp"
 #include "configParsing/Lexer.hpp"
+#include "configParsing/Exception.hpp"
 #include "gtest/gtest.h"
 
 void	testGoodConstruction( Token::tokenType type, std::string value )
@@ -59,7 +60,7 @@ void	testFileOpeningFailure( std::string filename )
 		Lexer	standardConstructor(filename);
 		ADD_FAILURE();
 	}
-	catch ( Lexer::fileException &e ) {
+	catch ( ParsingException& e ) {
 		SUCCEED();
 	}
 	catch ( std::exception &e ) {

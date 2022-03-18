@@ -6,11 +6,13 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 12:45:11 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 14:36:55 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sstream>
 #include "configParsing/Parser.hpp"
+#include "configParsing/Exception.hpp"
 
 Parser::Parser( void )
 {
@@ -37,11 +39,9 @@ Parser::~Parser( void )
 void	Parser::eat( Token::tokenType expectedType )
 {
 	if (this->currentToken.getType() != expectedType)
-		throw std::exception();
+		throw ParsingException(createEatErrorMsg(expectedType).c_str());
 	if (this->readLocationRules)
-	{
 		this->currentToken = *(++this->tokenIterator);
-	}
 	else
 		this->currentToken = lexer.getNextToken();
 }
@@ -73,6 +73,21 @@ Token	Parser::setTokenModeAndRestoreCurrent( Token& svg )
 	return svg;
 }
 
+std::string	Parser::createEatErrorMsg( Token::tokenType expectedType )
+{
+	std::stringstream	out;
+
+	out << "Invalid element found at: " << currentToken << std::endl;
+	out << "           server number: " << configFile.getServerList().size()
+		<< std::endl;
+	if (this->readLocationRules)
+		out << "           location number: "
+			<< configFile.LatestServer().getLocationList().size() << std::endl;
+	out << "           expected: " << Token(expectedType, "").getTypeName()
+		<< std::endl;
+	return out.str();
+}
+
 void	Parser::openFile( const std::string inputFileName )
 {
 	lexer.openFile(inputFileName);
@@ -85,7 +100,8 @@ void	Parser::checkCgiValidity( void )
 	LocationRules	&locationRules = configFile.LatestServer().LatestLocation();
 
 	if (locationRules.cgiExtension != "" && locationRules.cgiPath == "")
-		throw std::exception();
+		throw ParsingException("the path to a cgi must be included if a"
+				" cgi is going to be used");
 }
 
 void	Parser::parseConfigFile( void )
@@ -110,7 +126,7 @@ void	Parser::parseServer( void )
 	std::vector<Token>	locationTokens;
 
 	if (currentToken.getValue() != "server")
-		throw std::exception();
+		throw ParsingException("Unknown keyword encountered");
 	this->eat(Token::word);
 	configFile.createNewServerNode();
 	this->eat(Token::openingBracket);
@@ -144,14 +160,14 @@ void	Parser::parseServerRule( void )
 	else if (ruleName == "server_name")
 		parseServerNameRule();
 	else
-		throw std::exception(); // rule name invalid
+		throw ParsingException("rule name invalid");
 	eat(Token::semicolon);
 }
 
 void	Parser::parseLocation( void )
 {
 	if (currentToken.getValue() != "location")
-		throw std::exception();
+		throw ParsingException("Unknown keyword encountered");
 	configFile.LatestServer().createNewLocationNode();
 	eat(Token::word);
 	configFile.LatestServer().LatestLocation().locationPath
@@ -190,7 +206,7 @@ void	Parser::parseLocationRule( void )
 	else if (ruleName == "upload_path")
 		parseUploadPathRule();
 	else
-		throw std::exception(); // rule name invalid
+		throw ParsingException("rule name invalid");
 	eat(Token::semicolon);
 }
 
@@ -219,7 +235,8 @@ void	Parser::parseAutoindexRule( void )
 	else if (toggleValue == "off")
 		autoindex = false;
 	else
-		throw std::exception(); // autoindex value invalid
+		throw ParsingException("autoindex value invalid");
+		
 }
 
 void	Parser::parseCgiExtensionRule( void )
@@ -287,7 +304,9 @@ void	Parser::parseListenRule( void )
 			eat(Token::number);
 			break;
 		default:
-			throw std::exception();
+			throw ParsingException(
+						createEatErrorMsg(Token::ipAddress).c_str()
+					);
 	}
 }
 
@@ -309,7 +328,7 @@ void	Parser::parseIndexRule( void )
 		eat(Token::path);
 	}
 	if (indexList.empty())
-		throw std::exception();
+		throw ParsingException("index rule cannot be empty");
 }
 
 void	Parser::parseRedirectRule( void )
@@ -354,7 +373,7 @@ void	Parser::parseServerNameRule( void )
 		eat(Token::word);
 	}
 	if (serverNameList.empty())
-		throw std::exception();
+		throw ParsingException("server_name rule cannot be empty");
 }
 
 const ConfigFileNode	&Parser::getConfigFile( void ) const
