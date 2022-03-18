@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "config_parsing/Parser.hpp"
+#include "configParsing/Parser.hpp"
 
 int main( int argc, char **argv )
 {

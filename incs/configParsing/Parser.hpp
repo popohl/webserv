@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:56 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/17 11:49:46 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 12:25:32 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 # define PARSER_HPP
 
 # include <iostream>
-# include "config_parsing/AST/ConfigFileNode.hpp"
-# include "config_parsing/Lexer.hpp"
+# include "configParsing/AST/ConfigFileNode.hpp"
+# include "configParsing/Lexer.hpp"
 
 class Parser
 {
@@ -23,10 +23,10 @@ class Parser
 public:
 
 	Parser( void );
-	Parser( const std::string input_file_name );
+	Parser( const std::string inputFileName );
 	~Parser( void );
 
-	void	open_file( const std::string input_file_name );
+	void	openFile( const std::string inputFileName );
 
 	const ConfigFileNode	&getConfigFile( void ) const;
 	ConfigFileNode			&getConfigFile( void );
@@ -38,7 +38,7 @@ private:
 	Parser( const Parser &src );
 	Parser	&operator=( const Parser &src );
 
-	void	eat( Token::token_type expectedType );
+	void	eat( Token::tokenType expectedType );
 	void	saveLocationTokens( std::vector<Token>& locationTokens );
 	void	afterParseLocations( std::vector<Token> &locationTokens );
 	Token	setIteratorModeAndSaveCurrent( std::vector<Token>& tokenVector );
@@ -66,7 +66,7 @@ private:
 
 	ConfigFileNode						configFile;
 	Lexer								lexer;
-	Token								current_token;
+	Token								currentToken;
 	std::vector<Token>::const_iterator	tokenIterator;
 	bool								readLocationRules;
 

@@ -6,14 +6,14 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 14:52:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 11:50:01 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 12:26:43 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIGFILENODE_HPP
 # define CONFIGFILENODE_HPP
 
-# include "config_parsing/AST/ServerNode.hpp"
+# include "configParsing/AST/ServerNode.hpp"
 # include <vector>
 # include <set>
 

@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/18 10:55:57 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 12:29:10 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,10 @@ struct LocationRules
 
 	LocationRules	&operator=( const LocationRules &rhs );
 
-	void	reset_location_rules( void );
+	void	resetLocationRules( void );
 
-	bool 	is_method_allowed( char selected_method ) const;
-	bool 	is_method_allowed( std::string selected_method ) const;
+	bool 	isMethodAllowed( char selectedMethod ) const;
+	bool 	isMethodAllowed( std::string selectedMethod ) const;
 
 	static bool	verbose;
 
@@ -40,25 +40,25 @@ struct LocationRules
 	static const char	DELETE		= 0b0100;
 	static const char	ALL_METHODS	= 0b0111;
 
-	void	allow_method( std::string method );
-	void	allow_method( char method );
-	void	forbid_method( std::string method );
-	void	forbid_method( char method );
-	void	add_error_page( int error_code, std::string error_page_path );
+	void	allowMethod( std::string method );
+	void	allowMethod( char method );
+	void	forbidMethod( std::string method );
+	void	forbidMethod( char method );
+	void	addErrorPage( int errorCode, std::string errorPagePath );
 
 	std::string					locationPath;
 
-	char						allowed_method;
+	char						allowedMethod;
 	bool						autoindex;
-	std::string					cgi_extension;
-	std::string					cgi_path;
-	int							client_max_body_size;
-	std::map<int, std::string>	error_page;
+	std::string					cgiExtension;
+	std::string					cgiPath;
+	int							clientMaxBodySize;
+	std::map<int, std::string>	errorPage;
 	std::vector<std::string>	index;
-	int							redirect_code;
-	std::string					redirect_uri;
+	int							redirectCode;
+	std::string					redirectUri;
 	std::string					root;
-	std::string					upload_path;
+	std::string					uploadPath;
 
 };
 

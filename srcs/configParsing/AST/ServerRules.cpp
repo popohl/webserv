@@ -6,17 +6,17 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/16 19:57:00 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 12:28:08 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config_parsing/AST/ServerRules.hpp"
+#include "configParsing/AST/ServerRules.hpp"
 
 ServerRules::ServerRules( void )
 {
 	if (ServerRules::verbose)
 		std::cout << "Default constructor for ServerRules called" << std::endl;
-	reset_rules();
+	resetRules();
 	return;
 }
 
@@ -42,39 +42,39 @@ ServerRules &	ServerRules::operator=( ServerRules const & src )
 	if (this == &src)
 		return *this;
 	this->autoindex = src.autoindex;
-	this->client_max_body_size = src.client_max_body_size;
-	this->error_page = src.error_page;
+	this->clientMaxBodySize = src.clientMaxBodySize;
+	this->errorPage = src.errorPage;
 	this->index = src.index;
-	this->listen_port = src.listen_port;
-	this->listen_address = src.listen_address;
-	this->server_name = src.server_name;
+	this->listenPort = src.listenPort;
+	this->listenAddress = src.listenAddress;
+	this->serverName = src.serverName;
 	return *this;
 }
 
-void	ServerRules::reset_rules( void )
+void	ServerRules::resetRules( void )
 {
 	autoindex = false;
-	client_max_body_size = 1048576;
-	error_page.clear();
+	clientMaxBodySize = 1048576;
+	errorPage.clear();
 	index.clear();
-	listen_port = 8000;
-	listen_address = "0.0.0.0";
-	server_name.clear();
+	listenPort = 8000;
+	listenAddress = "0.0.0.0";
+	serverName.clear();
 }
 
-void	ServerRules::add_error_page( int error_code, std::string error_page_path )
+void	ServerRules::addErrorPage( int errorCode, std::string errorPagePath )
 {
-	this->error_page[error_code] = error_page_path;
+	this->errorPage[errorCode] = errorPagePath;
 }
 
-void	ServerRules::add_index( std::string new_index )
+void	ServerRules::addIndex( std::string newIndex )
 {
-	this->index.push_back(new_index);
+	this->index.push_back(newIndex);
 }
 
-void	ServerRules::add_server_name( std::string new_server_name )
+void	ServerRules::addServerName( std::string newServerName )
 {
-	this->server_name.push_back(new_server_name);
+	this->serverName.push_back(newServerName);
 }
 
 bool	ServerRules::verbose = false;

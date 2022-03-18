@@ -6,11 +6,11 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 16:06:20 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 11:50:29 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 12:23:44 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config_parsing/AST/ConfigFileNode.hpp"
+#include "configParsing/AST/ConfigFileNode.hpp"
 
 ConfigFileNode::ConfigFileNode( void )
 {
@@ -61,7 +61,7 @@ std::set<int>	ConfigFileNode::getListeningPorts( void ) const
 
 	for (std::vector<ServerNode>::const_iterator it = serverList.begin();
 			it != serverList.end(); it++)
-		listeningPorts.insert(it->getServerRules().listen_port);
+		listeningPorts.insert(it->getServerRules().listenPort);
 	return listeningPorts;
 }
 

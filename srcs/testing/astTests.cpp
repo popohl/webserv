@@ -1,4 +1,4 @@
-#include "config_parsing/AST/ConfigFileNode.hpp"
+#include "configParsing/AST/ConfigFileNode.hpp"
 #include "gtest/gtest.h"
 
 TEST(ASTSuite, Constructors)
