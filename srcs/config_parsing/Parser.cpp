@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/17 11:51:35 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 10:38:13 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,8 @@ void	Parser::parseLocationRule( void )
 
 void	Parser::parseAllowedMethod( void )
 {
+	configFile.LatestServer().LatestLocation()
+		.forbid_method(LocationRules::ALL_METHODS);
 	while (current_token.getType() == Token::word)
 	{
 		configFile.LatestServer().LatestLocation()

@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/16 19:54:17 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 10:55:57 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,19 @@ struct LocationRules
 	void	reset_location_rules( void );
 
 	bool 	is_method_allowed( char selected_method ) const;
+	bool 	is_method_allowed( std::string selected_method ) const;
 
 	static bool	verbose;
 
-	static const char	GET		= 0b0001;
-	static const char	POST	= 0b0010;
-	static const char	DELETE	= 0b0100;
+	static const char	GET			= 0b0001;
+	static const char	POST		= 0b0010;
+	static const char	DELETE		= 0b0100;
+	static const char	ALL_METHODS	= 0b0111;
 
 	void	allow_method( std::string method );
+	void	allow_method( char method );
 	void	forbid_method( std::string method );
+	void	forbid_method( char method );
 	void	add_error_page( int error_code, std::string error_page_path );
 
 	std::string					locationPath;
@@ -57,7 +61,5 @@ struct LocationRules
 	std::string					upload_path;
 
 };
-
-std::ostream	&operator<<( std::ostream &ostr, const LocationRules &instance );
 
 #endif
