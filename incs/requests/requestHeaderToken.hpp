@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/17 18:06:10 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/18 11:52:03 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -16,15 +16,17 @@
 struct requestHeaderToken {
 
 	requestHeaderToken();
-	requestHeaderToken(std::string type);
-	
+	requestHeaderToken(const std::pair <std::string, std::string> & rhs);
 
-	std::string _type;
-	std::vector<std::string> _input;
+	std::pair<std::string, std::string> _token;
 };
 
 requestHeaderToken parseHost(std::string);
-requestHeaderToken treatLine(const char *line);
 std::vector<requestHeaderToken> parseRequestHeader(const char *input);
+
+std::vector<std::string>split_header_to_lines(const char *input);
+requestHeaderToken treatLine(std::string line);
+	
+
 
 //requestHeaderToken::field findField(const char *);

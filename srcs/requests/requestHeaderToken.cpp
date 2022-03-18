@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/18 10:59:53 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/18 12:06:34 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -67,34 +67,31 @@ const char *field_table[] = {
 	"WWW-Authenticate",
 	NULL };
 
-requestHeaderToken::requestHeaderToken() : _type(), _input() {};
-requestHeaderToken::requestHeaderToken(std::string type) : _type(type), _input() {};
+//requestHeaderToken::requestHeaderToken() : _type(), _input() {};
+//requestHeaderToken::requestHeaderToken(std::string type) : _type(type), _input() {};
+requestHeaderToken::requestHeaderToken(const std::pair <std::string, std::string> & rhs) : _token(rhs) {};
 
-std::vector<std::string>split_header_to_lines(const char *input);
-requestHeaderToken treatLine(std::string line);
-	
 std::vector<requestHeaderToken> parseRequestHeader(const char *input)
 {
+	//this function will change as it expects a full header which might not be possible
 	std::vector<requestHeaderToken> requestHeader;
 	std::vector<std::string> lineByLineHeader = split_header_to_lines(input);
 
 	for (size_t i = 0; i < lineByLineHeader.size(); i++)
-		requestHeader.push_back(treatLine(std::string(lineByLineHeader[i])));
+	{
+		if (lineByLineHeader[i].find(':') != std::string::npos)
+			requestHeader.push_back(treatLine(std::string(lineByLineHeader[i])));
+	}
+	
 	return requestHeader;
 }
 
 requestHeaderToken treatLine(std::string line)
 {
-	//parse first field
-	char * field = strtok(const_cast<char *>(line.c_str()), ":");
-	requestHeaderToken token((std::string(field)));
-
-	do {
-		field = strtok(NULL, " \n");
-		if (field)
-			token._input.push_back(std::string(field));
-	} while (field);
-	return (token);
+	char * key = strtok(const_cast<char *>(line.c_str()), ":");
+	char * value = strtok(NULL, "\n");
+	return (requestHeaderToken(std::make_pair<std::string, std::string> (std::string(key),
+																		 std::string(value))));
 }
 
 std::vector<std::string>split_header_to_lines(const char *input)

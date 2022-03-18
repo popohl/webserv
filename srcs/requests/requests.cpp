@@ -6,12 +6,12 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/17 18:01:38 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/18 11:53:29 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "requests/requests.hpp"
-#include "requests/requestHeaderToken.hpp"
+//#include "requests/requestHeaderToken.hpp"
 #include <cstddef>
 #include <cstring>
 #include <string.h>

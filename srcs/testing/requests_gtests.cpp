@@ -96,18 +96,18 @@ TEST(requestHeaderTokenSuite, FirefoxGetRequestTest)
 
 	const char *small_request_header = {"Host: localhost:8080\nConnection: keep-alive\nCache-Control: max-age=0\n"};
 	const char *expected_field[] = {"Host", "Connection", "Cache-Control", NULL};
-	const char *expected_field_2[] = {"localhost:8080", "keep-alive", "max-age=0", NULL};
+	const char *expected_field_2[] = {" localhost:8080", " keep-alive", " max-age=0", NULL};
 	
 	std::vector<requestHeaderToken> vec1 = parseRequestHeader(small_request_header);
 	std::cout << vec1.size() << std::endl;
 	EXPECT_TRUE(vec1.size() == 3);
 	for (size_t i = 0; i < vec1.size(); i++)
 	{
-		EXPECT_TRUE((vec1[i]._type) == std::string(expected_field[i])) << "got " << vec1[i]._type << " instead of " << expected_field[i];
-		std::cout << vec1[i]._type << std::endl;// << "|" << vec1[i]._input[0] << std::endl;
-		ASSERT_EQ(vec1[i]._input.size(), size_t(1));
+		EXPECT_TRUE((vec1[i]._token.first) == std::string(expected_field[i])) << "got " << vec1[i]._token.first << " instead of " << expected_field[i];
 
-		EXPECT_TRUE((vec1[i]._input[0]) == std::string(expected_field_2[i]));
+//		ASSERT_EQ(vec1[i]._input.size(), size_t(1));
+
+		EXPECT_TRUE((vec1[i]._token.second) == std::string(expected_field_2[i]))  << "got " << vec1[i]._token.second << " instead of " << expected_field_2[i];
 	}
 	
 }
