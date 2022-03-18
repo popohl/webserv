@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/16 19:55:56 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 10:55:49 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,18 @@ bool 	LocationRules::is_method_allowed( char selected_method ) const
 	return false;
 }
 
+bool	LocationRules::is_method_allowed( std::string method ) const
+{
+	if (method == "GET")
+		return is_method_allowed(LocationRules::GET);
+	else if (method == "POST")
+		return is_method_allowed(LocationRules::POST);
+	else if (method == "DELETE")
+		return is_method_allowed(LocationRules::DELETE);
+	else
+		throw std::exception();
+}
+
 void	LocationRules::reset_location_rules( void )
 {
 	allowed_method = GET | POST | DELETE;
@@ -92,26 +104,36 @@ void	LocationRules::reset_location_rules( void )
 
 bool	LocationRules::verbose = false;
 
+void	LocationRules::allow_method( char method )
+{
+	this->allowed_method = this->allowed_method | method;
+}
+
 void	LocationRules::allow_method( std::string method )
 {
 	if (method == "GET")
-		this->allowed_method = this->allowed_method | LocationRules::GET;
+		allow_method(LocationRules::GET);
 	else if (method == "POST")
-		this->allowed_method = this->allowed_method | LocationRules::POST;
+		allow_method(LocationRules::POST);
 	else if (method == "DELETE")
-		this->allowed_method = this->allowed_method | LocationRules::DELETE;
+		allow_method(LocationRules::DELETE);
 	else
 		throw std::exception();
+}
+
+void	LocationRules::forbid_method( char method )
+{
+	this->allowed_method = this->allowed_method & ~method;
 }
 
 void	LocationRules::forbid_method( std::string method )
 {
 	if (method == "GET")
-		this->allowed_method = this->allowed_method & ~LocationRules::GET;
+		forbid_method(LocationRules::GET);
 	else if (method == "POST")
-		this->allowed_method = this->allowed_method & ~LocationRules::POST;
+		forbid_method(LocationRules::POST);
 	else if (method == "DELETE")
-		this->allowed_method = this->allowed_method & ~LocationRules::DELETE;
+		forbid_method(LocationRules::DELETE);
 	else
 		throw std::exception();
 }
