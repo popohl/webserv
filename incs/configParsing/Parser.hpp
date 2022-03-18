@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:56 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 12:25:32 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 14:35:56 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ private:
 	Token	setIteratorModeAndSaveCurrent( std::vector<Token>& tokenVector );
 	Token	setTokenModeAndRestoreCurrent( Token& svg );
 	void	checkCgiValidity( void );
+
+	std::string createEatErrorMsg( Token::tokenType expectedType );
 
 	void	parseConfigFile( void );
 	void	parseServer( void );

@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:11 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 12:30:01 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 13:55:24 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,9 @@ public:
 	Token	&operator=( const Token &src );
 
 	tokenType	getType( void ) const;
+	tokenValue	getValue( void ) const;
 	std::string getTypeName( void ) const;
-	tokenValue getValue( void ) const;
+	std::string toStr( void ) const;
 
 	size_t		sizeAtoi( void ) const;
 

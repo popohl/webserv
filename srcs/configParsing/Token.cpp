@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:13 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 12:19:18 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 13:58:09 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,11 @@ std::string		Token::getTypeName( void ) const
 
 Token::tokenValue Token::getValue( void ) const { return this->_value; }
 
+std::string	Token::toStr( void ) const
+{
+	return std::string("Token(" + getTypeName() + "): " + getValue());
+}
+
 size_t		Token::getSizeMultiplier( char c ) const
 {
 	size_t	multiplier = 1;
@@ -128,7 +133,7 @@ bool	Token::operator!=( const Token& other ) const
 
 std::ostream &	operator<<( std::ostream & ostr, Token const & instance)
 {
-	ostr << "Token(" << instance.getTypeName() << "): " << instance.getValue();
+	ostr << instance.toStr();
 	return ostr;
 }
 

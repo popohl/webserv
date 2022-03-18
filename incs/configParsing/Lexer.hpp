@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:51:05 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 12:28:38 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 14:38:39 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,25 +32,6 @@ public:
 	char	advance( void );
 
 	static bool	verbose;
-
-public:
-
-	class fileException: public std::exception
-	{
-	public:
-		virtual const char* what() const throw()
-		{
-			return ("Couldn't read config file");
-		}
-	};
-	class tokenException: public std::exception
-	{
-	public:
-		virtual const char* what() const throw()
-		{
-			return ("Invalid character found");
-		}
-	};
 
 private:
 
