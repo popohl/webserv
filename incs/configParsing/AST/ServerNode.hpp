@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 14:54:43 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 12:26:21 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/20 20:53:19 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ public:
 	ServerRules							&getServerRules( void );
 	const ServerRules					&getServerRules( void ) const;
 	LocationRules						&LatestLocation( void );
+
+	void	getLocationCandidates( std::string pathFromUrl ) const;
 
 private:
 

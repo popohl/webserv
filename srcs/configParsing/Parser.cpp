@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 14:36:55 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/20 20:39:00 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,15 +95,6 @@ void	Parser::openFile( const std::string inputFileName )
 	this->parseConfigFile();
 }
 
-void	Parser::checkCgiValidity( void )
-{
-	LocationRules	&locationRules = configFile.LatestServer().LatestLocation();
-
-	if (locationRules.cgiExtension != "" && locationRules.cgiPath == "")
-		throw ParsingException("the path to a cgi must be included if a"
-				" cgi is going to be used");
-}
-
 void	Parser::parseConfigFile( void )
 {
 	while (currentToken.getType() != Token::endOfFile)
@@ -126,7 +117,7 @@ void	Parser::parseServer( void )
 	std::vector<Token>	locationTokens;
 
 	if (currentToken.getValue() != "server")
-		throw ParsingException("Unknown keyword encountered");
+		throw ParsingException("Expected \"server\" keyword");
 	this->eat(Token::word);
 	configFile.createNewServerNode();
 	this->eat(Token::openingBracket);
@@ -140,6 +131,7 @@ void	Parser::parseServer( void )
 	this->eat(Token::closingBracket);
 	if (!locationTokens.empty())
 		afterParseLocations(locationTokens);
+	setCgiPathIfEmpty();
 }
 
 void	Parser::parseServerRule( void )
@@ -151,6 +143,10 @@ void	Parser::parseServerRule( void )
 		parseAutoindexRule();
 	else if (ruleName == "client_max_body_size")
 		parseClientMaxBodySizeRule();
+	else if (ruleName == "cgi_extension")
+		parseCgiExtensionRule();
+	else if (ruleName == "cgi_path")
+		parseCgiPathRule();
 	else if (ruleName == "error_page")
 		parseErrorPageRule();
 	else if (ruleName == "index")
@@ -177,7 +173,17 @@ void	Parser::parseLocation( void )
 	while (currentToken.getType() != Token::closingBracket)
 		parseLocationRule();
 	eat(Token::closingBracket);
-	checkCgiValidity();
+	setCgiPathIfEmpty();
+}
+
+void	Parser::setCgiPathIfEmpty( void )
+{
+	std::vector<std::string>&	cgiPath = this->readLocationRules ?
+		configFile.LatestServer().LatestLocation().cgiPath :
+		configFile.LatestServer().getServerRules().cgiPath;
+
+	if (cgiPath.empty())
+		cgiPath.push_back("/cgi-bin/");
 }
 
 void	Parser::parseLocationRule( void )
@@ -241,16 +247,30 @@ void	Parser::parseAutoindexRule( void )
 
 void	Parser::parseCgiExtensionRule( void )
 {
-	configFile.LatestServer().LatestLocation().cgiExtension
-		= currentToken.getValue();
-	eat(Token::word);
+	std::vector<std::string>&	cgiExtension = readLocationRules ?
+		configFile.LatestServer().LatestLocation().cgiExtension :
+		configFile.LatestServer().getServerRules().cgiExtension;
+
+	cgiExtension.clear();
+	while (currentToken.getType() == Token::word)
+	{
+		cgiExtension.push_back(currentToken.getValue());
+		eat(Token::word);
+	}
 }
 
 void	Parser::parseCgiPathRule( void )
 {
-	configFile.LatestServer().LatestLocation().cgiPath
-		= currentToken.getValue();
-	eat(Token::path);
+	std::vector<std::string>&	cgiPath = readLocationRules ?
+		configFile.LatestServer().LatestLocation().cgiPath :
+		configFile.LatestServer().getServerRules().cgiPath;
+
+	cgiPath.clear();
+	while (currentToken.getType() == Token::path)
+	{
+		cgiPath.push_back(currentToken.getValue());
+		eat(Token::path);
+	}
 }
 
 void	Parser::parseClientMaxBodySizeRule( void )

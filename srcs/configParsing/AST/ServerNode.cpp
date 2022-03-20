@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 15:32:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 12:22:58 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/20 18:41:17 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,18 @@ ServerRules							&ServerNode::getServerRules( void )
 const ServerRules					&ServerNode::getServerRules( void ) const
 {
 	return serverRules;
+}
+
+std::vector<ServerNode::locations_iterator>
+	ServerNode::getLocationCandidates( std::string pathFromUrl ) const
+{
+	std::vector<ServerNode::locations_iterator>	candidates;
+
+	for (locations_iterator it = locationList.begin(); it != locationList.end();
+			it ++)
+		if (pathFromUrl.rfind(it->locationPath, 0) == 0)
+			candidates.push_back(it);
+	return candidates;
 }
 
 bool	ServerNode::verbose = false;

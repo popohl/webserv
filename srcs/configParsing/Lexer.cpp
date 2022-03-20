@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 10:00:33 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 14:43:07 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/20 19:59:49 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,8 @@ Token	Lexer::tokenizeWord( void )
 	do
 	{
 		word += advance();
-	} while (isalnum(_currentChar) || _currentChar == '.' || _currentChar == '_');
+	} while (isalnum(_currentChar) || _currentChar == '.' || _currentChar == '_'
+			|| _currentChar == '-');
 	return Token(Token::word, word);
 }
 
@@ -150,7 +151,8 @@ Token	Lexer::tokenizePath( void )
 	do
 	{
 		path += advance();
-	} while (isalnum(_currentChar) || isPathSpecialChar(_currentChar));
+	} while (isalnum(_currentChar) || isPathSpecialChar(_currentChar)
+				|| _currentChar == '_' || _currentChar == '-');
 	return Token(Token::path, path);
 }
 

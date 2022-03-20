@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/18 12:26:09 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/20 19:03:32 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ struct ServerRules
 
 	bool						autoindex;
 	int							clientMaxBodySize;
+	std::vector<std::string>	cgiExtension;
+	std::vector<std::string>	cgiPath;
 	std::map<int, std::string>	errorPage;
 	std::vector<std::string>	index;
 	int							listenPort;
