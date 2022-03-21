@@ -6,19 +6,18 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/17 17:35:36 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/21 17:47:41 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Socket.hpp"
 #include "Server.hpp"
 
 //TODO think to free socket at the end
 
-static Socket*	createSocket(int port)
+static ASocket*	createSocket(int port)
 {
 	int flag = 1;
-	Socket *new_sock = new Socket(port);
+	ASocket *new_sock = new SocketPort(port);
 	fcntl(new_sock->getSocketFd(), F_SETFL, O_NONBLOCK);
 	if (setsockopt(new_sock->getSocketFd(),SOL_SOCKET, SO_REUSEADDR, &flag, sizeof flag) == -1)
 	{
@@ -30,43 +29,35 @@ static Socket*	createSocket(int port)
 	return (new_sock);
 }
 
-static struct pollfd*	createPollfd(std::vector<Socket*> & socket) //create structure for poll() to listen at every socket
-{
-	struct pollfd *poll = new pollfd[socket.size()];
-	for(int i = 0; i < socket.size(); i++)
-	{
-		poll[i].fd = socket[i]->getSocketFd();
-		poll[i].events = POLLIN;  //TODO do we have to change POLLIN to POLLOUT when we are ready to send something to client ?
-	}
-	return (poll);
-}
-
-static void	portListening(std::vector<Socket*> & socket, struct pollfd* poll_fd)
+static void	portListening(std::vector<ASocket*> & socket, std::vector<pollfd> & poll_fd)
 {
 	int	poll_ret;
 
-
-	while (1)
+	while (1) // je peux garder en memoire les fd qui POLLHUP et les supprimer a chaque debut de boucle
 	{
 		std::cout << "\n----------- Waiting for new connection -----------\n" << std::endl;
-		poll_ret = poll(poll_fd, socket.size(), -1); // with negative number poll never time out
+		poll_ret = poll(poll_fd.data(), poll_fd.size(), TIMEOUT); // with negative number poll never time out
 		std::cout << "result of poll_ret : " << poll_ret << std::endl;
 
 		if (poll_ret == 0)
 			std::cout << " Server Time out" << std::endl; // related to the timeout parameter of poll
 		else
 		{
-			for(int i = 0; poll_ret > 0; i++)
+			for (int i = 0; poll_ret > 0; i++)
 			{
-
-				if (poll_fd[i].revents & POLLIN)
+				if (poll_fd[i].revents & POLLHUP)
 				{
-					receiveConnectToClient(i, socket, poll_fd);
+					std::cout << "suppression of FD" << socket[i]->getSocketFd() << std::endl;
+					removeFromPoll(socket, poll_fd, socket[i]->getSocketFd());
+				}
+				else if (poll_fd[i].revents & POLLIN)
+				{
+					connectToClient(i, socket, poll_fd);
 					poll_ret--;
 				}
-					if (poll_fd[i].revents & POLLOUT)
+				else if (poll_fd[i].revents & POLLOUT)
 				{
-					sendConnectToClient(i, socket, poll_fd); //Créer une classe fd client avec le buffer dedans, rajouter une interface ou une classe abstraite
+					sendToClient(*socket[i]);
 					poll_ret--;
 				}
 			}
@@ -83,14 +74,14 @@ int main()
 	// allPort.push_back(9056);
 
 	//Create a containers of Socket pointer. The Class Socket initialize the bind and the listening for every Socket
-	std::vector<Socket*>	socket;
+	std::vector<ASocket*>	socket;
 	for(int i = 0; i < allPort.size(); i++)
 		socket.push_back(createSocket(allPort[i]));
 
-	//Create the struct of pollfd for function poll
-	struct pollfd*	poll_fd;
+	//Create the extensible struct of pollfd for function poll
+	std::vector<pollfd>	poll_fd;
 
-	poll_fd = createPollfd(socket);
+	createPoll(socket, poll_fd);
 	portListening(socket, poll_fd);
 }
 

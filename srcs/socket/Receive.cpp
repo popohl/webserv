@@ -6,46 +6,46 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/17 17:13:57 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/21 17:35:49 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Socket.hpp"
 #include "Server.hpp"
 
-static void	receiveMessage(int link)
+static void	receiveMessage(SocketClient & link)
 {
-	char	buff[90000];
 	std::string	temp;
-	int		ret;
+	int			ret;
+	char		buff[90000];
 
 	ret = 1;
 	memset((void*)buff, 0, 90000);
-
 	// while(ret < 8000)
 	// {
-		if ((ret = recv(link, buff, 90000, 0)) < 0)
+		if ((ret = recv(link.getSocketFd(), buff, 90000, 0)) < 0)
 		{
 			std::perror("Recv failed:");
 			return ;
 		}
 		std::cout << "value of recv "<< ret << std::endl;
-		temp = buff;
-		std::cout << temp << std::endl;
+		link.addContent(buff);
 	// }
 	// sendMessage(link, buff);
 }
 
-void	receiveConnectToClient(int i, std::vector<Socket*> & socket, struct pollfd* poll_fd)
+void	connectToClient(int i, std::vector<ASocket*> & socket, std::vector<pollfd> & poll_fd)
 {
-	int	link;
+	int	temp_fd;
 
-	if ((link = accept(socket[i]->getSocketFd(), (struct sockaddr *)&socket[i]->_address, (socklen_t*)&socket[i]->_addrlen))<0)
+	if ((temp_fd = accept(socket[i]->getSocketFd(), (struct sockaddr *)&socket[i]->_address, (socklen_t*)&socket[i]->_addrlen))<0)
 		std::perror("Accept failed:");
-	receiveMessage(link);
-	poll_fd[i].events = POLLOUT;
-	poll_fd[i].revents = 0;
-	close(link);
+
+	fcntl(temp_fd, F_SETFL, O_NONBLOCK);
+	// TODO tester de recuperer l adresse IP du client
+	SocketClient *link = new SocketClient(socket[i]->getPort(), temp_fd); // est ce qu on doit proteger les new ??
+	receiveMessage(*link);
+	socket.push_back(link);
+	addToPoll(*link, poll_fd);
 }
 
 //For accept()ed socket in non-blocking mode you first try write()ing or

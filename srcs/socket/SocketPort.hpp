@@ -1,30 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.cpp                                           :+:      :+:    :+:   */
+/*   SocketPort.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/10 15:31:24 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/21 13:20:52 by fmonbeig         ###   ########.fr       */
+/*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
+/*   Updated: 2022/03/21 15:49:52 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <vector>
+#ifndef SOCKECTPORT_HPP
+#define SOCKECTPORT_HPP
 
-int main()
+#include "ASocket.hpp"
+
+class SocketPort : public ASocket
 {
-	std::vector<int> temp;
+	protected:
+		SocketPort();
 
-	std::cout << &temp << std::endl;
+	public:
 
-	temp.push_back(10);
-	temp.push_back(20);
-	temp.push_back(30);
+		SocketPort(int const & port);
+		SocketPort(SocketPort const & other );
+		virtual ~SocketPort();
 
-	for(int i = 0; i < temp.size(); i++)
-	{
-		std::cout << temp.data() + i << std::endl;
-	}
-}
+		SocketPort & operator=(SocketPort const & other);
+
+};
+
+#endif

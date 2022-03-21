@@ -1,53 +1,49 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Socket.hpp                                         :+:      :+:    :+:   */
+/*   ASocket.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/16 14:13:01 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/21 15:56:34 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SOCKET_HPP
-#define SOCKET_HPP
+#ifndef ASocket_HPP
+#define ASocket_HPP
 
 #include <iostream>
 #include <cstring>
 #include <cerrno>
 #include <stdio.h>
-#include <stdlib.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
 #include <vector>
-#include <poll.h>
 #include <fcntl.h>
 
-class Socket
+class ASocket
 {
 	protected:
-
-		const int	_port;
-		const int	_socket_fd;
-		Socket();
+		int	_port;
+		int	_socket_fd;
 
 	public:
 
-		Socket(int const & port);
-		Socket(Socket const & other );
-		virtual ~Socket();
+		ASocket();
+		ASocket(ASocket const & other );
+		virtual ~ASocket();
 
-		Socket & operator=(Socket const & other);
-
-		void	bindSocket() const;
-		void	listenSocket() const;
+		ASocket & operator=(ASocket const & other);
 
 		int	getSocketFd() const;
 		int	getPort() const;
 
-		struct sockaddr_in	_address; // it's public otherwise we have do make a geter function on is address
+		void	bindSocket() const;
+		void	listenSocket() const;
+
+		struct sockaddr_in	_address; // it's public otherwise we have to make a geter function on is address
 		int					_addrlen;
 };
 
