@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 15:32:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/22 09:38:30 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/22 15:28:08 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,23 @@
 
 ServerNode::ServerNode( void )
 {
-	if (ServerNode::verbose)
-		std::cout << "Default constructor for ServerNode called" << std::endl;
 	locationList.clear();
 	return;
 }
 
 ServerNode::ServerNode( ServerNode const & src )
 {
-	if (ServerNode::verbose)
-		std::cout << "Copy constructor for ServerNode called" << std::endl;
 	*this = src;
 	return;
 }
 
 ServerNode::~ServerNode( void )
 {
-	if (ServerNode::verbose)
-		std::cout << "Destructor for ServerNode called" << std::endl;
 	return;
 }
 
 ServerNode &	ServerNode::operator=( ServerNode const & src )
 {
-	if (ServerNode::verbose)
-		std::cout << "Assignement operator for ServerNode called" << std::endl;
 	if (this == &src)
 		return *this;
 	this->locationList = src.locationList;
@@ -97,4 +89,20 @@ const LocationRules*
 	return result;
 }
 
-bool	ServerNode::verbose = false;
+bool		ServerNode::hasCgiExtension( std::string uri,
+		std::string cgiExtension ) const
+{
+	if (cgiExtension == "")
+		return false;
+	uri.erase(0, uri.find_first_of('.') + 1);
+	if (uri.rfind(cgiExtension, 0) == 0)
+		return true;
+	return false;
+}
+
+bool		ServerNode::isCgi( std::string uri, LocationRules* location ) const
+{
+	if (location == NULL)
+		return hasCgiExtension(uri, this->getServerRules().cgiExtension);
+	return location->isCgi(uri);
+}

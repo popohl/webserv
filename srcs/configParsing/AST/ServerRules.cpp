@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/20 19:03:45 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/22 15:34:56 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	ServerRules::resetRules( void )
 	autoindex = false;
 	clientMaxBodySize = 1048576;
 	cgiExtension.clear();
-	cgiPath.assign(1, "/cgi-bin/");
+	cgiPath.clear();
 	errorPage.clear();
 	index.clear();
 	listenPort = 8000;

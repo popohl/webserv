@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/20 19:04:14 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/22 15:32:25 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,15 +46,17 @@ struct LocationRules
 
 	void	addErrorPage( int errorCode, std::string errorPagePath );
 
+	// Helper functions
 	std::string	getPathFromLocation( std::string pathFromUrl ) const;
+	bool		isCgi( std::string uri ) const;
 
 	std::string					locationPath;
 	std::string					root;
 
 	char						allowedMethod;
 	bool						autoindex;
-	std::vector<std::string>	cgiExtension;
-	std::vector<std::string>	cgiPath;
+	std::string					cgiExtension;
+	std::string					cgiPath;
 	int							clientMaxBodySize;
 	std::map<int, std::string>	errorPage;
 	std::vector<std::string>	index;

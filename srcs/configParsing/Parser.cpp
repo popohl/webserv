@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/20 20:39:00 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/22 15:45:13 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,6 @@ void	Parser::parseServer( void )
 	this->eat(Token::closingBracket);
 	if (!locationTokens.empty())
 		afterParseLocations(locationTokens);
-	setCgiPathIfEmpty();
 }
 
 void	Parser::parseServerRule( void )
@@ -173,17 +172,6 @@ void	Parser::parseLocation( void )
 	while (currentToken.getType() != Token::closingBracket)
 		parseLocationRule();
 	eat(Token::closingBracket);
-	setCgiPathIfEmpty();
-}
-
-void	Parser::setCgiPathIfEmpty( void )
-{
-	std::vector<std::string>&	cgiPath = this->readLocationRules ?
-		configFile.LatestServer().LatestLocation().cgiPath :
-		configFile.LatestServer().getServerRules().cgiPath;
-
-	if (cgiPath.empty())
-		cgiPath.push_back("/cgi-bin/");
 }
 
 void	Parser::parseLocationRule( void )
@@ -247,30 +235,22 @@ void	Parser::parseAutoindexRule( void )
 
 void	Parser::parseCgiExtensionRule( void )
 {
-	std::vector<std::string>&	cgiExtension = readLocationRules ?
+	std::string&	cgiExtension = readLocationRules ?
 		configFile.LatestServer().LatestLocation().cgiExtension :
 		configFile.LatestServer().getServerRules().cgiExtension;
 
-	cgiExtension.clear();
-	while (currentToken.getType() == Token::word)
-	{
-		cgiExtension.push_back(currentToken.getValue());
-		eat(Token::word);
-	}
+	cgiExtension = currentToken.getValue();
+	eat(Token::word);
 }
 
 void	Parser::parseCgiPathRule( void )
 {
-	std::vector<std::string>&	cgiPath = readLocationRules ?
+	std::string&	cgiPath = readLocationRules ?
 		configFile.LatestServer().LatestLocation().cgiPath :
 		configFile.LatestServer().getServerRules().cgiPath;
 
-	cgiPath.clear();
-	while (currentToken.getType() == Token::path)
-	{
-		cgiPath.push_back(currentToken.getValue());
-		eat(Token::path);
-	}
+	cgiPath = currentToken.getValue();
+	eat(Token::path);
 }
 
 void	Parser::parseClientMaxBodySizeRule( void )

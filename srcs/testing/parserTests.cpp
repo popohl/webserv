@@ -46,13 +46,13 @@ TEST(ParserSuite, EveryRightPossibilityFile)
 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].errorPage[401], "./server401.html");
 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].errorPage[403], "./location403.html");
 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].errorPage[412], "./location412.html");
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].cgiExtension[0], "py");
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].cgiPath[1], "/cgi-bin/");
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].cgiPath[0], "/cgi-bin/");
-	EXPECT_EQ(result.getServerList()[3].getServerRules().cgiExtension[0], "py");
-	EXPECT_EQ(result.getServerList()[3].getServerRules().cgiPath[1], "/cgi-bin/");
-	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].cgiExtension[0], "py");
-	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].cgiPath[1], "/cgi-bin/");
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].cgiExtension, "php");
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].cgiPath, "/bin/sh");
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].cgiPath, "");
+	EXPECT_EQ(result.getServerList()[3].getServerRules().cgiExtension, "py");
+	EXPECT_EQ(result.getServerList()[3].getServerRules().cgiPath, "/cgi-bin/");
+	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].cgiExtension, "py");
+	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].cgiPath, "/cgi-bin/");
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].locationPath, "/");
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].locationPath, "/www/");
 
