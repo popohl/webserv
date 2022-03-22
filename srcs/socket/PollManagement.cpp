@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/21 14:40:35 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/21 17:27:51 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/22 14:11:53 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,14 @@ void	addToPoll(ASocket & socket, std::vector<pollfd> & poll_fd)
 
 	poll.fd = socket.getSocketFd();
 	poll.events = POLLOUT;
+	poll.revents = 0;
 	poll_fd.push_back(poll);
 }
 
 void	removeFromPoll(std::vector<ASocket*> & socket, std::vector<pollfd> & poll_fd, int fd)
 {
+	ASocket* temp;
+
 	for (int i = 0; i < socket.size(); i++)
 	{
 		if (socket[i]->getSocketFd() == fd)
@@ -47,9 +50,10 @@ void	removeFromPoll(std::vector<ASocket*> & socket, std::vector<pollfd> & poll_f
 	{
 		if (poll_fd[i].fd == fd)
 		{
+			temp = socket[i];
 			socket.erase(socket.begin() + i);
+			delete temp;
 			break ;
 		}
 	}
-
 }
