@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/16 19:55:15 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 12:26:09 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,22 +26,22 @@ struct ServerRules
 
 	ServerRules	&operator=( const ServerRules &rhs );
 
-	void		reset_rules( void );
+	void		resetRules( void );
 
 	static bool	verbose;
 
-	void	add_error_page( int error_code, std::string error_page_path );
-	void	set_index( std::vector<std::string> new_index );
-	void	add_index( std::string new_index );
-	void	add_server_name( std::string new_server_name );
+	void	addErrorPage( int errorCode, std::string errorPagePath );
+	void	setIndex( std::vector<std::string> newIndex );
+	void	addIndex( std::string newIndex );
+	void	addServerName( std::string newServerName );
 
 	bool						autoindex;
-	int							client_max_body_size;
-	std::map<int, std::string>	error_page;
+	int							clientMaxBodySize;
+	std::map<int, std::string>	errorPage;
 	std::vector<std::string>	index;
-	int							listen_port;
-	std::string					listen_address;
-	std::vector<std::string> 	server_name;
+	int							listenPort;
+	std::string					listenAddress;
+	std::vector<std::string> 	serverName;
 
 };
 

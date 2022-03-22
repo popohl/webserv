@@ -6,18 +6,18 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/18 10:55:49 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 12:23:28 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "config_parsing/AST/LocationRules.hpp"
+#include "configParsing/AST/LocationRules.hpp"
 
 LocationRules::LocationRules( void )
 {
 	if (LocationRules::verbose)
 		std::cout << "Default constructor for LocationRules called" << std::endl;
-	reset_location_rules();
+	resetLocationRules();
 	return;
 }
 
@@ -33,10 +33,10 @@ LocationRules::LocationRules( const ServerRules& src )
 {
 	if (LocationRules::verbose)
 		std::cout << "ServerRules copy constructor for LocationRules called" << std::endl;
-	reset_location_rules();
+	resetLocationRules();
 	this->autoindex = src.autoindex;
-	this->client_max_body_size = src.client_max_body_size;
-	this->error_page = src.error_page;
+	this->clientMaxBodySize = src.clientMaxBodySize;
+	this->errorPage = src.errorPage;
 	this->index = src.index;
 	return;
 }
@@ -54,91 +54,91 @@ LocationRules &	LocationRules::operator=( LocationRules const & src )
 		std::cout << "Assignement operator for LocationRules called" << std::endl;
 	if (this == &src)
 		return *this;
-	this->allowed_method = src.allowed_method;
+	this->allowedMethod = src.allowedMethod;
 	this->autoindex = src.autoindex;
-	this->cgi_extension = src.cgi_extension;
-	this->cgi_path = src.cgi_path;
-	this->client_max_body_size = src.client_max_body_size;
-	this->error_page = src.error_page;
+	this->cgiExtension = src.cgiExtension;
+	this->cgiPath = src.cgiPath;
+	this->clientMaxBodySize = src.clientMaxBodySize;
+	this->errorPage = src.errorPage;
 	this->index = src.index;
-	this->redirect_code = src.redirect_code;
-	this->redirect_uri = src.redirect_uri;
+	this->redirectCode = src.redirectCode;
+	this->redirectUri = src.redirectUri;
 	this->root = src.root;
-	this->upload_path = src.upload_path;
+	this->uploadPath = src.uploadPath;
 	return *this;
 }
 
-bool 	LocationRules::is_method_allowed( char selected_method ) const
+bool 	LocationRules::isMethodAllowed( char selectedMethod ) const
 {
-	if ((selected_method & allowed_method) != 0)
+	if ((selectedMethod & allowedMethod) != 0)
 		return true;
 	return false;
 }
 
-bool	LocationRules::is_method_allowed( std::string method ) const
+bool	LocationRules::isMethodAllowed( std::string method ) const
 {
 	if (method == "GET")
-		return is_method_allowed(LocationRules::GET);
+		return isMethodAllowed(LocationRules::GET);
 	else if (method == "POST")
-		return is_method_allowed(LocationRules::POST);
+		return isMethodAllowed(LocationRules::POST);
 	else if (method == "DELETE")
-		return is_method_allowed(LocationRules::DELETE);
+		return isMethodAllowed(LocationRules::DELETE);
 	else
 		throw std::exception();
 }
 
-void	LocationRules::reset_location_rules( void )
+void	LocationRules::resetLocationRules( void )
 {
-	allowed_method = GET | POST | DELETE;
+	allowedMethod = GET | POST | DELETE;
 	autoindex = false;
-	cgi_extension.clear();
-	cgi_path.clear();
-	client_max_body_size = 1048576;
-	error_page.clear();
+	cgiExtension.clear();
+	cgiPath.clear();
+	clientMaxBodySize = 1048576;
+	errorPage.clear();
 	index.clear();
-	redirect_code = 0;
-	redirect_uri.clear();
+	redirectCode = 0;
+	redirectUri.clear();
 	root.clear();
-	upload_path.clear();
+	uploadPath.clear();
 }
 
 bool	LocationRules::verbose = false;
 
-void	LocationRules::allow_method( char method )
+void	LocationRules::allowMethod( char method )
 {
-	this->allowed_method = this->allowed_method | method;
+	this->allowedMethod = this->allowedMethod | method;
 }
 
-void	LocationRules::allow_method( std::string method )
+void	LocationRules::allowMethod( std::string method )
 {
 	if (method == "GET")
-		allow_method(LocationRules::GET);
+		allowMethod(LocationRules::GET);
 	else if (method == "POST")
-		allow_method(LocationRules::POST);
+		allowMethod(LocationRules::POST);
 	else if (method == "DELETE")
-		allow_method(LocationRules::DELETE);
+		allowMethod(LocationRules::DELETE);
 	else
 		throw std::exception();
 }
 
-void	LocationRules::forbid_method( char method )
+void	LocationRules::forbidMethod( char method )
 {
-	this->allowed_method = this->allowed_method & ~method;
+	this->allowedMethod = this->allowedMethod & ~method;
 }
 
-void	LocationRules::forbid_method( std::string method )
+void	LocationRules::forbidMethod( std::string method )
 {
 	if (method == "GET")
-		forbid_method(LocationRules::GET);
+		forbidMethod(LocationRules::GET);
 	else if (method == "POST")
-		forbid_method(LocationRules::POST);
+		forbidMethod(LocationRules::POST);
 	else if (method == "DELETE")
-		forbid_method(LocationRules::DELETE);
+		forbidMethod(LocationRules::DELETE);
 	else
 		throw std::exception();
 }
 
-void	LocationRules::add_error_page( int error_code, std::string error_page_path )
+void	LocationRules::addErrorPage( int errorCode, std::string errorPagePath )
 {
-	this->error_page[error_code] = error_page_path;
+	this->errorPage[errorCode] = errorPagePath;
 }

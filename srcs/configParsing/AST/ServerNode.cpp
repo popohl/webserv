@@ -6,11 +6,11 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 15:32:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/16 17:10:28 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 12:22:58 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config_parsing/AST/ServerNode.hpp"
+#include "configParsing/AST/ServerNode.hpp"
 
 ServerNode::ServerNode( void )
 {

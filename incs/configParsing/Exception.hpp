@@ -1,22 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Exception.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 13:38:14 by pohl             ###   ########.fr       */
+/*   Created: 2022/03/18 14:34:53 by pohl              #+#    #+#             */
+/*   Updated: 2022/03/18 14:36:05 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <fstream>
-#include "configParsing/Parser.hpp"
+#ifndef EXCEPTION_HPP
+# define EXCEPTION_HPP
 
-int main( int argc, char **argv )
-{
-	(void)argc;
-	Parser			parser(argv[1]);
-	ConfigFileNode	result = parser.getConfigFile();
-}
+# include <stdexcept>
+
+class ParsingException : public std::runtime_error {
+	public:
+		ParsingException(const char* msg) : std::runtime_error(msg) { }
+};
+
+#endif

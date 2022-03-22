@@ -6,13 +6,14 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:13 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/15 10:42:21 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 14:45:29 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config_parsing/Token.hpp"
+#include "configParsing/Token.hpp"
+#include "configParsing/Exception.hpp"
 
-Token::Token( void ): _type(Token::end_of_file), _value("")
+Token::Token( void ): _type(Token::endOfFile), _value("")
 {
 	if (Token::verbose)
 		std::cout << "Default constructor for Token called" << std::endl;
@@ -27,7 +28,7 @@ Token::Token( Token const & src )
 	return;
 }
 
-Token::Token( token_type type, token_value value ): _type(type), _value(value)
+Token::Token( tokenType type, tokenValue value ): _type(type), _value(value)
 {
 	if (Token::verbose)
 		std::cout << "Initialisation constructor for " << *this << std::endl;
@@ -52,24 +53,24 @@ Token &	Token::operator=( Token const& src )
 	return *this;
 }
 
-Token::token_type	Token::getType( void ) const { return this->_type; }
+Token::tokenType	Token::getType( void ) const { return this->_type; }
 
 std::string		Token::getTypeName( void ) const
 {
-		if (this->_type == end_of_file)
-			return std::string("end_of_file");
-		else if (this->_type == opening_bracket)
-			return std::string("opening_bracket");
-		else if (this->_type == closing_bracket)
-			return std::string("closing_bracket");
+		if (this->_type == endOfFile)
+			return std::string("endOfFile");
+		else if (this->_type == openingBracket)
+			return std::string("openingBracket");
+		else if (this->_type == closingBracket)
+			return std::string("closingBracket");
 		else if (this->_type == semicolon)
 			return std::string("semicolon");
 		else if (this->_type == colon)
 			return std::string("colon");
 		else if (this->_type == path)
 			return std::string("path");
-		else if (this->_type == ip_address)
-			return std::string("ip_address");
+		else if (this->_type == ipAddress)
+			return std::string("ipAddress");
 		else if (this->_type == word)
 			return std::string("word");
 		else if (this->_type == number)
@@ -79,9 +80,14 @@ std::string		Token::getTypeName( void ) const
 		return std::string("unknown token");
 }
 
-Token::token_value Token::getValue( void ) const { return this->_value; }
+Token::tokenValue Token::getValue( void ) const { return this->_value; }
 
-size_t		Token::get_size_multiplier( char c ) const
+std::string	Token::toStr( void ) const
+{
+	return std::string("Token(" + getTypeName() + "): " + getValue());
+}
+
+size_t		Token::getSizeMultiplier( char c ) const
 {
 	size_t	multiplier = 1;
 
@@ -96,7 +102,7 @@ size_t		Token::get_size_multiplier( char c ) const
 	return multiplier;
 }
 
-size_t		Token::size_atoi( void ) const
+size_t		Token::sizeAtoi( void ) const
 {
 	size_t						result = 0;
 	size_t						multiplier = 1;
@@ -109,9 +115,10 @@ size_t		Token::size_atoi( void ) const
 		i++;
 	}
 	if (_type == Token::size )
-		multiplier = (i != _value.end()) ? get_size_multiplier(*i) : 1;
+		multiplier = (i != _value.end()) ? getSizeMultiplier(*i) : 1;
 	else if (_type != Token::number)
-		throw std::exception();
+		throw ParsingException("Invalid element found, tried to convert a non "
+				"numeric value into an int");
 	return result * multiplier;
 }
 
@@ -128,7 +135,7 @@ bool	Token::operator!=( const Token& other ) const
 
 std::ostream &	operator<<( std::ostream & ostr, Token const & instance)
 {
-	ostr << "Token(" << instance.getTypeName() << "): " << instance.getValue();
+	ostr << instance.toStr();
 	return ostr;
 }
 

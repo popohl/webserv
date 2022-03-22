@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:11 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/15 14:55:57 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/18 13:55:24 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,18 @@ class Token
 
 public:
 
-	typedef	int			token_type;
-	typedef	std::string token_value;
+	typedef	int			tokenType;
+	typedef	std::string tokenValue;
 
 	enum	Types
 	{
-		end_of_file = 0,
-		opening_bracket,
-		closing_bracket,
+		endOfFile = 0,
+		openingBracket,
+		closingBracket,
 		semicolon,
 		colon,
 		path,
-		ip_address,
+		ipAddress,
 		size,
 		word,
 		number,
@@ -39,16 +39,17 @@ public:
 
 	Token( void );
 	Token( const Token &src );
-	Token( token_type type, token_value value );
+	Token( tokenType type, tokenValue value );
 	~Token( void );
 
 	Token	&operator=( const Token &src );
 
-	token_type	getType( void ) const;
+	tokenType	getType( void ) const;
+	tokenValue	getValue( void ) const;
 	std::string getTypeName( void ) const;
-	token_value getValue( void ) const;
+	std::string toStr( void ) const;
 
-	size_t		size_atoi( void ) const;
+	size_t		sizeAtoi( void ) const;
 
 	bool	operator==( const Token& other ) const;
 	bool	operator!=( const Token& other ) const;
@@ -57,10 +58,10 @@ public:
 
 private:
 
-	size_t		get_size_multiplier( char c ) const;
+	size_t		getSizeMultiplier( char c ) const;
 
-	token_type	_type;
-	token_value _value;
+	tokenType	_type;
+	tokenValue	_value;
 
 };
 
