@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/21 15:56:34 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/23 11:57:49 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,29 +22,27 @@
 #include <netinet/in.h>
 #include <vector>
 #include <fcntl.h>
+#include "Server.hpp"
 
 class ASocket
 {
 	protected:
-		int	_port;
-		int	_socket_fd;
+		const int	_port;
+		const int	_socket_fd;
+		const int	_type;
 
 	public:
 
 		ASocket();
-		ASocket(ASocket const & other );
+		ASocket(int port, int fd, int type);
+		ASocket(ASocket const & other);
 		virtual ~ASocket();
 
 		ASocket & operator=(ASocket const & other);
 
 		int	getSocketFd() const;
 		int	getPort() const;
-
-		void	bindSocket() const;
-		void	listenSocket() const;
-
-		struct sockaddr_in	_address; // it's public otherwise we have to make a geter function on is address
-		int					_addrlen;
+		int	getType() const;
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/21 18:02:12 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/23 10:37:50 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class SocketClient : public ASocket
 		std::string	_response;
 
 	public:
-		SocketClient(int const & port, int const & fd);
+		SocketClient(int port, int fd);
 		SocketClient(SocketClient const & other );
 		virtual ~SocketClient();
 

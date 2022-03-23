@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/21 17:11:33 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/23 11:58:15 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 //   CONSTRUCTOR OVERLOAD 					    //
 // +------------------------------------------+ //
 
-SocketPort::SocketPort(int const & port): ASocket()
+SocketPort::SocketPort(int port):
+	ASocket(port, socket(AF_INET, SOCK_STREAM, 0), PORT),
+	_addrlen(sizeof(_address))
 {
-	_port = port;
-	_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_socket_fd == 0) //AF_INET pour utilisation en IPV4
 	{
 		std::perror("Socket creation failed");
@@ -35,16 +35,22 @@ SocketPort::SocketPort(int const & port): ASocket()
 //   CANONICAL FORM 					        //
 // +------------------------------------------+ //
 
-SocketPort::SocketPort(void) : ASocket() {}
+SocketPort::SocketPort(void) : ASocket(), _addrlen(sizeof(_address)) {}
 
 SocketPort::SocketPort (const SocketPort &other):
-	ASocket(other){}
+	ASocket(other), _address(other._address),
+	_addrlen(other._addrlen) {}
 
 SocketPort::~SocketPort(void) {}
 
 SocketPort &SocketPort::operator=(const SocketPort & rhs)
 {
 	ASocket::operator=(rhs);
+	if (this != &rhs)
+	{
+		_address = rhs._address;
+		_addrlen = rhs._addrlen;
+	}
 	return *this;
 }
 
@@ -52,6 +58,23 @@ SocketPort &SocketPort::operator=(const SocketPort & rhs)
 //   MEMBER FUNCTION					        //
 // +------------------------------------------+ //
 
+void	SocketPort::bindSocket() const
+{
+	  if (bind(_socket_fd, (struct sockaddr *)&_address, _addrlen)<0)
+	{
+		std::perror("Bind failed");
+		exit(EXIT_FAILURE);
+	}
+}
+
+void	SocketPort::listenSocket() const
+{
+	if (listen(_socket_fd, 10) < 0) // only 10 connection at the same time
+	{
+		std::perror("Listen failed");
+		exit(EXIT_FAILURE);
+	}
+}
 
 
 

@@ -1,38 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   SocketPort.hpp                                     :+:      :+:    :+:   */
+/*   FdSet.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/23 11:57:56 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/23 11:29:42 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SOCKECTPORT_HPP
-#define SOCKECTPORT_HPP
+#ifndef FDSET_HPP
+#define FDSET_HPP
 
-#include "ASocket.hpp"
+#include "Server.hpp"
 
-class SocketPort : public ASocket
+class FdSet
 {
 	protected:
-		SocketPort();
+		fd_set	_set;
 
 	public:
+		FdSet();
+		FdSet(FdSet const & other);
+		virtual ~FdSet();
 
-		SocketPort(int port);
-		SocketPort(SocketPort const & other );
-		virtual ~SocketPort();
+		FdSet & operator=(FdSet const & other);
 
-		SocketPort & operator=(SocketPort const & other);
+		fd_set	getset();
 
-		void	bindSocket() const;
-		void	listenSocket() const;
+		void	add(int fd);
+		void	remove(int fd);
+		void	clearAll();
+		bool	isset(int fd);
 
-		struct sockaddr_in	_address; // it's public otherwise we have to make a geter function on is address
-		int					_addrlen;
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/22 15:56:01 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/23 12:09:22 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 static ASocket*	createSocket(int port)
 {
 	int flag = 1;
-	ASocket *new_sock = new SocketPort(port);
+	SocketPort *new_sock = new SocketPort(port);
 	fcntl(new_sock->getSocketFd(), F_SETFL, O_NONBLOCK);
 	if (setsockopt(new_sock->getSocketFd(),SOL_SOCKET, SO_REUSEADDR, &flag, sizeof flag) == -1)
 	{
@@ -29,45 +29,80 @@ static ASocket*	createSocket(int port)
 	return (new_sock);
 }
 
-static void	portListening(std::vector<ASocket*> & socket, std::vector<pollfd> & poll_fd)
+static void	fillFdSets(t_FD sets, std::vector<ASocket*> & socket)
 {
-	int	poll_ret;
-
-	while (1) // je peux garder en memoire les fd qui POLLHUP et les supprimer a chaque debut de boucle
+	sets.fdmax = 0;
+	for (int i = 0; i < socket.size(); i++)
 	{
-		std::cout << "\n----------- Waiting for new connection -----------\n" << std::endl;
-		poll_ret = poll(poll_fd.data(), poll_fd.size(), 5000); // with negative number poll never time out
-		std::cout << "result of poll_ret : " << poll_ret << std::endl;
-		std::cout << "POLL_FD Size " << socket.size() << std::endl;
-		std::cout << "Socket Size : " << poll_fd.size() << std::endl << std::endl;
+		sets.readfds.add(socket[i]->getSocketFd());
+		if (sets.fdmax < socket[i]->getSocketFd())
+			sets.fdmax = socket[i]->getSocketFd();
+	}
+}
 
-		if (poll_ret == 0)
-			std::cout << " Server Time out" << std::endl; // related to the timeout parameter of poll
-		else
+static ASocket *findSocket(int fd, std::vector<ASocket*> & socket)
+{
+	for (int i = 0; i < socket.size(); i++)
+	{
+		if ( i == socket[i]->getSocketFd())
+			return (socket[i]);
+	}
+	return (NULL);
+}
+
+static void	portListening(t_FD sets, std::vector<ASocket*> & socket)
+{
+	fd_set	tmp_read;
+	fd_set	tmp_write;
+	int		ret;
+
+	while (1)
+	{
+		// We have to make a copy a each loop because select mess up the fd_set
+		tmp_read = sets.readfds.getset();
+		tmp_write = sets.writefds.getset();
+		std::cout << "\n----------- Waiting for new connection -----------\n" << std::endl;
+		if ( (ret = select(sets.fdmax, &tmp_read, &tmp_write, NULL, NULL)) < 0)
+			std::perror("Select:");
+		for (int i = 0; i < sets.fdmax && ret; i++)
 		{
-			for (int i = 0; poll_ret > 0; i++)
+			if (FD_ISSET(i, &tmp_read))
 			{
-				if (poll_fd[i].revents & POLLHUP)
-				{
-					std::cout << "suppression of FD" << socket[i]->getSocketFd() << std::endl;
-					removeFromPoll(socket, poll_fd, socket[i]->getSocketFd());
-				}
-				else if (poll_fd[i].revents & POLLIN)
-				{
-					std::cout << "CONNECT TO PORT "<< socket[i]->getSocketFd() << std::endl;
-					connectToClient(i, socket, poll_fd);
-					poll_ret--;
-				}
-				else if (poll_fd[i].revents & POLLOUT)
-				{
-					std::cout << "SEND TO Socket "<< socket[i]->getSocketFd() <<std::endl;
-					sendToClient(*socket[i]);
-					poll_ret--;
-				}
+				ret--;
+				receiveDataOrNewClient(i, socket, sets);
+			}
+			else if (FD_ISSET(i, &tmp_write))
+			{
+				ret--;
+				findSocket(i, socket);
 			}
 		}
 	}
 }
+
+// select
+// int select(int numfds, fd_set *readfds, fd_set *writefds,
+//            fd_set *exceptfds, struct timeval *timeout);
+// Pour select il faut utiliser des set de FD que l'on va manipuler avec des Macros
+// FD_SET(int fd, fd_set *set);	Add fd to the set.
+// FD_CLR(int fd, fd_set *set);	Remove fd from the set.
+// FD_ISSET(int fd, fd_set *set);	Return true if fd is in the set.
+// FD_ZERO(fd_set *set);	Clear all entries from the set.
+//
+// Mettre timeval a NULL met le TIMEOUT a -1 (en gros)
+// on check les fd a lire dans Readfds et ensuite on check ceux a ecrire dans writefd
+// Retourne comme POLL
+//
+//
+// What happens if a socket in the read set closes the connection? Well, in that case, select() returns with that socket descriptor set as “ready to read”. When you actually do recv() from it, recv() will return 0.
+// That’s how you know the client has closed the connection.
+
+// fdmax = last socket
+// On peut creer une class select qui va faire la fonction la select et attendre la reponse
+// et on peut avoir dans cette structure les diffents fd set et des fonctions afin de bien l utiliser
+// on peut avoir la variable qui keep in track le fd max
+// On doit avoir un fd set master avec tous les elements a l interieur et on doit le faire evoluer au fur et a mesure et le copier au dernier moment dans Readfd
+
 
 int main()
 {
@@ -82,11 +117,10 @@ int main()
 	for(int i = 0; i < allPort.size(); i++)
 		socket.push_back(createSocket(allPort[i]));
 
-	//Create the extensible struct of pollfd for function poll
-	std::vector<pollfd>	poll_fd;
-
-	createPoll(socket, poll_fd);
-	portListening(socket, poll_fd);
+	//Create two sets of fd for select : readfds and writefds
+	t_FD	sets;
+	fillFdSets(sets, socket);
+	portListening(sets, socket);
 }
 
 
@@ -102,3 +136,29 @@ int main()
 
 // Le but serait que les socket classique ne crée que les socketClient et les socket client font leur vie avec POLLIN et POLLOUT jusqu'a la mort
 
+
+// select
+// int select(int numfds, fd_set *readfds, fd_set *writefds,
+//            fd_set *exceptfds, struct timeval *timeout);
+// Pour select il faut utiliser des set de FD que l'on va manipuler avec des Macros
+// FD_SET(int fd, fd_set *set);	Add fd to the set.
+// FD_CLR(int fd, fd_set *set);	Remove fd from the set.
+// FD_ISSET(int fd, fd_set *set);	Return true if fd is in the set.
+// FD_ZERO(fd_set *set);	Clear all entries from the set.
+//
+// Metttre timeval a NULL met le TIMEOUT a -1 (en gros)
+// on check les fd a lire dans Readfds et ensuite on check ceux a ecrire dans writefd
+// Retourne comme POLL
+//
+//
+// What happens if a socket in the read set closes the connection? Well, in that case, select() returns with that socket descriptor set as “ready to read”. When you actually do recv() from it, recv() will return 0.
+// That’s how you know the client has closed the connection.
+
+// fdmax = last socket
+// On peut creer une structure select qui va faire la fonction la select et attendre la reponse
+// et on peut avoir dans cette structure les diffents fd set et des fonctions afin de bien l utiliser
+// on peut avoir la variable qui keep in track le fd max
+// On doit avoir un fd set master avec tous les elements a l interieur et on doit le faire evoluer au fur et a mesure et le copier au dernier moment dans Readfd
+
+
+//Select will change the inside of the set so it's unusable after, we have to copy it at each round

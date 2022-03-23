@@ -1,43 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ASocket.cpp                                        :+:      :+:    :+:   */
+/*   FdSet.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/23 11:58:29 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/23 11:30:10 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ASocket.hpp"
-
-// +------------------------------------------+ //
-//   CONSTRUCTOR OVERLOAD 					    //
-// +------------------------------------------+ //
-
-ASocket::ASocket(int port, int fd, int type):
-	_port(port), _socket_fd(fd), _type(type)
-{}
+#include "FdSet.hpp"
 
 // +------------------------------------------+ //
 //   CANONICAL FORM 					        //
 // +------------------------------------------+ //
 
-ASocket::ASocket(void) : _port(0), _socket_fd(0), _type(0)
+FdSet::FdSet(void)
+{	FD_ZERO(&_set);	}
+
+FdSet::FdSet (const FdSet &other):
+	_set(other._set)
 {}
 
-ASocket::ASocket (const ASocket &other):
-	_port(other._port), _socket_fd(other._socket_fd),
-	_type(other._type)
+FdSet::~FdSet(void)
 {}
 
-ASocket::~ASocket(void)
-{}
-
-ASocket &ASocket::operator=(const ASocket & rhs)
+FdSet &FdSet::operator=(const FdSet & rhs)
 {
-
+	if (this != &rhs)
+	{
+		_set = rhs._set;
+	}
 		return *this;
 }
 
@@ -45,11 +39,17 @@ ASocket &ASocket::operator=(const ASocket & rhs)
 //   MEMBER FUNCTION					        //
 // +------------------------------------------+ //
 
-int	ASocket::getSocketFd() const
-{ return (_socket_fd); }
+fd_set	FdSet::getset()
+{ return (_set); }
 
-int	ASocket::getPort() const
-{ return (_port); }
+void	FdSet::add(int fd)
+{ FD_SET(fd, &_set); }
 
-int	ASocket::getType() const
-{ return (_type); }
+void	FdSet::remove(int fd)
+{ FD_CLR(fd, &_set); }
+
+void	FdSet::clearAll()
+{ FD_ZERO(&_set); }
+
+bool	FdSet::isset(int fd)
+{ return FD_ISSET(fd, &_set); }
