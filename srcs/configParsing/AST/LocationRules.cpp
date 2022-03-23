@@ -6,10 +6,9 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/18 12:23:28 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/22 15:35:30 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "configParsing/AST/LocationRules.hpp"
 
@@ -17,7 +16,7 @@ LocationRules::LocationRules( void )
 {
 	if (LocationRules::verbose)
 		std::cout << "Default constructor for LocationRules called" << std::endl;
-	resetLocationRules();
+	resetRules();
 	return;
 }
 
@@ -33,9 +32,11 @@ LocationRules::LocationRules( const ServerRules& src )
 {
 	if (LocationRules::verbose)
 		std::cout << "ServerRules copy constructor for LocationRules called" << std::endl;
-	resetLocationRules();
+	resetRules();
 	this->autoindex = src.autoindex;
 	this->clientMaxBodySize = src.clientMaxBodySize;
+	this->cgiExtension = src.cgiExtension;
+	this->cgiPath = src.cgiPath;
 	this->errorPage = src.errorPage;
 	this->index = src.index;
 	return;
@@ -65,6 +66,7 @@ LocationRules &	LocationRules::operator=( LocationRules const & src )
 	this->redirectUri = src.redirectUri;
 	this->root = src.root;
 	this->uploadPath = src.uploadPath;
+	this->locationPath = src.locationPath;
 	return *this;
 }
 
@@ -87,7 +89,7 @@ bool	LocationRules::isMethodAllowed( std::string method ) const
 		throw std::exception();
 }
 
-void	LocationRules::resetLocationRules( void )
+void	LocationRules::resetRules( void )
 {
 	allowedMethod = GET | POST | DELETE;
 	autoindex = false;
@@ -96,6 +98,7 @@ void	LocationRules::resetLocationRules( void )
 	clientMaxBodySize = 1048576;
 	errorPage.clear();
 	index.clear();
+	locationPath.clear();
 	redirectCode = 0;
 	redirectUri.clear();
 	root.clear();
@@ -141,4 +144,25 @@ void	LocationRules::forbidMethod( std::string method )
 void	LocationRules::addErrorPage( int errorCode, std::string errorPagePath )
 {
 	this->errorPage[errorCode] = errorPagePath;
+}
+
+std::string	LocationRules::getPathFromLocation( std::string pathFromUrl ) const
+{
+	if (root.empty())
+		return pathFromUrl;
+
+	std::string result = pathFromUrl;
+
+	result.replace(0, locationPath.size(), root);
+	return result;
+}
+
+bool		LocationRules::isCgi( std::string uri ) const
+{
+	std::string extension = uri;
+
+	extension.erase(0, uri.find_first_of('.') + 1);
+	if (extension.rfind(this->cgiExtension, 0) == 0)
+		return true;
+	return false;
 }
