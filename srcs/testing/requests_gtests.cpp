@@ -84,7 +84,7 @@ TEST(RequestSuite, createRequestTypeCheck)
 TEST(requestHeaderTokenSuite, FirefoxGetRequestTest)
 {
 	const char * request_line = { "GET / HTTP/1.1\b\n" };
-	const char * request_header = { "Host: localhost:8080\nConnection: keep-alive\nCache-Control: max-age=0\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\nsec-ch-ua-mobile: ?0\nsec-ch-ua-platform: \"Linux\"\nUpgrade-Insecure-Requests: 1\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\nSec-Fetch-Site: none\nSec-Fetch-Mode: navigate\nSec-Fetch-User: ?1\nSec-Fetch-Dest: document\nAccept-Encoding: gzip, deflate, br\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\b\n\b\n"};
+	const char * request_header = { "Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\b\nsec-ch-ua-mobile: ?0\b\nsec-ch-ua-platform: \"Linux\"\b\nUpgrade-Insecure-Requests: 1\b\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\b\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\b\nSec-Fetch-Site: none\b\nSec-Fetch-Mode: navigate\b\nSec-Fetch-User: ?1\b\nSec-Fetch-Dest: document\b\nAccept-Encoding: gzip, deflate, br\b\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\b\n\b\n"};
 
 	iRequest * result = iRequest::createRequest(request_line);
 
@@ -94,11 +94,15 @@ TEST(requestHeaderTokenSuite, FirefoxGetRequestTest)
 	EXPECT_TRUE(check != NULL);
 
 
-	const char *small_request_header = {"Host: localhost:8080\nConnection: keep-alive\nCache-Control: max-age=0\n"};
+	const char *small_request_header = {"Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\n\b\n"};
 	const char *expected_field[] = {"Host", "Connection", "Cache-Control", NULL};
-	const char *expected_field_2[] = {" localhost:8080", " keep-alive", " max-age=0", NULL};
-	
-	std::vector<requestHeaderToken> vec1 = parseRequestHeader(small_request_header);
+	const char *expected_field_2[] = {"localhost:8080", "keep-alive", "max-age=0", NULL};
+	std::vector<requestHeaderToken> vec1;
+	try {
+		vec1 = parseRequestHeader(small_request_header);
+	}
+	catch (std::exception & e) {
+	}
 	std::cout << vec1.size() << std::endl;
 	EXPECT_TRUE(vec1.size() == 3);
 	for (size_t i = 0; i < vec1.size(); i++)
