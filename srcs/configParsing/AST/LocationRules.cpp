@@ -6,11 +6,12 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/22 15:35:30 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/23 12:09:36 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configParsing/AST/LocationRules.hpp"
+#include "configParsing/helperFunctions.hpp"
 
 LocationRules::LocationRules( void )
 {
@@ -159,10 +160,5 @@ std::string	LocationRules::getPathFromLocation( std::string pathFromUrl ) const
 
 bool		LocationRules::isCgi( std::string uri ) const
 {
-	std::string extension = uri;
-
-	extension.erase(0, uri.find_first_of('.') + 1);
-	if (extension.rfind(this->cgiExtension, 0) == 0)
-		return true;
-	return false;
+	return hasCgiExtension(uri, this->cgiExtension);
 }

@@ -6,11 +6,12 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 15:32:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/22 15:28:08 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/23 12:15:33 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configParsing/AST/ServerNode.hpp"
+#include "configParsing/helperFunctions.hpp"
 
 ServerNode::ServerNode( void )
 {
@@ -89,18 +90,7 @@ const LocationRules*
 	return result;
 }
 
-bool		ServerNode::hasCgiExtension( std::string uri,
-		std::string cgiExtension ) const
-{
-	if (cgiExtension == "")
-		return false;
-	uri.erase(0, uri.find_first_of('.') + 1);
-	if (uri.rfind(cgiExtension, 0) == 0)
-		return true;
-	return false;
-}
-
-bool		ServerNode::isCgi( std::string uri, LocationRules* location ) const
+bool		ServerNode::isCgi( std::string uri, const LocationRules* location ) const
 {
 	if (location == NULL)
 		return hasCgiExtension(uri, this->getServerRules().cgiExtension);

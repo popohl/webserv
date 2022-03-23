@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/22 15:45:13 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/23 12:20:01 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 #include "configParsing/Parser.hpp"
 #include "configParsing/Exception.hpp"
 
-Parser::Parser( void )
+Parser::Parser( void ): readLocationRules(false)
 {
 	if (Parser::verbose)
 		std::cout << "Default constructor for Parser called" << std::endl;
 	return;
 }
 
-Parser::Parser( const std::string inputFileName )
+Parser::Parser( const std::string inputFileName ): readLocationRules(false)
 {
 	if (Parser::verbose)
 		std::cout << "input file constructor for Parser called" << std::endl;

@@ -67,14 +67,17 @@ TEST(ParserSuite, EveryRightPossibilityFile)
 
 	const LocationRules* selectedLocation = result.getServerList()[2].getLocationFromUrl("/web/pouet.html");
 	EXPECT_EQ(selectedLocation, &result.getServerList()[2].getLocationList()[0]);
+	EXPECT_FALSE(result.getServerList()[2].isCgi("/ok.php", selectedLocation));
 	selectedLocation = result.getServerList()[2].getLocationFromUrl("/www/pouet.html");
 	EXPECT_EQ(selectedLocation, &result.getServerList()[2].getLocationList()[1]);
+	EXPECT_TRUE(result.getServerList()[2].isCgi("/ok.php", selectedLocation));
 	selectedLocation = result.getServerList()[3].getLocationFromUrl("/www/pouet.html");
 	EXPECT_EQ(selectedLocation, &result.getServerList()[3].getLocationList()[0]);
 	selectedLocation = result.getServerList()[3].getLocationFromUrl("/www/downloads/pouet.html");
 	EXPECT_EQ(selectedLocation, &result.getServerList()[3].getLocationList()[1]);
 	selectedLocation = result.getServerList()[3].getLocationFromUrl("/dont_exist/nope/");
 	EXPECT_EQ(selectedLocation, (const LocationRules*)NULL);
+	EXPECT_TRUE(result.getServerList()[3].isCgi("/ok.py", selectedLocation));
 
 	std::set<int>	listeningPorts = result.getListeningPorts();
 	std::set<int>::iterator it = listeningPorts.begin();
