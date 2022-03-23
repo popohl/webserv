@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/23 11:57:56 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/23 15:09:27 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,15 @@
 
 #include "ASocket.hpp"
 
+#define PORT 1
+#define CLIENT 2
+
 class SocketPort : public ASocket
 {
 	protected:
-		SocketPort();
 
 	public:
+		SocketPort();
 
 		SocketPort(int port);
 		SocketPort(SocketPort const & other );

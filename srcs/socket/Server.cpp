@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/23 12:09:22 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/23 15:33:20 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,18 +29,33 @@ static ASocket*	createSocket(int port)
 	return (new_sock);
 }
 
-static void	fillFdSets(t_FD sets, std::vector<ASocket*> & socket)
+static void	fillFdSets(t_FD & sets, std::vector<ASocket*> & socket) // add another function for Timeval ?
 {
 	sets.fdmax = 0;
 	for (int i = 0; i < socket.size(); i++)
 	{
 		sets.readfds.add(socket[i]->getSocketFd());
+	}
+}
+
+static void	fillTimeout(t_FD & sets) // add another function for Timeval ?
+{
+	sets.tv.tv_sec = 3;
+	sets.tv.tv_usec = 500000;
+}
+
+static void	fillFdMax(t_FD & sets, std::vector<ASocket*> & socket)
+{
+	sets.fdmax = 0;
+
+	for (int i = 0; i < socket.size(); i++)
+	{
 		if (sets.fdmax < socket[i]->getSocketFd())
 			sets.fdmax = socket[i]->getSocketFd();
 	}
 }
 
-static ASocket *findSocket(int fd, std::vector<ASocket*> & socket)
+ASocket *findSocket(int fd, std::vector<ASocket*> & socket)
 {
 	for (int i = 0; i < socket.size(); i++)
 	{
@@ -50,59 +65,42 @@ static ASocket *findSocket(int fd, std::vector<ASocket*> & socket)
 	return (NULL);
 }
 
-static void	portListening(t_FD sets, std::vector<ASocket*> & socket)
+static void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 {
 	fd_set	tmp_read;
 	fd_set	tmp_write;
 	int		ret;
 
+	FD_ZERO(&tmp_read);
+	FD_ZERO(&tmp_write);
 	while (1)
 	{
 		// We have to make a copy a each loop because select mess up the fd_set
 		tmp_read = sets.readfds.getset();
 		tmp_write = sets.writefds.getset();
+		fillFdMax(sets, socket);
 		std::cout << "\n----------- Waiting for new connection -----------\n" << std::endl;
-		if ( (ret = select(sets.fdmax, &tmp_read, &tmp_write, NULL, NULL)) < 0)
+		if ((ret = select(sets.fdmax + 1, &tmp_read, &tmp_write, NULL, NULL)) < 0)
 			std::perror("Select:");
+		std::cout << "Return of select " << ret << std::endl;
 		for (int i = 0; i < sets.fdmax && ret; i++)
 		{
+			std::cout << "coucou" << ret << std::endl;
 			if (FD_ISSET(i, &tmp_read))
 			{
+				std::cout << "coucou1" << ret << std::endl;
 				ret--;
 				receiveDataOrNewClient(i, socket, sets);
 			}
 			else if (FD_ISSET(i, &tmp_write))
 			{
+				std::cout << "coucou2" << ret << std::endl;
 				ret--;
-				findSocket(i, socket);
+				sendToClient(findSocket(i, socket), socket, sets);
 			}
 		}
 	}
 }
-
-// select
-// int select(int numfds, fd_set *readfds, fd_set *writefds,
-//            fd_set *exceptfds, struct timeval *timeout);
-// Pour select il faut utiliser des set de FD que l'on va manipuler avec des Macros
-// FD_SET(int fd, fd_set *set);	Add fd to the set.
-// FD_CLR(int fd, fd_set *set);	Remove fd from the set.
-// FD_ISSET(int fd, fd_set *set);	Return true if fd is in the set.
-// FD_ZERO(fd_set *set);	Clear all entries from the set.
-//
-// Mettre timeval a NULL met le TIMEOUT a -1 (en gros)
-// on check les fd a lire dans Readfds et ensuite on check ceux a ecrire dans writefd
-// Retourne comme POLL
-//
-//
-// What happens if a socket in the read set closes the connection? Well, in that case, select() returns with that socket descriptor set as “ready to read”. When you actually do recv() from it, recv() will return 0.
-// That’s how you know the client has closed the connection.
-
-// fdmax = last socket
-// On peut creer une class select qui va faire la fonction la select et attendre la reponse
-// et on peut avoir dans cette structure les diffents fd set et des fonctions afin de bien l utiliser
-// on peut avoir la variable qui keep in track le fd max
-// On doit avoir un fd set master avec tous les elements a l interieur et on doit le faire evoluer au fur et a mesure et le copier au dernier moment dans Readfd
-
 
 int main()
 {
@@ -120,6 +118,7 @@ int main()
 	//Create two sets of fd for select : readfds and writefds
 	t_FD	sets;
 	fillFdSets(sets, socket);
+	fillTimeout(sets);
 	portListening(sets, socket);
 }
 

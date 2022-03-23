@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/23 10:38:01 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/23 14:42:06 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,3 +55,9 @@ void	SocketClient::addContent(char *content)
 
 std::string	SocketClient::getResponse()
 { return (_response); }
+
+void	SocketClient::clearAll()
+{
+	_header.clear();
+	_response.clear();
+}

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/23 12:11:16 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/23 15:07:02 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 
 typedef struct s_FD
 {
+	struct timeval tv;
 	int	fdmax;
 	FdSet readfds;
 	FdSet writefds;
@@ -43,8 +44,8 @@ typedef struct s_FD
 
 void	sendMessage(int link, char *buff);
 void	receiveDataOrNewClient(int i, std::vector<ASocket*> & socket, t_FD sets);
-void	sendToClient(ASocket  & link);
-static ASocket *findSocket(int fd, std::vector<ASocket*> & socket);
+void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD sets);
+ASocket *findSocket(int fd, std::vector<ASocket*> & socket);
 //FD management
 void	createPoll(std::vector<ASocket*> & socket, std::vector<pollfd> & poll_fd);
 void	addToPoll(ASocket & socket, std::vector<pollfd> & poll_fd);
