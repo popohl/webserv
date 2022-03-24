@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:56 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/22 15:38:32 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 13:24:31 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,7 @@ private:
 
 	void	parseAllowedMethod( void );
 	void	parseAutoindexRule( void );
-	void	parseCgiExtensionRule( void );
-	void	parseCgiPathRule( void );
+	void	parseCgiRule( void );
 	void	parseClientMaxBodySizeRule( void );
 	void	parseErrorPageRule( void );
 	void	parseListenRule( void );

@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/23 12:20:01 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 13:26:58 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,10 +142,8 @@ void	Parser::parseServerRule( void )
 		parseAutoindexRule();
 	else if (ruleName == "client_max_body_size")
 		parseClientMaxBodySizeRule();
-	else if (ruleName == "cgi_extension")
-		parseCgiExtensionRule();
-	else if (ruleName == "cgi_path")
-		parseCgiPathRule();
+	else if (ruleName == "cgi")
+		parseCgiRule();
 	else if (ruleName == "error_page")
 		parseErrorPageRule();
 	else if (ruleName == "index")
@@ -183,10 +181,8 @@ void	Parser::parseLocationRule( void )
 		parseAllowedMethod();
 	else if (ruleName == "autoindex")
 		parseAutoindexRule();
-	else if (ruleName == "cgi_extension")
-		parseCgiExtensionRule();
-	else if (ruleName == "cgi_path")
-		parseCgiPathRule();
+	else if (ruleName == "cgi")
+		parseCgiRule();
 	else if (ruleName == "client_max_body_size")
 		parseClientMaxBodySizeRule();
 	else if (ruleName == "error_page")
@@ -233,24 +229,29 @@ void	Parser::parseAutoindexRule( void )
 		
 }
 
-void	Parser::parseCgiExtensionRule( void )
+void	Parser::parseCgiRule( void )
 {
 	std::string&	cgiExtension = readLocationRules ?
 		configFile.LatestServer().LatestLocation().cgiExtension :
 		configFile.LatestServer().getServerRules().cgiExtension;
-
-	cgiExtension = currentToken.getValue();
-	eat(Token::word);
-}
-
-void	Parser::parseCgiPathRule( void )
-{
 	std::string&	cgiPath = readLocationRules ?
 		configFile.LatestServer().LatestLocation().cgiPath :
 		configFile.LatestServer().getServerRules().cgiPath;
 
-	cgiPath = currentToken.getValue();
-	eat(Token::path);
+	if (currentToken.getType() == Token::word)
+	{
+		cgiExtension = currentToken.getValue();
+		eat(Token::word);
+		cgiPath = currentToken.getValue();
+		eat(Token::path);
+	}
+	else
+	{
+		cgiPath = currentToken.getValue();
+		eat(Token::path);
+		cgiExtension = currentToken.getValue();
+		eat(Token::word);
+	}
 }
 
 void	Parser::parseClientMaxBodySizeRule( void )
