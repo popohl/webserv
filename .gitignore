@@ -9,3 +9,4 @@ webserv
 .vscode
 *~
 *.o
+srcs/testing/gtests
