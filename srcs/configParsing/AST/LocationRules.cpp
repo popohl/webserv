@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/23 12:09:36 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 16:07:10 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,11 @@ void	LocationRules::forbidMethod( std::string method )
 		forbidMethod(LocationRules::DELETE);
 	else
 		throw std::exception();
+}
+
+void	LocationRules::addIndex( std::string newIndex )
+{
+	this->index.push_back(newIndex);
 }
 
 void	LocationRules::addErrorPage( int errorCode, std::string errorPagePath )

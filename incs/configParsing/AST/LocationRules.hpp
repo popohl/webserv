@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/22 15:32:25 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 16:05:29 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include <map>
 # include "ServerRules.hpp"
 
-struct LocationRules
+struct LocationRules: public IRulesNode
 {
 
 	LocationRules( void );
@@ -39,6 +39,7 @@ struct LocationRules
 
 	void	allowMethod( std::string method );
 	void	allowMethod( char method );
+	void	addIndex( std::string newIndex );
 	void	forbidMethod( std::string method );
 	void	forbidMethod( char method );
 	bool 	isMethodAllowed( char selectedMethod ) const;

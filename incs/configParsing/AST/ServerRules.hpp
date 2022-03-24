@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/22 15:34:18 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 16:06:36 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@
 # include <iostream>
 # include <vector>
 # include <map>
+# include "configParsing/AST/IRulesNode.hpp"
 
-struct ServerRules
+struct ServerRules: public IRulesNode
 {
 
 	ServerRules( void );
@@ -28,10 +29,7 @@ struct ServerRules
 
 	void		resetRules( void );
 
-	static bool	verbose;
-
 	void	addErrorPage( int errorCode, std::string errorPagePath );
-	void	setIndex( std::vector<std::string> newIndex );
 	void	addIndex( std::string newIndex );
 	void	addServerName( std::string newServerName );
 
@@ -46,7 +44,5 @@ struct ServerRules
 	std::vector<std::string> 	serverName;
 
 };
-
-std::ostream	&operator<<( std::ostream &ostr, const ServerRules &instance );
 
 #endif
