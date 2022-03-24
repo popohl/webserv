@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/24 16:06:06 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:00:50 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,6 @@ void	ServerRules::resetRules( void )
 void	ServerRules::addErrorPage( int errorCode, std::string errorPagePath )
 {
 	this->errorPage[errorCode] = errorPagePath;
-}
-
-void	ServerRules::addIndex( std::string newIndex )
-{
-	this->index.push_back(newIndex);
 }
 
 void	ServerRules::addServerName( std::string newServerName )

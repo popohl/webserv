@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/24 16:05:29 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:03:26 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@ struct LocationRules: public IRulesNode
 
 	void	resetRules( void );
 
-	static bool	verbose;
-
 	static const char	GET			= 0b0001;
 	static const char	POST		= 0b0010;
 	static const char	DELETE		= 0b0100;
@@ -39,7 +37,6 @@ struct LocationRules: public IRulesNode
 
 	void	allowMethod( std::string method );
 	void	allowMethod( char method );
-	void	addIndex( std::string newIndex );
 	void	forbidMethod( std::string method );
 	void	forbidMethod( char method );
 	bool 	isMethodAllowed( char selectedMethod ) const;

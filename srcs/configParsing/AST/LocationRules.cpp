@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/24 16:07:10 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:03:27 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,18 @@
 
 LocationRules::LocationRules( void )
 {
-	if (LocationRules::verbose)
-		std::cout << "Default constructor for LocationRules called" << std::endl;
 	resetRules();
 	return;
 }
 
 LocationRules::LocationRules( LocationRules const & src )
 {
-	if (LocationRules::verbose)
-		std::cout << "Copy constructor for LocationRules called" << std::endl;
 	*this = src;
 	return;
 }
 
 LocationRules::LocationRules( const ServerRules& src )
 {
-	if (LocationRules::verbose)
-		std::cout << "ServerRules copy constructor for LocationRules called" << std::endl;
 	resetRules();
 	this->autoindex = src.autoindex;
 	this->clientMaxBodySize = src.clientMaxBodySize;
@@ -45,15 +39,11 @@ LocationRules::LocationRules( const ServerRules& src )
 
 LocationRules::~LocationRules( void )
 {
-	if (LocationRules::verbose)
-		std::cout << "Destructor for LocationRules called" << std::endl;
 	return;
 }
 
 LocationRules &	LocationRules::operator=( LocationRules const & src )
 {
-	if (LocationRules::verbose)
-		std::cout << "Assignement operator for LocationRules called" << std::endl;
 	if (this == &src)
 		return *this;
 	this->allowedMethod = src.allowedMethod;
@@ -106,8 +96,6 @@ void	LocationRules::resetRules( void )
 	uploadPath.clear();
 }
 
-bool	LocationRules::verbose = false;
-
 void	LocationRules::allowMethod( char method )
 {
 	this->allowedMethod = this->allowedMethod | method;
@@ -140,11 +128,6 @@ void	LocationRules::forbidMethod( std::string method )
 		forbidMethod(LocationRules::DELETE);
 	else
 		throw std::exception();
-}
-
-void	LocationRules::addIndex( std::string newIndex )
-{
-	this->index.push_back(newIndex);
 }
 
 void	LocationRules::addErrorPage( int errorCode, std::string errorPagePath )

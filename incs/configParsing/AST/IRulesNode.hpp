@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 15:34:22 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/24 16:08:23 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:00:53 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ struct IRulesNode
 	virtual void		resetRules( void ) = 0;
 
 	virtual void	addErrorPage( int errCode, std::string errPagePath ) = 0;
-	virtual void	addIndex( std::string newIndex ) = 0;
 
 	bool						autoindex;
 	int							clientMaxBodySize;

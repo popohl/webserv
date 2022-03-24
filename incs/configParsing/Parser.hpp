@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:56 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/24 13:24:31 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:08:27 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ public:
 	const ConfigFileNode	&getConfigFile( void ) const;
 	ConfigFileNode			&getConfigFile( void );
 
-	static bool	verbose;
-
 private:
 
 	Parser( const Parser &src );
@@ -52,17 +50,17 @@ private:
 	void	parseLocation( void );
 	void	parseLocationRule( void );
 
-	void	parseAllowedMethod( void );
-	void	parseAutoindexRule( void );
-	void	parseCgiRule( void );
-	void	parseClientMaxBodySizeRule( void );
-	void	parseErrorPageRule( void );
-	void	parseListenRule( void );
-	void	parseIndexRule( void );
-	void	parseRedirectRule( void );
-	void	parseRootRule( void );
-	void	parseServerNameRule( void );
-	void	parseUploadPathRule( void );
+	void	parseAllowedMethod( LocationRules& locationRules );
+	void	parseAutoindexRule( bool& autoindex );
+	void	parseCgiRule( std::string& cgiExtension, std::string& cgiPath );
+	void	parseClientMaxBodySizeRule( int& clientMaxBodySize );
+	void	parseErrorPageRule( std::map<int, std::string>& errorPage );
+	void	parseListenRule( ServerRules& serverRules );
+	void	parseIndexRule( std::vector<std::string>& index );
+	void	parseRedirectRule( LocationRules& locationRules );
+	void	parseRootRule( std::string& root );
+	void	parseServerNameRule( ServerRules& serverRules );
+	void	parseUploadPathRule( std::string& uploadPath );
 
 	ConfigFileNode						configFile;
 	Lexer								lexer;

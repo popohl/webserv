@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/24 16:06:36 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:00:52 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ struct ServerRules: public IRulesNode
 	void		resetRules( void );
 
 	void	addErrorPage( int errorCode, std::string errorPagePath );
-	void	addIndex( std::string newIndex );
 	void	addServerName( std::string newServerName );
 
 	bool						autoindex;
