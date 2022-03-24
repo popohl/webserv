@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/23 11:58:15 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/24 17:02:59 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,22 +58,24 @@ SocketPort &SocketPort::operator=(const SocketPort & rhs)
 //   MEMBER FUNCTION					        //
 // +------------------------------------------+ //
 
-void	SocketPort::bindSocket() const
+bool	SocketPort::bindSocket() const
 {
 	  if (bind(_socket_fd, (struct sockaddr *)&_address, _addrlen)<0)
 	{
 		std::perror("Bind failed");
-		exit(EXIT_FAILURE);
+		return (false);
 	}
+	return (true);
 }
 
-void	SocketPort::listenSocket() const
+bool	SocketPort::listenSocket() const
 {
 	if (listen(_socket_fd, 10) < 0) // only 10 connection at the same time
 	{
 		std::perror("Listen failed");
-		exit(EXIT_FAILURE);
+		return (false);
 	}
+	return (true);
 }
 
 

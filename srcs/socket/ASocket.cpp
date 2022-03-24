@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/23 11:58:29 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/24 17:21:34 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,7 @@ ASocket::~ASocket(void)
 
 ASocket &ASocket::operator=(const ASocket & rhs)
 {
-
-		return *this;
+	return *this;
 }
 
 // +------------------------------------------+ //
@@ -53,3 +52,8 @@ int	ASocket::getPort() const
 
 int	ASocket::getType() const
 { return (_type); }
+
+const char* ASocket::FailCreation::what() const throw()
+{
+	return ("\e[0;31mERROR: Fail on created the socket\e[0m");
+}

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/23 15:09:27 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/24 17:00:03 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ class SocketPort : public ASocket
 
 		SocketPort & operator=(SocketPort const & other);
 
-		void	bindSocket() const;
-		void	listenSocket() const;
+		bool	bindSocket() const;
+		bool	listenSocket() const;
 
 		struct sockaddr_in	_address; // it's public otherwise we have to make a geter function on is address
 		int					_addrlen;
