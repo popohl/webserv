@@ -81,6 +81,7 @@ TEST(RequestSuite, createRequestTypeCheck)
 
 }
 
+/*
 TEST(requestHeaderTokenSuite, FirefoxGetRequestTest)
 {
 	const char * request_line = { "GET / HTTP/1.1\b\n" };
@@ -114,4 +115,88 @@ TEST(requestHeaderTokenSuite, FirefoxGetRequestTest)
 		EXPECT_TRUE((vec1[i]._token.second) == std::string(expected_field_2[i]))  << "got " << vec1[i]._token.second << " instead of " << expected_field_2[i];
 	}
 	
+}
+*/
+
+TEST(requestHeaderSuite, FirefoxGetRequestTestv2)
+{
+	const char * request_line = { "GET / HTTP/1.1\b\n" };
+	const char * request_header = { "Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\b\nsec-ch-ua-mobile: ?0\b\nsec-ch-ua-platform: \"Linux\"\b\nUpgrade-Insecure-Requests: 1\b\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\b\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\b\nSec-Fetch-Site: none\b\nSec-Fetch-Mode: navigate\b\nSec-Fetch-User: ?1\b\nSec-Fetch-Dest: document\b\nAccept-Encoding: gzip, deflate, br\b\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\b\n\b\n"};
+
+	iRequest * result = iRequest::createRequest(request_line);
+
+	requestBase test;
+	test.parseHeader(request_header);
+
+	iRequest * check = dynamic_cast<getRequest *>(result);
+	EXPECT_TRUE(check != NULL);
+
+
+	const char *small_request_header = {"Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\n\b\n"};
+	const char *expected_field[] = {"Host", "Connection", "Cache-Control", NULL};
+	const char *expected_field_2[] = {"localhost:8080", "keep-alive", "max-age=0", NULL};
+	requestBase test1;
+
+
+	try {
+		test1.parseHeader(small_request_header);
+	}
+	catch (std::exception & e) {
+	}
+
+	EXPECT_TRUE(test1._header.size() == 3);
+	for (size_t i = 0; expected_field[i]; i++)
+	{
+
+		std::map<std::string, std::string>::iterator it = test1._header.find(expected_field[i]);
+		
+		EXPECT_TRUE(it->first == std::string(expected_field[i])) << "got " << it->first << " instead of " << expected_field[i];
+		EXPECT_TRUE(it->second == std::string(expected_field_2[i]))  << "got " << it->second << " instead of " << expected_field_2[i];
+	}
+	
+}
+
+TEST(requestHeaderSuite, InvalidHeaderRequestTests)
+{
+	const char *invalidTests[] = { "localtruc yoyoyo",
+								   "Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\nCacolac\b\n",
+								   "Bipip\b\nKrack",
+								   NULL};
+
+	for (int i = 0; invalidTests[i]; i++)
+	{
+		EXPECT_THROW({
+				try
+				{
+					requestBase test;
+					test.parseHeader(std::string(invalidTests[i]));
+				}
+				catch (const unfinishedHeader & e) {
+					EXPECT_STREQ("Header is not correctly terminated", e.what());
+					throw;
+				}
+			}, unfinishedHeader);
+	}
+}
+
+TEST(requestHeaderSuite, InvalidSyntaxRequestTests)
+{
+	const char *invalidTests[] = { "localtruc: yoyoyo\b\nCACAhoho",
+								   "Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\nCacolac\b\n",
+								   NULL};
+
+	for (int i = 0; invalidTests[i]; i++)
+	{
+		EXPECT_THROW({
+				try
+				{
+					requestBase test;
+					test.parseHeader(std::string(invalidTests[i]));
+				}
+				catch (const malformedHeader & e) {
+					EXPECT_STREQ("Header has syntax error", e.what());
+					throw;
+				}
+			}, unfinishedHeader);
+	}
 }
