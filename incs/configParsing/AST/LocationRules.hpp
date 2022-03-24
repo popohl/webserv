@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/18 12:29:10 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/22 15:32:25 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,7 @@ struct LocationRules
 
 	LocationRules	&operator=( const LocationRules &rhs );
 
-	void	resetLocationRules( void );
-
-	bool 	isMethodAllowed( char selectedMethod ) const;
-	bool 	isMethodAllowed( std::string selectedMethod ) const;
+	void	resetRules( void );
 
 	static bool	verbose;
 
@@ -44,9 +41,17 @@ struct LocationRules
 	void	allowMethod( char method );
 	void	forbidMethod( std::string method );
 	void	forbidMethod( char method );
+	bool 	isMethodAllowed( char selectedMethod ) const;
+	bool 	isMethodAllowed( std::string selectedMethod ) const;
+
 	void	addErrorPage( int errorCode, std::string errorPagePath );
 
+	// Helper functions
+	std::string	getPathFromLocation( std::string pathFromUrl ) const;
+	bool		isCgi( std::string uri ) const;
+
 	std::string					locationPath;
+	std::string					root;
 
 	char						allowedMethod;
 	bool						autoindex;
@@ -57,7 +62,6 @@ struct LocationRules
 	std::vector<std::string>	index;
 	int							redirectCode;
 	std::string					redirectUri;
-	std::string					root;
 	std::string					uploadPath;
 
 };
