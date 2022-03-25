@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/18 11:54:10 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 14:59:43 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,14 +15,18 @@
 
 //#include "requests/requestHeaderToken.hpp"
 #include "requests/parsing.hpp"
+#include "requests/requestHeaderToken.hpp"
+#include "responses/response.hpp"
 
 class iRequest
 {
 	public:
-	virtual void parse(void) = 0;
+//	virtual void parse(void) = 0;
 //	virtual void sendRequest(void) = 0;
 	static iRequest * createRequest(std::string);
 
+	requestBase	_message;
+//	virtual response createReponse() = 0;
 //	std::vector<requestHeaderToken> parseRequestHeader(const char *input);
 
 	virtual ~iRequest() {};
@@ -36,6 +40,7 @@ public:
 	getRequest();
 	~getRequest() {};
 
+//	response createResponse();
 	void parse(void) {};
 	void sendRequest(void) {};
 };

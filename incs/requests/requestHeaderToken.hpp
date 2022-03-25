@@ -6,9 +6,12 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/24 13:50:38 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 11:51:47 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
+
+#ifndef REQUESTHEADERTOKEN_HPP
+# define REQUESTHEADERTOKEN_HPP
 
 #include <string>
 #include <vector>
@@ -68,9 +71,12 @@ struct requestBase {
 
 private:
 	std::pair<std::string, std::string>splitIntoPair(std::string line);
+	bool containsHostField();
 };
 
 bool isHeaderEnd(const char *input);
 
 
 //requestHeaderToken::field findField(const char *);
+
+#endif

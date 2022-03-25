@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/18 11:53:29 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 15:01:59 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -22,11 +22,12 @@ deleteRequest::deleteRequest() {}
 
 iRequest * iRequest::createRequest(std::string firstLine)
 {
+	//rewrite using strings
 	char * method, * requestUri, * httpVersion;
 
 	method = strtok(const_cast<char *>(firstLine.c_str()), " ");
 	requestUri = strtok(NULL, " ");
-	httpVersion = strtok(NULL, "\b\n");
+	httpVersion = strtok(NULL, "\r\n");
 	if (method && requestUri && httpVersion)
 	{
 		if (parseMethod(method) && parseHttpVersion(httpVersion))
@@ -43,3 +44,4 @@ iRequest * iRequest::createRequest(std::string firstLine)
 }
 
 
+//std::string 

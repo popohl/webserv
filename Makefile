@@ -16,6 +16,7 @@ SRCS	= config_parsing/AST/ConfigFileNode.cpp \
 		  config_parsing/AST/ServerNode.cpp config_parsing/AST/ServerRules.cpp \
 		  config_parsing/Lexer.cpp config_parsing/Token.cpp  config_parsing/Parser.cpp \
 		  requests/parsing.cpp requests/requests.cpp requests/requestHeader.cpp \
+		  responses/response.cpp \
 		  main.cpp
 
 # Compiler

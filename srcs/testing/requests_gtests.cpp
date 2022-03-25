@@ -18,7 +18,7 @@ TEST(RequestSuite, parseMethodTests)
 TEST(RequestSuite, parseHttpVersionTests)
 {
 	const char * validTests[] = { "HTTP/1.0",  "HTTP/0.0", "HTTP/9.0", "HTTP/1.9",NULL };
-	const char * invalidTests[] = { "HTTP/1.", "HTTP/.0", " HTT/1.0", "htt/1.1\b\n", "paafyaadix"
+	const char * invalidTests[] = { "HTTP/1.", "HTTP/.0", " HTT/1.0", "htt/1.1\r\n", "paafyaadix"
 									" GET", "", "GET27", NULL };
 	for (int i = 0; validTests[i]; i++)
 		EXPECT_EQ( parseHttpVersion( validTests[i] ), validTests[i] );
@@ -29,10 +29,10 @@ TEST(RequestSuite, parseHttpVersionTests)
 
 TEST(RequestSuite, createRequestTests)
 {
-	const char * validTests[] = {"GET www.doug.fr HTTP/1.0\b\n", "POST * HTTP/0.0\b\n", NULL};
+	const char * validTests[] = {"GET www.doug.fr HTTP/1.0\r\n", "POST * HTTP/0.0\r\n", NULL};
 	const char * invalidTests[] = {"hello this is the place", "hohoho", "bip boup", "",
-							 "POT * HTTP/0.0\b", "GEt www.tamer.fr hTTP/1.0\b\n",
-							 "HEAD * HTTP/1.1\b\n", NULL};
+							 "POT * HTTP/0.0\r", "GEt www.tamer.fr hTTP/1.0\r\n",
+							 "HEAD * HTTP/1.1\r\n", NULL};
 	for (int i = 0; validTests[i]; i++)
 	{
 		iRequest * result = iRequest::createRequest(std::string(validTests[i]));
@@ -49,9 +49,9 @@ TEST(RequestSuite, createRequestTests)
 
 TEST(RequestSuite, createRequestTypeCheck)
 {
-	const char *getTests[] = { "GET www.Talleyrand.fr HTTP/1.0\b\n" , NULL };
-	const char *postTests[] = { "POST www.Bonaparte.fr HTTP/1.0\b\n" , NULL };
-	const char *deleteTests[] = { "DELETE www.Mauvaisappart.fr HTTP/1.0\b\n" , NULL };
+	const char *getTests[] = { "GET www.Talleyrand.fr HTTP/1.0\r\n" , NULL };
+	const char *postTests[] = { "POST www.Bonaparte.fr HTTP/1.0\r\n" , NULL };
+	const char *deleteTests[] = { "DELETE www.Mauvaisappart.fr HTTP/1.0\r\n" , NULL };
 
 	iRequest * result = NULL;
 	
@@ -84,8 +84,8 @@ TEST(RequestSuite, createRequestTypeCheck)
 /*
 TEST(requestHeaderTokenSuite, FirefoxGetRequestTest)
 {
-	const char * request_line = { "GET / HTTP/1.1\b\n" };
-	const char * request_header = { "Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\b\nsec-ch-ua-mobile: ?0\b\nsec-ch-ua-platform: \"Linux\"\b\nUpgrade-Insecure-Requests: 1\b\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\b\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\b\nSec-Fetch-Site: none\b\nSec-Fetch-Mode: navigate\b\nSec-Fetch-User: ?1\b\nSec-Fetch-Dest: document\b\nAccept-Encoding: gzip, deflate, br\b\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\b\n\b\n"};
+	const char * request_line = { "GET / HTTP/1.1\r\n" };
+	const char * request_header = { "Host: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\r\nsec-ch-ua-mobile: ?0\r\nsec-ch-ua-platform: \"Linux\"\r\nUpgrade-Insecure-Requests: 1\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\r\nSec-Fetch-Site: none\r\nSec-Fetch-Mode: navigate\r\nSec-Fetch-User: ?1\r\nSec-Fetch-Dest: document\r\nAccept-Encoding: gzip, deflate, br\r\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\r\n\r\n"};
 
 	iRequest * result = iRequest::createRequest(request_line);
 
@@ -95,7 +95,7 @@ TEST(requestHeaderTokenSuite, FirefoxGetRequestTest)
 	EXPECT_TRUE(check != NULL);
 
 
-	const char *small_request_header = {"Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\n\b\n"};
+	const char *small_request_header = {"Host: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\n\r\n"};
 	const char *expected_field[] = {"Host", "Connection", "Cache-Control", NULL};
 	const char *expected_field_2[] = {"localhost:8080", "keep-alive", "max-age=0", NULL};
 	std::vector<requestHeaderToken> vec1;
@@ -120,8 +120,8 @@ TEST(requestHeaderTokenSuite, FirefoxGetRequestTest)
 
 TEST(requestHeaderSuite, FirefoxGetRequestTestv2)
 {
-	const char * request_line = { "GET / HTTP/1.1\b\n" };
-	const char * request_header = { "Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\b\nsec-ch-ua-mobile: ?0\b\nsec-ch-ua-platform: \"Linux\"\b\nUpgrade-Insecure-Requests: 1\b\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\b\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\b\nSec-Fetch-Site: none\b\nSec-Fetch-Mode: navigate\b\nSec-Fetch-User: ?1\b\nSec-Fetch-Dest: document\b\nAccept-Encoding: gzip, deflate, br\b\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\b\n\b\n"};
+	const char * request_line = { "GET / HTTP/1.1\r\n" };
+	const char * request_header = { "Host: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\r\nsec-ch-ua-mobile: ?0\r\nsec-ch-ua-platform: \"Linux\"\r\nUpgrade-Insecure-Requests: 1\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\r\nSec-Fetch-Site: none\r\nSec-Fetch-Mode: navigate\r\nSec-Fetch-User: ?1\r\nSec-Fetch-Dest: document\r\nAccept-Encoding: gzip, deflate, br\r\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\r\n\r\n"};
 
 	iRequest * result = iRequest::createRequest(request_line);
 
@@ -132,7 +132,7 @@ TEST(requestHeaderSuite, FirefoxGetRequestTestv2)
 	EXPECT_TRUE(check != NULL);
 
 
-	const char *small_request_header = {"Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\n\b\n"};
+	const char *small_request_header = {"Host: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\n\r\n"};
 	const char *expected_field[] = {"Host", "Connection", "Cache-Control", NULL};
 	const char *expected_field_2[] = {"localhost:8080", "keep-alive", "max-age=0", NULL};
 	requestBase test1;
@@ -159,8 +159,8 @@ TEST(requestHeaderSuite, FirefoxGetRequestTestv2)
 TEST(requestHeaderSuite, InvalidHeaderRequestTests)
 {
 	const char *invalidTests[] = { "localtruc yoyoyo",
-								   "Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\nCacolac\b\n",
-								   "Bipip\b\nKrack",
+								   "Host: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\nCacolac\r\n",
+								   "Bipip\r\nKrack",
 								   NULL};
 
 	for (int i = 0; invalidTests[i]; i++)
@@ -181,8 +181,8 @@ TEST(requestHeaderSuite, InvalidHeaderRequestTests)
 
 TEST(requestHeaderSuite, InvalidSyntaxRequestTests)
 {
-	const char *invalidTests[] = { "localtruc: yoyoyo\b\nCACAhoho",
-								   "Host: localhost:8080\b\nConnection: keep-alive\b\nCache-Control: max-age=0\b\nCacolac\b\n",
+	const char *invalidTests[] = { "localtruc: yoyoyo\r\nCACAhoho",
+								   "Host: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\nCacolac\r\n",
 								   NULL};
 
 	for (int i = 0; invalidTests[i]; i++)
@@ -199,4 +199,18 @@ TEST(requestHeaderSuite, InvalidSyntaxRequestTests)
 				}
 			}, unfinishedHeader);
 	}
+}
+
+
+TEST(RequestBodySuite, simpleTest)
+{
+	const char * input = { "Host: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\r\nsec-ch-ua-mobile: ?0\r\nsec-ch-ua-platform: \"Linux\"\r\nUpgrade-Insecure-Requests: 1\r\nContent-Length:83\r\n\r\nCeci est un exemple de fichier qui pourrait etre envoye dans le corps de la requete"};
+	const char *body = {"Ceci est un exemple de fichier qui pourrait etre envoye dans le corps de la requete"};
+
+	requestBase test;
+	test.parseRequest(std::string(input));
+	EXPECT_STREQ(test._body.c_str(), body);
+
+	test.parseRequest(std::string(input));
+	EXPECT_STREQ(test._body.c_str(), body);
 }

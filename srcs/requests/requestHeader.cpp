@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/24 14:09:29 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 11:09:35 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -36,7 +36,7 @@ const char * fieldAlreadyExists::what() const throw() {
 
 void checkLineEnd(const std::string &input)
 {
-	size_t pos = input.find_last_of("\b\n");
+	size_t pos = input.find_last_of("\r\n");
 	if (!pos || (pos != (input.length() - 1)))
 		throw malformedHeader();
 }
@@ -48,7 +48,8 @@ void requestBase::parseRequest(const std::string &line)
 	size_t headerSize = 0;
 	if (!_headerFinished)
 		headerSize = parseHeader(line);
-	if (!_bodyFinished && headerSize > line.length())
+	std::cout << line.length() << "|" << headerSize << std::endl;
+	if (!_bodyFinished && (headerSize < line.length()))
 	{
 		std::string body(line, headerSize, line.length());
 		parseBody(body);
@@ -63,9 +64,9 @@ size_t requestBase::parseHeader(const std::string &line) {
 	{
 		if (it->find(':') != std::string::npos)
 		{
-			//remove \b\n
+			//remove \r\n
 			checkLineEnd(*it);
-			it->erase(it->find("\b"));
+			it->erase(it->find("\r"));
 			//get pair
 			std::pair<std::string, std::string>parsedPair = splitIntoPair(*it);
 			if (_header.find(parsedPair.first) == _header.end())
@@ -77,10 +78,11 @@ size_t requestBase::parseHeader(const std::string &line) {
 		else
 		{
 			//check if header end has been reached
-			std::string end("\b\n");
+			std::string end("\r\n");
 			if (*it == end && it->length() == end.length())
 			{
 				_headerFinished = true;
+				headerSize++;
 				break ;
 			}
 			else
@@ -98,8 +100,10 @@ void requestBase::parseBody(const std::string &line)
 	std::map<std::string, std::string>::iterator notFound = _header.end();
 	if (_header.find("Transfert-Encoding") != notFound)
 	{
-		
-
+		if (_header["Transfert-Encoding"] == "chuncked")
+		{
+			//parse chunked body
+		}
 		
 
 	}
@@ -109,7 +113,6 @@ void requestBase::parseBody(const std::string &line)
 			_bodySize = atoi(_header["Content-Length"].c_str());//, NULL, 10);
 		if (_body.length() < _bodySize)
 			_body += copy;
-
 	}
 }
 
@@ -138,7 +141,7 @@ std::list<std::string>split_header_to_lines(const std::string & input, size_t &h
 	
 	while (copy.length())
 	{
-		end = copy.find("\b\n", start);
+		end = copy.find("\r\n", start);
 		if (end != std::string::npos)
 			end += 2;
 		hold.push_back(std::string(copy, start, end));
@@ -151,11 +154,20 @@ std::list<std::string>split_header_to_lines(const std::string & input, size_t &h
 
 bool isHeaderEnd(const char *input)
 {
-	if (!strcmp("\b\n\b\n", input))
+	if (!strcmp("\r\n\r\n", input))
 		return (true);
 	else
 		return (false);
 }
+
+bool requestBase::containsHostField(void)
+{
+	if (_header.find("Host") != _header.end())
+		return (true);
+	else
+		return (false);
+}
+//NB server should return 400 Bad Request for a request missing host field in http 1.1 protocol
 
 /////////////////////////////////
 
