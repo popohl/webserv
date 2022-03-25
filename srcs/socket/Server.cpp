@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/24 17:27:04 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/25 14:31:32 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int main() //Mettre dans un fichier main.cpp
 	//Create a containers of Socket pointer. The Class Socket initialize the bind and the listening for every Socket
 	std::vector<ASocket*>	socket;
 	ASocket					*temp;
-	for(int i = 0; i < allPort.size(); i++)
+	for(int i = 0; i < allPort.size(); i++) // check le NULL de l'erreur
 	{
 		temp = createSocket(allPort[i]);
 		if (temp)
