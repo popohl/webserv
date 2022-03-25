@@ -11,10 +11,12 @@ D		= deps/
 NAME	= webserv
 
 # list of your source files
-SRCS	= config_parsing/AST/ConfigFileNode.cpp \
-		  config_parsing/AST/LocationRules.cpp \
-		  config_parsing/AST/ServerNode.cpp config_parsing/AST/ServerRules.cpp \
-		  config_parsing/Lexer.cpp config_parsing/Token.cpp  config_parsing/Parser.cpp \
+
+SRCS	= configParsing/AST/ConfigFileNode.cpp \
+		  configParsing/AST/LocationRules.cpp \
+		  configParsing/AST/ServerNode.cpp configParsing/AST/ServerRules.cpp \
+		  configParsing/Lexer.cpp configParsing/Parser.cpp \
+		  configParsing/Token.cpp \
 		  requests/parsing.cpp requests/requests.cpp requests/requestHeader.cpp \
 		  responses/response.cpp \
 		  main.cpp

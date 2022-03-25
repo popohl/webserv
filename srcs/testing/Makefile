@@ -12,11 +12,11 @@ CXXFLAGS += $(INCLUDE)
 
 MAIN = gtest_main.cpp
 
-FILES = lexer_tests ast_tests requests_gtests
+FILES = lexerTests astTests parserTests requests_gtests
 
 WEBSERV_OBJS_PATH = ../../objs/
 
-WEBSERV_DIR = config_parsing config_parsing/AST requests
+WEBSERV_DIR = configParsing configParsing/AST requests
 
 WEBSERV_PATH = $(addprefix $(WEBSERV_OBJS_PATH), $(WEBSERV_DIR))
 # WEBSERV_OBJS = $(wildcard $(foreach $(WEBSERV_PATH)/*.o) #taking all the objects without the main
