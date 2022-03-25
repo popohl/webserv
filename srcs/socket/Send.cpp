@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/25 15:26:35 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/25 16:10:11 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@ void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD & se
 	int				total;
 
 	total = 0;
+	/*******
+	 * _response = prepare_response()
+	 * */
 	while (total < response.size())
 	{
 		if ((ret = send(client->getSocketFd(), response.c_str() + total, response.size(), 0)) < 0)
@@ -40,6 +43,7 @@ void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD & se
 		std::cout << " Message bytes =" << response.size() << " Bytes Sent =" << ret << std::endl;
 		std::cout << "\n======== Message sent to client ========\n" << std::endl;
 	}
+
 	client->clearAll();
 	sets.writefds.remove(client->getSocketFd());
 	sets.readfds.add(client->getSocketFd());

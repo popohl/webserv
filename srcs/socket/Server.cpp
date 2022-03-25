@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/25 14:31:32 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/25 15:39:50 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,8 @@ static void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 		if (ret == 0)
 			std::cout << "Time Out" << std::endl;
 		// std::cout << "Return of select " << ret << std::endl;
+
+		
 		for (int i = 0; i <= sets.fdmax && ret; i++)
 		{
 			if (FD_ISSET(i, &tmp_read))

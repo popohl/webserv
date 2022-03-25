@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/24 15:45:21 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/25 16:10:47 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 //   CONSTRUCTOR OVERLOAD 					    //
 // +------------------------------------------+ //
 
-SocketClient::SocketClient(int port, int fd): ASocket(port, fd, CLIENT)
+SocketClient::SocketClient(int port, int fd): ASocket(port, fd, CLIENT) //, _request (NULL)
 {
 	// _response = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 202\n\n"
 	// 	"<form method=\"post\" enctype=\"multipart/form-data\"><div><label for=\"file\">select file</label><input type=\"file\" id=\"file\" name=\"file\" multiple></div><div><button>Envoyer</button></div></form>";
@@ -30,7 +30,7 @@ SocketClient::SocketClient(int port, int fd): ASocket(port, fd, CLIENT)
 SocketClient::SocketClient(void) : ASocket() {}
 
 SocketClient::SocketClient (const SocketClient &other):
-	ASocket(other), _response(other._response) {} // copier le buffer caractere par caractere
+	ASocket(other), _response(other._response) {} // copier le buffer caractere par caractere et rajouter request
 
 SocketClient::~SocketClient(void) {}
 
@@ -61,4 +61,8 @@ void	SocketClient::clearAll()
 {
 	_header.clear();
 	_response.clear();
+	/****
+	 * delete _request;
+	 *	_request = NULL;
+	 * */
 }
