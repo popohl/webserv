@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/25 15:01:59 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 17:49:29 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -20,11 +20,12 @@ getRequest::getRequest() {}
 postRequest::postRequest() {}
 deleteRequest::deleteRequest() {}
 
-iRequest * iRequest::createRequest(std::string firstLine)
+iRequest * iRequest::createRequest(std::string &firstLine) //be able to remove first line from buffer
 {
 	//rewrite using strings
 	char * method, * requestUri, * httpVersion;
 
+	size_t eraseLen = firstLine.find("\r\n");
 	method = strtok(const_cast<char *>(firstLine.c_str()), " ");
 	requestUri = strtok(NULL, " ");
 	httpVersion = strtok(NULL, "\r\n");
@@ -32,6 +33,7 @@ iRequest * iRequest::createRequest(std::string firstLine)
 	{
 		if (parseMethod(method) && parseHttpVersion(httpVersion))
 		{
+			firstLine.erase(0, eraseLen);
 			if (!strcmp(method, "GET"))
 				return (new getRequest);
 			if (!strcmp(method, "POST"))
@@ -43,5 +45,12 @@ iRequest * iRequest::createRequest(std::string firstLine)
 	return (NULL);
 }
 
+bool iRequest::receivingisDone()
+{
+	if (_message._headerFinished && _message._bodyFinished)
+		return (true);
+	else
+		return (false);
+}
 
 //std::string 

@@ -6,11 +6,12 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/25 17:13:04 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 17:49:36 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/Server.hpp"
+#include "requests/requests.hpp"
 
 static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
@@ -46,7 +47,12 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	std::cout << "value of recv "<< ret << std::endl << std::endl;
 	client.addContent(buff);
 	//TODO INSERER PARTIE DE PIERRE
-	/****
+//	if (!client._request)
+//		client._request = iRequest::createRequest(buff);
+	
+//	delete (client._request);
+//	client._request = NULL;
+/****
 	 * if (!ptr) // pas de requete cree
 	 * 	client._request = createRequest();
 	 * if (!client._request->headerIsComplete()

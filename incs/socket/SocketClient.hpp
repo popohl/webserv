@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/25 16:06:51 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/03/25 17:41:42 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #define PORT 1
 #define CLIENT 2
 #include "ASocket.hpp"
+#include "requests/requests.hpp"
 
 class SocketClient : public ASocket
 {
@@ -37,7 +38,7 @@ class SocketClient : public ASocket
 		std::string	getResponse();
 
 		//prepareResponse(iRequest *);
-		//iRequest * _request; // allocation et suppression a chaque boucle de lecture/ecriture
+		iRequest * _request; // allocation et suppression a chaque boucle de lecture/ecriture
 };
 
 #endif

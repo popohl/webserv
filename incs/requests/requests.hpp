@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-/*   Updated: 2022/03/25 15:54:56 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/03/25 17:47:04 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,10 @@ class iRequest
 	public:
 //	virtual void parse(void) = 0;
 //	virtual void sendRequest(void) = 0;
-	static iRequest * createRequest(std::string);
+	static iRequest * createRequest(std::string &);
 
 	requestBase	_message;
+	bool receivingisDone();
 //	virtual response createReponse() = 0;
 //	std::vector<requestHeaderToken> parseRequestHeader(const char *input);
 
