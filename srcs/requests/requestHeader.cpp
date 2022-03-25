@@ -1,14 +1,14 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   requestHeader.cpp                                  :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/25 11:09:35 by pcharton         ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   requestHeader.cpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
+/*   Updated: 2022/03/25 16:25:06 by fmonbeig         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "requests/requestHeaderToken.hpp"
 #include <string.h>
@@ -16,7 +16,7 @@
 #include <string>
 #include <iostream>
 #include <cstdlib>
-
+#include <utility>
 
 malformedHeader::malformedHeader() {};
 const char * malformedHeader::what() const throw() {
@@ -59,7 +59,7 @@ void requestBase::parseRequest(const std::string &line)
 size_t requestBase::parseHeader(const std::string &line) {
 	size_t headerSize = 0;
 	std::list<std::string> lineNumber = split_header_to_lines(line, headerSize);
-	
+
 	for (std::list<std::string>::iterator it = lineNumber.begin(); it != lineNumber.end(); it = lineNumber.begin())
 	{
 		if (it->find(':') != std::string::npos)
@@ -96,7 +96,7 @@ size_t requestBase::parseHeader(const std::string &line) {
 void requestBase::parseBody(const std::string &line)
 {
 	std::string copy(line);
-	
+
 	std::map<std::string, std::string>::iterator notFound = _header.end();
 	if (_header.find("Transfert-Encoding") != notFound)
 	{
@@ -104,7 +104,7 @@ void requestBase::parseBody(const std::string &line)
 		{
 			//parse chunked body
 		}
-		
+
 
 	}
 	else if	(_header.find("Content-Length") != notFound)
@@ -138,7 +138,7 @@ std::list<std::string>split_header_to_lines(const std::string & input, size_t &h
 
 	size_t start = 0;
 	size_t end = copy.length();
-	
+
 	while (copy.length())
 	{
 		end = copy.find("\r\n", start);
@@ -146,7 +146,7 @@ std::list<std::string>split_header_to_lines(const std::string & input, size_t &h
 			end += 2;
 		hold.push_back(std::string(copy, start, end));
 		copy.erase(start, end);
-		
+
 		headerSize += end;
 	}
 	return (hold);
