@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/25 16:17:03 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/03/25 16:55:23 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ int main( int argc, char **argv )
 	Parser			parser(argv[1]);
 	ConfigFileNode	result = parser.getConfigFile();
 
-	/********
-	 * 	// Get all the port to listen from Paul's Parsing
+
+	// Get all the port to listen from Paul's Parsing
 	std::vector<int>	allPort;
 	allPort.push_back(8080);
 	allPort.push_back(8003);
@@ -40,5 +40,4 @@ int main( int argc, char **argv )
 	t_FD	sets;
 	fillFdSets(sets, socket);
 	portListening(sets, socket);
-	*/
 }

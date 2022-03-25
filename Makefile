@@ -19,6 +19,8 @@ SRCS	= configParsing/AST/ConfigFileNode.cpp \
 		  configParsing/Token.cpp \
 		  requests/parsing.cpp requests/requests.cpp requests/requestHeader.cpp \
 		  responses/response.cpp \
+		  socket/ASocket.cpp socket/FdSet.cpp socket/Receive.cpp socket/Send.cpp \
+		  socket/Server.cpp socket/SocketClient.cpp socket/SocketPort.cpp \
 		  main.cpp
 
 # Compiler
@@ -73,6 +75,7 @@ clean:
 fclean: clean
 	@echo "Everything!"
 	@$(RM) $(NAME)
+	@make -C srcs/testing fclean
 
 .PHONY: re
 re: fclean all

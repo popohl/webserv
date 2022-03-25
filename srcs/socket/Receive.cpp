@@ -6,11 +6,11 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/25 16:07:27 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/03/25 16:56:21 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "socket/Server.hpp"
 
 static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
@@ -23,7 +23,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	memset((void*)buff, 0, 90000);
 	if ((ret = recv(client.getSocketFd(), buff, 90000, 0)) < 0)
 	{
-		std::perror("Recv failed:");
+		perror("Recv failed:");
 		return ;
 	}
 	if (ret == 0) // if recv = 0 the connection is closed so we have to delete the client
@@ -69,7 +69,7 @@ void	createClient(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & s
 
 	if ((temp_fd = accept(socket_port.getSocketFd(), (struct sockaddr *)&socket_port._address, (socklen_t*)&socket_port._addrlen))<0)
 	{
-		std::perror("Accept failed:");
+		perror("Accept failed:");
 		return ;
 	}
 	fcntl(temp_fd, F_SETFL, O_NONBLOCK);

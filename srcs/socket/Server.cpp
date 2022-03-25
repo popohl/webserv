@@ -6,11 +6,11 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/25 15:39:50 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/03/25 16:54:54 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "socket/Server.hpp"
 
 static ASocket*	createSocket(int port)
 {
@@ -116,7 +116,7 @@ static void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 		}
 	}
 }
-
+/*
 int main() //Mettre dans un fichier main.cpp
 {
 	// Get all the port to listen from Paul's Parsing
@@ -139,3 +139,4 @@ int main() //Mettre dans un fichier main.cpp
 	fillFdSets(sets, socket);
 	portListening(sets, socket);
 }
+*/

@@ -6,11 +6,11 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/25 16:10:47 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/03/25 16:52:25 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "SocketClient.hpp"
+#include "socket/SocketClient.hpp"
 
 // +------------------------------------------+ //
 //   CONSTRUCTOR OVERLOAD 					    //
