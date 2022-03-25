@@ -6,12 +6,12 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/25 16:52:12 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 17:14:26 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/Server.hpp"
-
+/*
 static int	contentSize(const char *content)
 {
 	int i = 0;
@@ -20,13 +20,13 @@ static int	contentSize(const char *content)
 		i++;
 	return (i);
 }
-
+*/
 void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
 	SocketClient	*client = dynamic_cast<SocketClient*>(tmp_socket);
 	std::string		response = client->getResponse();
 	int				ret;
-	int				total;
+	size_t			total;
 
 	total = 0;
 	/*******
@@ -36,7 +36,7 @@ void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD & se
 	{
 		if ((ret = send(client->getSocketFd(), response.c_str() + total, response.size(), 0)) < 0)
 		{
-			std::perror("Send failed:");
+			perror("Send failed:");
 			return ;
 		}
 		total += ret;

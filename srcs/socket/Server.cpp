@@ -6,13 +6,13 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/25 16:54:54 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 17:23:29 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/Server.hpp"
 
-static ASocket*	createSocket(int port)
+ASocket*	createSocket(int port)
 {
 	int flag = 1;
 	try
@@ -20,7 +20,7 @@ static ASocket*	createSocket(int port)
 		SocketPort *new_sock = new SocketPort(port);
 		fcntl(new_sock->getSocketFd(), F_SETFL, O_NONBLOCK);
 		if (setsockopt(new_sock->getSocketFd(),SOL_SOCKET, SO_REUSEADDR, &flag, sizeof flag) == -1)
-			std::perror("setsockopt");
+			perror("setsockopt");
 		if (!new_sock->bindSocket())
 		{
 			close(new_sock->getSocketFd());
@@ -43,10 +43,10 @@ static ASocket*	createSocket(int port)
 	}
 }
 
-static void	fillFdSets(t_FD & sets, std::vector<ASocket*> & socket)
+void	fillFdSets(t_FD & sets, std::vector<ASocket*> & socket)
 {
 	sets.fdmax = 0;
-	for (int i = 0; i < socket.size(); i++)
+	for (size_t i = 0; i < socket.size(); i++)
 	{
 		sets.readfds.add(socket[i]->getSocketFd());
 	}
@@ -62,7 +62,7 @@ static void	fillFdMax(t_FD & sets, std::vector<ASocket*> & socket)
 {
 	sets.fdmax = 0;
 
-	for (int i = 0; i < socket.size(); i++)
+	for (size_t i = 0; i < socket.size(); i++)
 	{
 		if (sets.fdmax < socket[i]->getSocketFd())
 			sets.fdmax = socket[i]->getSocketFd();
@@ -71,7 +71,7 @@ static void	fillFdMax(t_FD & sets, std::vector<ASocket*> & socket)
 
 ASocket *findSocket(int fd, std::vector<ASocket*> & socket)
 {
-	for (int i = 0; i < socket.size(); i++)
+	for (size_t i = 0; i < socket.size(); i++)
 	{
 		if ( fd == socket[i]->getSocketFd())
 			return (socket[i]);
@@ -79,7 +79,7 @@ ASocket *findSocket(int fd, std::vector<ASocket*> & socket)
 	return (NULL);
 }
 
-static void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
+void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 {
 	fd_set	tmp_read;
 	fd_set	tmp_write;
@@ -95,7 +95,7 @@ static void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 		fillFdMax(sets, socket);
 		std::cout << "\n----------- Waiting for New connection -----------\n" << std::endl;
 		if ((ret = select(sets.fdmax + 1, &tmp_read, &tmp_write, NULL, &sets.tv)) < 0)
-			std::perror("Select:");
+			perror("Select:");
 		if (ret == 0)
 			std::cout << "Time Out" << std::endl;
 		// std::cout << "Return of select " << ret << std::endl;

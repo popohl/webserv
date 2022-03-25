@@ -6,12 +6,12 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/25 16:52:30 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 17:19:24 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/SocketPort.hpp"
-
+#include <cstdlib>
 // +------------------------------------------+ //
 //   CONSTRUCTOR OVERLOAD 					    //
 // +------------------------------------------+ //
@@ -22,7 +22,7 @@ SocketPort::SocketPort(int port):
 {
 	if (_socket_fd == 0) //AF_INET pour utilisation en IPV4
 	{
-		std::perror("Socket creation failed");
+		perror("Socket creation failed");
 		exit(EXIT_FAILURE);
 	}
 	_address.sin_family = AF_INET;
@@ -62,7 +62,7 @@ bool	SocketPort::bindSocket() const
 {
 	  if (bind(_socket_fd, (struct sockaddr *)&_address, _addrlen)<0)
 	{
-		std::perror("Bind failed");
+		perror("Bind failed");
 		return (false);
 	}
 	return (true);
@@ -72,7 +72,7 @@ bool	SocketPort::listenSocket() const
 {
 	if (listen(_socket_fd, 10) < 0) // only 10 connection at the same time
 	{
-		std::perror("Listen failed");
+		perror("Listen failed");
 		return (false);
 	}
 	return (true);

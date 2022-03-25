@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/25 16:56:21 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 17:13:04 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
 	SocketClient	client = dynamic_cast<SocketClient&>(tmp_socket);
-	ASocket 		*addr;
+	ASocket 		*addr = NULL;
 	int				ret;
 	char			buff[90000];
 
@@ -28,7 +28,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	}
 	if (ret == 0) // if recv = 0 the connection is closed so we have to delete the client
 	{
-		for (int i = 0; i < socket.size(); i++)
+		for (size_t i = 0; i < socket.size(); i++)
 		{
 			if (client.getSocketFd() == socket[i]->getSocketFd())
 			{

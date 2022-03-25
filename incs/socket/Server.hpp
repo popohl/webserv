@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/24 17:16:20 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/03/25 17:24:19 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@
 #include <poll.h>
 #include <fcntl.h>
 #include <iterator>
-#include <cstdbool>
+//#include <cstdbool>
 #include <stdexcept>
-
+#include <cstdlib>
 #include "ASocket.hpp"
 #include "SocketClient.hpp"
 #include "SocketPort.hpp"
@@ -48,6 +48,12 @@ typedef struct s_FD
 void	sendMessage(int link, char *buff);
 void	receiveDataOrNewClient(int i, std::vector<ASocket*> & socket, t_FD & sets);
 void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD & sets);
+
+ASocket*	createSocket(int port);
 ASocket *findSocket(int fd, std::vector<ASocket*> & socket);
+
+void	fillFdSets(t_FD & sets, std::vector<ASocket*> & socket);
+void	portListening(t_FD & sets, std::vector<ASocket*> & socket);
+
 
 #endif

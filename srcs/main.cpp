@@ -6,19 +6,21 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-//   Updated: 2022/03/25 16:55:23 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/25 17:25:51 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <fstream>
 #include "configParsing/Parser.hpp"
+#include "socket/ASocket.hpp"
+#include "socket/Server.hpp"
 
 int main( int argc, char **argv )
 {
 	(void)argc;
-	Parser			parser(argv[1]);
-	ConfigFileNode	result = parser.getConfigFile();
+//	Parser			parser(argv[1]);
+//	ConfigFileNode	result = parser.getConfigFile();
 
 
 	// Get all the port to listen from Paul's Parsing
@@ -30,7 +32,7 @@ int main( int argc, char **argv )
 	//Create a containers of Socket pointer. The Class Socket initialize the bind and the listening for every Socket
 	std::vector<ASocket*>	socket;
 	ASocket					*temp;
-	for(int i = 0; i < allPort.size(); i++) // check le NULL de l'erreur
+	for(size_t i = 0; i < allPort.size(); i++) // check le NULL de l'erreur
 	{
 		temp = createSocket(allPort[i]);
 		if (temp)
