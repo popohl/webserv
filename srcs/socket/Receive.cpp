@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/25 17:49:36 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 12:56:49 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,12 +46,22 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	}
 	std::cout << "value of recv "<< ret << std::endl << std::endl;
 	client.addContent(buff);
+	std::string tmp(buff);
 	//TODO INSERER PARTIE DE PIERRE
-//	if (!client._request)
-//		client._request = iRequest::createRequest(buff);
-	
+	if (!client._request)
+		client._request = iRequest::createRequest(tmp);
+//	std::cout << client._request << std::endl;
+//	std::cout << "after creating request : tmp content is : " << tmp << std::endl;
+//	if iRequest fails, send 405 Method Not Allowed
 //	delete (client._request);
 //	client._request = NULL;
+
+	if (client._request->receivingisDone())
+	{
+		std::cout << "hello" << std::endl;
+		sets.readfds.remove(client.getSocketFd());
+		sets.writefds.add(client.getSocketFd());
+	}
 /****
 	 * if (!ptr) // pas de requete cree
 	 * 	client._request = createRequest();
@@ -64,8 +74,6 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 			sets.writefds.add(client.getSocketFd());
 	 * 	}
 	 * */
-	sets.readfds.remove(client.getSocketFd());
-	sets.writefds.add(client.getSocketFd());
 }
 
 void	createClient(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)

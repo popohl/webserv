@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/25 16:52:25 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 12:49:31 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@ SocketClient::SocketClient(int port, int fd): ASocket(port, fd, CLIENT) //, _req
 //   CANONICAL FORM 					        //
 // +------------------------------------------+ //
 
-SocketClient::SocketClient(void) : ASocket() {}
+SocketClient::SocketClient(void) : ASocket(), _request(NULL) {}
 
 SocketClient::SocketClient (const SocketClient &other):
-	ASocket(other), _response(other._response) {} // copier le buffer caractere par caractere et rajouter request
+	ASocket(other), _response(other._response), _request(other._request) {} // copier le buffer caractere par caractere et rajouter request
 
 SocketClient::~SocketClient(void) {}
 
@@ -38,6 +38,7 @@ SocketClient &SocketClient::operator=(const SocketClient & rhs) // ici aussi
 {
 	ASocket::operator=(rhs);
 	_response = rhs._response;
+	_request = rhs._request;
 	return *this;
 }
 

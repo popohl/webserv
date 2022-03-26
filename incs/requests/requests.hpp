@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/25 17:47:04 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 12:25:53 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,14 @@
 #include "requests/requestHeaderToken.hpp"
 #include "responses/response.hpp"
 
+const std::pair<std::string, std::string>responseStatus[] = {
+	std::make_pair("100", "Continue"),
+	std::make_pair("200", "OK"),
+	std::make_pair("400", "Bad Request"),
+	
+	std::make_pair("405", "Method Not Allowed"),
+};
+
 class iRequest
 {
 	public:
@@ -26,8 +34,9 @@ class iRequest
 	static iRequest * createRequest(std::string &);
 
 	requestBase	_message;
+//	int _status;
 	bool receivingisDone();
-//	virtual response createReponse() = 0;
+	virtual std::string createResponse() = 0;
 //	std::vector<requestHeaderToken> parseRequestHeader(const char *input);
 
 	virtual ~iRequest() {};
@@ -44,6 +53,7 @@ public:
 //	response createResponse();
 	void parse(void) {};
 	void sendRequest(void) {};
+	std::string createResponse();
 };
 
 class postRequest : public iRequest
@@ -54,7 +64,7 @@ class postRequest : public iRequest
 
 	void parse(void) {};
 	void sendRequest(void) {};
-
+	std::string createResponse();
 };
 
 class deleteRequest : public iRequest
@@ -64,7 +74,7 @@ class deleteRequest : public iRequest
 	~deleteRequest() {};
 	void parse(void) {};
 	void sendRequest(void) {};
-
+	std::string createResponse();
 };
 
 #endif
