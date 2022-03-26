@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/26 12:25:53 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 17:09:31 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ const std::pair<std::string, std::string>responseStatus[] = {
 	
 	std::make_pair("405", "Method Not Allowed"),
 };
+
+
+std::string date();
 
 class iRequest
 {

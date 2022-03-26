@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/26 14:50:38 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 16:43:54 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,38 +45,22 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		return ;
 	}
 	std::cout << "value of recv "<< ret << std::endl << std::endl;
-	client.addContent(buff);
+//	client.addContent(buff);
 	std::string tmp(buff);
 	//TODO INSERER PARTIE DE PIERRE
 	if (!client._request)
 		client._request = iRequest::createRequest(tmp);
-//	std::cout << client._request << std::endl;
-//	std::cout << "after creating request : tmp content is : " << tmp << std::endl;
-//	if iRequest fails, send 405 Method Not Allowed
-//	delete (client._request);
-//	client._request = NULL;
+	//	if iRequest fails, send 405 Method Not Allowed
 
-	if (client._request->receivingisDone())
+	if (!client._request || client._request->receivingisDone())
 	{
-		std::cout << "when receving is done " << &client << " "<< client._request << std::endl;
-		client.setResponse(client._request->createResponse());
-		std::cout << "client fd is : " << client.getSocketFd() << std::endl;
-		std::cout << "formulated response is " << client.getResponse() << std::endl;
+		if(!client._request)
+			client.setResponse(tmp + " 405 Method Not Allowed\r\n\r\n");
+		if (client._request && client._request->receivingisDone())
+			client.setResponse(client._request->createResponse());
 		sets.readfds.remove(client.getSocketFd());
 		sets.writefds.add(client.getSocketFd());
 	}
-/****
-	 * if (!ptr) // pas de requete cree
-	 * 	client._request = createRequest();
-	 * if (!client._request->headerIsComplete()
-	 * 	|| !client._request->bodyIsComplete())
-	 * 		return ;
-	 * else
-	 * 	{
-	 * 		sets.readfds.remove(client.getSocketFd());
-			sets.writefds.add(client.getSocketFd());
-	 * 	}
-	 * */
 }
 
 void	createClient(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)

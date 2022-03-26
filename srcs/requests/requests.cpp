@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/26 13:00:38 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 17:18:20 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -14,26 +14,36 @@
 //#include "requests/requestHeaderToken.hpp"
 #include <cstddef>
 #include <cstring>
+#include <ctime>
+#include <sstream>
 #include <string.h>
 #include <iostream>
+#include <time.h>
 
 getRequest::getRequest() {}
 postRequest::postRequest() {}
 deleteRequest::deleteRequest() {}
 
-iRequest * iRequest::createRequest(std::string &firstLine) //be able to remove first line from buffer
+iRequest * iRequest::createRequest(std::string &input) //be able to remove first line from buffer
 {
 	//rewrite using strings
 	iRequest * result = NULL;
-	char * method, * requestUri, * httpVersion;
+	char * method = NULL;
+	char * requestUri = NULL;
+	char * httpVersion = NULL;
 
-	size_t eraseLen = firstLine.find("\r\n");
+	size_t eraseLen = input.find("\r\n");
+	std::string firstLine(input, 0, eraseLen);
+	std::cout << "value of eraseLen : " <<eraseLen << std::endl;
+	
+	std::cout << "in create request |" << firstLine << "|" <<std::endl;
+	if (eraseLen != std::string::npos)
+	{
+		method = strtok(const_cast<char *>(firstLine.c_str()), " ");
+		requestUri = strtok(NULL, " ");
+		httpVersion = strtok(NULL, "\r\n");
+	}
 
-	//std::cout << "value of eraseLen : " <<eraseLen << std::endl;
-
-	method = strtok(const_cast<char *>(firstLine.c_str()), " ");
-	requestUri = strtok(NULL, " ");
-	httpVersion = strtok(NULL, "\r\n");
 	if (method && requestUri && httpVersion)
 	{
 		if (parseMethod(method) && parseHttpVersion(httpVersion))
@@ -44,9 +54,9 @@ iRequest * iRequest::createRequest(std::string &firstLine) //be able to remove f
 				result = new postRequest;
 			if (!strcmp(method, "DELETE"))
 				result = new deleteRequest;
-			firstLine.erase(0, eraseLen + 2);
+			input.erase(0, eraseLen + 2);
 			std::cout << "content after erase : size : " << firstLine.length() << "|" << firstLine << "|" << std::endl;
-			result->_message.parseRequest(firstLine);
+			result->_message.parseRequest(input);
 		}
 	}
 	return result;
@@ -64,7 +74,13 @@ std::string getRequest::createResponse() {
 	std::string response;
 
 	response += "HTTP/1.1 200 OK\r\n";
+	if (_message._status != 500 && _message._status != 503)
+		response += date();
+	response += "Accept: /text/plain\r\n";
+	response += "Content-length: 5\r\n"; //replace it with the length of the body to send
 	response += "\r\n";
+	//body
+	response += "Hello"; //body to send
 	return response;
 }
 
@@ -77,3 +93,23 @@ std::string deleteRequest::createResponse() {
 	std::string response;
 	return response;
 }
+
+std::string date()
+{
+	time_t now = time(0);
+	tm * gmt = gmtime(&now);	
+
+	std::string result("Date:");
+	std::stringstream tmp;
+	tmp << " " << gmt->tm_mday;
+	tmp << " " << gmt->tm_mon;
+	tmp << " " << 1900 + gmt->tm_year;
+	tmp << " " << gmt->tm_hour;
+	tmp << ":" << gmt->tm_min;
+	tmp << ":" << gmt->tm_sec;
+
+	result += tmp.str();
+	result += " GMT\r\n";
+	return (result);
+}
+

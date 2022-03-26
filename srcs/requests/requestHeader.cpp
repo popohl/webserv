@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/26 13:03:31 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 17:19:01 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <cstring>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <cstdlib>
 #include <utility>
 
@@ -45,10 +46,12 @@ requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _head
 
 void requestBase::parseRequest(const std::string &line)
 {
-	size_t headerSize = 0;
+	size_t headerSize = 0; //might not work for 
 	if (!_headerFinished)
 		headerSize = parseHeader(line);
-	std::cout << line.length() << "|" << headerSize << std::endl;
+	else
+		headerSize = findBodyLength();
+//	std::cout << line.length() << "|" << headerSize << std::endl;
 	if (!_bodyFinished && (headerSize < line.length()))
 	{
 		std::string body(line, headerSize, line.length());
@@ -107,8 +110,6 @@ void requestBase::parseBody(const std::string &line)
 		{
 			//parse chunked body
 		}
-
-
 	}
 	else if	(_header.find("Content-Length") != notFound)
 	{
@@ -131,8 +132,6 @@ std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
 
 	return (std::make_pair<std::string, std::string>(key, value));
 }
-
-
 
 std::list<std::string>split_header_to_lines(const std::string & input, size_t &headerSize)
 {
@@ -170,52 +169,24 @@ bool requestBase::containsHostField(void)
 	else
 		return (false);
 }
+
+void requestBase::updateResponseStatus(void)
+{
+	std::map<std::string, std::string>::iterator notFound = _header.end();
+	if (_header.find("Host") == notFound)
+		_status = 400;
+}
 //NB server should return 400 Bad Request for a request missing host field in http 1.1 protocol
 
-/////////////////////////////////
-
-/*
-requestHeaderToken::requestHeaderToken(const std::pair <std::string, std::string> & rhs) : _token(rhs) {};
-
-std::vector<requestHeaderToken> parseRequestHeader(const char *input)
+size_t requestBase::findBodyLength(void)
 {
-	//this function will change as it expects a full header which might not be possible
-	std::vector<requestHeaderToken> requestHeader;
-	//change vector for map as there can be only one key field (it seems)
-
-	std::vector<std::string> lineNumber = split_header_to_lines(input);
-
-	for (size_t i = 0; i < lineNumber.size(); i++)
+	size_t result = 0;
+	std::map<std::string, std::string>::iterator notFound = _header.end();
+	if (_header.find("Content-Length") != notFound)
 	{
-		if (lineNumber[i].find(':') != std::string::npos)
-		{
-			checkLineEnd(lineNumber[i]);
-			lineNumber[i].erase(lineNumber[i].find("\b"));
-			requestHeader.push_back(treatLine(lineNumber[i]));
-		}
-		else
-		{
-			//check if header end has been reached
-			std::string end("\b\n");
-			if (i == lineNumber.size() -1 && lineNumber[i] == end)
-				break ;
-			else
-				throw unfinishedHeader();
-		}
+		std::stringstream nb(_header["Content-Length"]);
+		nb >> result;
 	}
-	return requestHeader;
+	return (result);
 }
 
-requestHeaderToken treatLine(std::string line)
-{
-	size_t sep_index = line.find(":");
-	//here we could handle the case of a field unfinished with :
-	std::string key(line, 0, sep_index);
-	if (sep_index != std::string::npos)
-		sep_index += 2;
-	line.erase(0, sep_index);
-	std::string value(line, 0, line.length());
-
-	return (requestHeaderToken(std::make_pair<std::string, std::string> (key, value)));
-}
-*/

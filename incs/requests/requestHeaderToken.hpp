@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/25 11:51:47 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 15:28:41 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -65,13 +65,17 @@ struct requestBase {
 
 	bool _headerFinished;
 	bool _bodyFinished;
+	int _status;
+	
 	std::map<std::string, std::string> _header;
 	size_t		_bodySize;
 	std::string _body;
 
 private:
 	std::pair<std::string, std::string>splitIntoPair(std::string line);
-	bool containsHostField();
+	bool containsHostField(void);
+	void updateResponseStatus(void);
+	size_t	findBodyLength(void);
 };
 
 bool isHeaderEnd(const char *input);
