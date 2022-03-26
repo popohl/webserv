@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/25 17:23:29 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 14:52:41 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 	fd_set	tmp_write;
 	int		ret;
 
+	std::cout << "at the listening part, there is " << socket.size() << std::endl;
 	while (1)
 	{
 		// We have to make a copy a each loop because select mess up the fd_set

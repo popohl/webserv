@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/26 12:49:53 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 14:29:09 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ class SocketClient : public ASocket
 		void	addContent(char *content);
 		void	clearAll();
 		std::string	getResponse();
-
+	void	setResponse(std::string input);
 		//prepareResponse(iRequest *);
 		iRequest * _request; // allocation et suppression a chaque boucle de lecture/ecriture
 };

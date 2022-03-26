@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/26 12:56:49 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 14:50:38 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
-	SocketClient	client = dynamic_cast<SocketClient&>(tmp_socket);
+	SocketClient	&client = dynamic_cast<SocketClient&>(tmp_socket);
 	ASocket 		*addr = NULL;
 	int				ret;
 	char			buff[90000];
@@ -58,7 +58,10 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 
 	if (client._request->receivingisDone())
 	{
-		std::cout << "hello" << std::endl;
+		std::cout << "when receving is done " << &client << " "<< client._request << std::endl;
+		client.setResponse(client._request->createResponse());
+		std::cout << "client fd is : " << client.getSocketFd() << std::endl;
+		std::cout << "formulated response is " << client.getResponse() << std::endl;
 		sets.readfds.remove(client.getSocketFd());
 		sets.writefds.add(client.getSocketFd());
 	}
