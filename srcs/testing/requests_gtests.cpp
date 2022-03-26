@@ -35,13 +35,15 @@ TEST(RequestSuite, createRequestTests)
 							 "HEAD * HTTP/1.1\r\n", NULL};
 	for (int i = 0; validTests[i]; i++)
 	{
-		iRequest * result = iRequest::createRequest(std::string(validTests[i]));
+		std::string tmp(validTests[i]);
+		iRequest * result = iRequest::createRequest(tmp);
 		EXPECT_TRUE( result != NULL) << "fail for input : " << validTests[i];
 		delete result;
 	}
 	for (int i = 0; invalidTests[i]; i++)
 	{
-		iRequest * result = iRequest::createRequest(std::string(invalidTests[i]));
+		std::string tmp(invalidTests[i]);
+		iRequest * result = iRequest::createRequest(tmp);
 		EXPECT_TRUE( result == NULL) << "fail for input : " << invalidTests[i];
 		delete result;
 	}
@@ -58,23 +60,26 @@ TEST(RequestSuite, createRequestTypeCheck)
 	for (int i = 0; getTests[i]; i++)
 	{
 		iRequest * check = NULL;		
-		result = iRequest::createRequest(std::string(getTests[i]));
+		std::string tmp(getTests[i]);
+		result = iRequest::createRequest(tmp);
 		check = dynamic_cast<getRequest *>(result);
 		EXPECT_TRUE(check != NULL) << "fail for input : " << getTests[i];
 	}
 
 	for (int i = 0; postTests[i]; i++)
 	{
-		iRequest * check = NULL;		
-		result = iRequest::createRequest(std::string(postTests[i]));
+		iRequest * check = NULL;
+		std::string tmp(postTests[i]);
+		result = iRequest::createRequest(tmp);
 		check = dynamic_cast<postRequest *>(result);
 		EXPECT_TRUE(check != NULL)<< "fail for input : " << postTests[i];
 	}
 
 	for (int i = 0; deleteTests[i]; i++)
 	{
-		iRequest * check = NULL;		
-		result = iRequest::createRequest(std::string(deleteTests[i]));
+		iRequest * check = NULL;
+		std::string tmp(deleteTests[i]);
+		result = iRequest::createRequest(tmp);
 		check = dynamic_cast<deleteRequest *>(result);
 		EXPECT_TRUE(check != NULL) << "fail for input : " << deleteTests[i];
 	}
@@ -123,10 +128,12 @@ TEST(requestHeaderSuite, FirefoxGetRequestTestv2)
 	const char * request_line = { "GET / HTTP/1.1\r\n" };
 	const char * request_header = { "Host: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\r\nsec-ch-ua-mobile: ?0\r\nsec-ch-ua-platform: \"Linux\"\r\nUpgrade-Insecure-Requests: 1\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\r\nSec-Fetch-Site: none\r\nSec-Fetch-Mode: navigate\r\nSec-Fetch-User: ?1\r\nSec-Fetch-Dest: document\r\nAccept-Encoding: gzip, deflate, br\r\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\r\n\r\n"};
 
-	iRequest * result = iRequest::createRequest(request_line);
+	std::string input(request_line);
+	iRequest * result = iRequest::createRequest(input);
 
 	requestBase test;
-	test.parseHeader(request_header);
+	std::string header(request_header);
+	test.parseHeader(header);
 
 	iRequest * check = dynamic_cast<getRequest *>(result);
 	EXPECT_TRUE(check != NULL);

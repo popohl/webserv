@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/26 14:51:51 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 17:59:13 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,8 @@ static int	contentSize(const char *content)
 void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
 
-	std::cout << "before sending, there is " << socket.size() << std::endl;
 	SocketClient	*client = dynamic_cast<SocketClient*>(tmp_socket);
-	std::cout << "client fd is : " << client->getSocketFd() << std::endl;
-	std::cout << tmp_socket << std::endl;
-	std::cout << client << " " << client->_request << std::endl;
-	//std::string		response = client->_request->createResponse();
 	std::string		response = client->getResponse();
-	std::cout << "this is the answer " <<  response << std::endl;
 	int				ret;
 	size_t			total;
 

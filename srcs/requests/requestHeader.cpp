@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/26 17:19:01 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 17:20:39 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void requestBase::parseRequest(const std::string &line)
 	}
 	else
 		_bodyFinished = true; //are you sure ?
-	std::cout << line.length() << "|" << headerSize  << "|" << _body.length()<< std::endl;
+//	std::cout << line.length() << "|" << headerSize  << "|" << _body.length()<< std::endl;
 }
 
 size_t requestBase::parseHeader(const std::string &line) {

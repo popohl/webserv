@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/26 17:18:20 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/26 17:59:37 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -34,9 +34,6 @@ iRequest * iRequest::createRequest(std::string &input) //be able to remove first
 
 	size_t eraseLen = input.find("\r\n");
 	std::string firstLine(input, 0, eraseLen);
-	std::cout << "value of eraseLen : " <<eraseLen << std::endl;
-	
-	std::cout << "in create request |" << firstLine << "|" <<std::endl;
 	if (eraseLen != std::string::npos)
 	{
 		method = strtok(const_cast<char *>(firstLine.c_str()), " ");
@@ -55,7 +52,6 @@ iRequest * iRequest::createRequest(std::string &input) //be able to remove first
 			if (!strcmp(method, "DELETE"))
 				result = new deleteRequest;
 			input.erase(0, eraseLen + 2);
-			std::cout << "content after erase : size : " << firstLine.length() << "|" << firstLine << "|" << std::endl;
 			result->_message.parseRequest(input);
 		}
 	}
@@ -73,7 +69,7 @@ bool iRequest::receivingisDone()
 std::string getRequest::createResponse() {
 	std::string response;
 
-	response += "HTTP/1.1 200 OK\r\n";
+	response += "HTTP/1.1 200 Ok\r\n";
 	if (_message._status != 500 && _message._status != 503)
 		response += date();
 	response += "Accept: /text/plain\r\n";
@@ -94,6 +90,9 @@ std::string deleteRequest::createResponse() {
 	return response;
 }
 
+const char *days[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", NULL };
+const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
+
 std::string date()
 {
 	time_t now = time(0);
@@ -101,8 +100,9 @@ std::string date()
 
 	std::string result("Date:");
 	std::stringstream tmp;
-	tmp << " " << gmt->tm_mday;
-	tmp << " " << gmt->tm_mon;
+	tmp << " " << days[gmt->tm_wday];
+	tmp << ", " << gmt->tm_mday;
+	tmp << " " << months[gmt->tm_mon];
 	tmp << " " << 1900 + gmt->tm_year;
 	tmp << " " << gmt->tm_hour;
 	tmp << ":" << gmt->tm_min;
