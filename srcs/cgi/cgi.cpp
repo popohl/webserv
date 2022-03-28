@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 15:31:21 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/28 10:15:36 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/28 15:00:42 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,28 +16,34 @@
 #include <string.h>
 #include <fcntl.h>
 
-#define STD_IN 0
-#define STD_OUT 1
+#include <errno.h>
 
 static char**	createArgv( const char* binPath, const char* filePath )
 {
-	char** env;
+	char** argv;
 
-	env = (char**)malloc(sizeof(*env) * 2);
-	env[0] = strdup(binPath);
-	env[1] = strdup(filePath);
-	return env;
+	argv = (char**)malloc(sizeof(*argv) * 3);
+	argv[0] = strdup(binPath);
+	argv[1] = strdup(filePath);
+	argv[2] = 0;
+	return argv;
 }
 
 static char**	createEnvp( void )
 {
-	char** env;
+	char**		envp;
+	std::string	document_root = "DOCUMENT_ROOT=";
 
-	env = (char**)malloc(sizeof(*env) * 3);
-	env[0] = strdup("REQUEST_METHOD=GET");
-	env[1] = strdup("SERVER_PROTOCOL=HTTP/1.1");
-	env[2] = strdup("PATH_INFO=/");
-	return env;
+	document_root += get_current_dir_name();
+	envp = (char**)malloc(sizeof(*envp) * 6);
+	envp[0] = strdup("REQUEST_METHOD=POST");
+	envp[1] = strdup("SERVER_PROTOCOL=HTTP/1.1");
+	envp[2] = strdup("PATH_INFO=a");
+	envp[3] = strdup(document_root.c_str());
+	envp[4] = strdup("PATH_TRANSLATED=/mnt/nfs/homes/pohl/Documents/a");
+	envp[5] = strdup("REDIRECT_STATUS=1");
+	envp[6] = 0;
+	return envp;
 }
 
 static void	writeFileToStdIn( const char* pathToFile )
@@ -49,7 +55,7 @@ static void	writeFileToStdIn( const char* pathToFile )
 		// 500 Internal Server Error
 		throw std::exception();
 	}
-	if (dup2(fd, STD_IN) == -1)
+	if (dup2(fd, STDIN_FILENO) == -1)
 	{
 		// 500 Internal Server Error
 		throw std::exception();
@@ -60,11 +66,17 @@ static void	executeChildProcess( void )
 {
 	char**	execveEnvp;
 	char**	execveArgv;
+	int		err;
+	char	program[] = "/usr/bin/php-cgi";
+	/* char	program[] = "/mnt/nfs/homes/pohl/Documents/42/webserv/research/ubuntu_cgi_tester"; */
 
+	std::cout << "Using " << program << std::endl;
 	execveEnvp = createEnvp();
-	execveArgv = createArgv("/bin/cat", "./Makefile");
-	writeFileToStdIn("./Makefile");
-	execve("/bin/cat", execveArgv, execveEnvp);
+	execveArgv = createArgv(program, "/mnt/nfs/homes/pohl/Documents/b");
+	writeFileToStdIn("/mnt/nfs/homes/pohl/Documents/c");
+	err = execve(program, execveArgv, execveEnvp);
+	if (err == -1)
+		throw std::logic_error(strerror(errno));
 }
 
 std::string	executeCgi( void )
