@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/28 12:15:49 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 14:06:00 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class iRequest
 	public:
 //	virtual void parse(void) = 0;
 //	virtual void sendRequest(void) = 0;
-//	std::vector<requestHeaderToken> parseRequestHeader(const char *input);
+
 //	int _status;
 	static iRequest * createRequest(std::string &);
 

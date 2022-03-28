@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-//   Updated: 2022/03/28 14:03:13 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 14:15:32 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ int main( int argc, char **argv )
 {
 	(void)argc;
 	(void)argc;(void)argv;
-//	Parser			parser("./srcs/testing/config_files/everyRight.conf");
-//	ConfigFileNode	result = parser.getConfigFile();
+	Parser			parser("./srcs/testing/config_files/everyRight.conf");
+	ConfigFileNode	result = parser.getConfigFile();
 //	Parser			parser(argv[1]);
 //	ConfigFileNode	result = parser.getConfigFile();
 
