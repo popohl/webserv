@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/16 14:17:12 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/28 10:12:47 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	sendMessage(int link, char *buff)
 	{
 		if ((temp = send(link, &content[ret], contentSize(content), 0)) < 0)
 		{
-			std::perror("Send failed:");
+			perror("Send failed:");
 			return ;
 		}
 		ret += temp;

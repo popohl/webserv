@@ -1,37 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Cgi.cpp                                            :+:      :+:    :+:   */
+/*   pipe.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/24 15:31:21 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/24 15:31:23 by pohl             ###   ########.fr       */
+/*   Created: 2022/03/28 09:20:36 by pohl              #+#    #+#             */
+/*   Updated: 2022/03/28 10:15:26 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cgi/Cgi.hpp"
+#include "cgi.hpp"
+#include <unistd.h>
 
-Cgi::Cgi( void )
+void	createPipe( int pipeFd[2] )
 {
-	return;
-}
+	int returnValue = pipe(pipeFd);
 
-Cgi::Cgi( Cgi const & src )
-{
-	*this = src;
-	return;
-}
-
-Cgi::~Cgi( void )
-{
-	return;
-}
-
-Cgi &	Cgi::operator=( Cgi const & src )
-{
-	if (this == &src)
-		return *this;
-	// TODO: fill this
-	return *this;
+	if (returnValue != 0)
+	{
+		// 500 Internal Server Error
+		throw std::exception();
+	}
 }

@@ -1,37 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Cgi.hpp                                            :+:      :+:    :+:   */
+/*   fork.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/24 15:31:17 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/24 15:31:24 by pohl             ###   ########.fr       */
+/*   Created: 2022/03/28 09:29:34 by pohl              #+#    #+#             */
+/*   Updated: 2022/03/28 10:15:32 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CGI_HPP
-# define CGI_HPP
+#include "cgi.hpp"
+#include <unistd.h>
 
-# include <iostream>
-
-class Cgi
+int	createFork( void )
 {
+	int forkPid = fork();
 
-public:
+	if (forkPid == -1)
+	{
+		// 500 Internal Server Error
+		throw std::exception();
+	}
+	return forkPid;
+}
 
-	Cgi( void );
-	Cgi( const Cgi &src );
-	~Cgi( void );
-
-	Cgi	&operator=( const Cgi &src );
-
-	std::string executeCgi( void );
-
-private:
-
-};
-
-std::ostream	&operator<<( std::ostream &ostr, const Cgi &instance );
-
-#endif
+bool	isChildProcess( int forkPid )
+{
+	return (forkPid != 0);
+}

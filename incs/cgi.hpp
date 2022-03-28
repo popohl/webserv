@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   cgi.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/28 10:15:47 by pohl             ###   ########.fr       */
+/*   Created: 2022/03/24 15:31:17 by pohl              #+#    #+#             */
+/*   Updated: 2022/03/28 09:32:45 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <fstream>
-#include "configParsing/Parser.hpp"
-#include "cgi.hpp"
+#ifndef CGI_HPP
+# define CGI_HPP
 
-int main( int argc, char **argv )
-{
-	(void)argc;
-	(void)argv;
-	executeCgi();
-}
+# include <iostream>
+
+std::string	executeCgi( void );
+void		createPipe( int pipeFd[2] );
+int			createFork( void );
+bool		isChildProcess( int forkPid );
+
+#endif
