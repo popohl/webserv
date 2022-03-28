@@ -6,39 +6,32 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 15:32:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 12:22:58 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/28 11:46:00 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configParsing/AST/ServerNode.hpp"
+#include "configParsing/helperFunctions.hpp"
 
 ServerNode::ServerNode( void )
 {
-	if (ServerNode::verbose)
-		std::cout << "Default constructor for ServerNode called" << std::endl;
 	locationList.clear();
 	return;
 }
 
 ServerNode::ServerNode( ServerNode const & src )
 {
-	if (ServerNode::verbose)
-		std::cout << "Copy constructor for ServerNode called" << std::endl;
 	*this = src;
 	return;
 }
 
 ServerNode::~ServerNode( void )
 {
-	if (ServerNode::verbose)
-		std::cout << "Destructor for ServerNode called" << std::endl;
 	return;
 }
 
 ServerNode &	ServerNode::operator=( ServerNode const & src )
 {
-	if (ServerNode::verbose)
-		std::cout << "Assignement operator for ServerNode called" << std::endl;
 	if (this == &src)
 		return *this;
 	this->locationList = src.locationList;
@@ -54,7 +47,7 @@ LocationRules	&ServerNode::createNewLocationNode( void )
 	return locationList.back();
 }
 
-LocationRules	&ServerNode::LatestLocation( void )
+LocationRules	&ServerNode::latestLocation( void )
 {
 	return locationList.back();
 }
@@ -79,4 +72,20 @@ const ServerRules					&ServerNode::getServerRules( void ) const
 	return serverRules;
 }
 
-bool	ServerNode::verbose = false;
+const LocationRules*
+	ServerNode::getLocationFromUrl( std::string pathFromUrl ) const
+{
+	const LocationRules* result = NULL;
+
+	for (std::vector<LocationRules>::const_iterator it = locationList.begin();
+			it != locationList.end(); it++)
+	{
+		if (pathFromUrl.rfind(it->locationPath, 0) == 0)
+		{
+			if (result == NULL
+					|| it->locationPath.size() > result->locationPath.size())
+				result = &(*it);
+		}
+	}
+	return result;
+}

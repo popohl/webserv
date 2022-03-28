@@ -19,7 +19,7 @@ TEST(ParserSuite, EveryRightPossibilityFile)
 	EXPECT_EQ(result.getServerList()[0].getLocationList().size(), (size_t)0);
 	EXPECT_EQ(result.getServerList()[1].getLocationList().size(), (size_t)0);
 	EXPECT_EQ(result.getServerList()[2].getLocationList().size(), (size_t)2);
-	EXPECT_EQ(result.getServerList()[3].getLocationList().size(), (size_t)1);
+	EXPECT_EQ(result.getServerList()[3].getLocationList().size(), (size_t)3);
 	EXPECT_EQ(result.getServerList()[0].getServerRules().autoindex, false);
 	EXPECT_EQ(result.getServerList()[0].getServerRules().listenPort, 8000);
 	EXPECT_EQ(result.getServerList()[1].getServerRules().autoindex, false);
@@ -29,12 +29,8 @@ TEST(ParserSuite, EveryRightPossibilityFile)
 	EXPECT_EQ(result.getServerList()[1].getServerRules().listenPort, 7000);
 	EXPECT_EQ(result.getServerList()[1].getServerRules().serverName[0], "www.example.fr");
 	EXPECT_EQ(result.getServerList()[1].getServerRules().serverName.size(), (size_t)3);
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].isMethodAllowed(LocationRules::GET), true);
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].isMethodAllowed(LocationRules::POST), true);
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].isMethodAllowed(LocationRules::DELETE), true);
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].isMethodAllowed(LocationRules::GET), true);
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].isMethodAllowed(LocationRules::POST), false);
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].isMethodAllowed(LocationRules::DELETE), true);
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].allowedMethod, 0b0111);
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].allowedMethod, 0b0101);
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].redirectCode, 302);
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].redirectUri, "www.archlinux.org");
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].root, "/www/rootsite/");
@@ -46,6 +42,35 @@ TEST(ParserSuite, EveryRightPossibilityFile)
 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].errorPage[401], "./server401.html");
 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].errorPage[403], "./location403.html");
 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].errorPage[412], "./location412.html");
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].cgiExtension, "php");
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].cgiPath, "/bin/php-cgi");
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].cgiPath, "");
+	EXPECT_EQ(result.getServerList()[3].getServerRules().cgiExtension, "py");
+	EXPECT_EQ(result.getServerList()[3].getServerRules().cgiPath, "/cgi-bin/python");
+	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].cgiExtension, "py");
+	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].cgiPath, "/cgi-bin/python");
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].locationPath, "/");
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].locationPath, "/www/");
+
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].getPathFromLocation("/www/bonjour/etc.html"),
+			"/www/bonjour/etc.html");
+	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].getPathFromLocation("/www/bonjour/etc.html"),
+			"/www/rootsite/bonjour/etc.html");
+	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].getPathFromLocation("/www/downloads/bonjour/etc.html"),
+			"/www/downloads/bonjour/etc.html");
+	EXPECT_EQ(result.getServerList()[3].getLocationList()[1].getPathFromLocation("/www/downloads/bonjour/etc.html"),
+			"/etc/systemd/bonjour/etc.html");
+
+	const LocationRules* selectedLocation = result.getServerList()[2].getLocationFromUrl("/web/pouet.html");
+	EXPECT_EQ(selectedLocation, &result.getServerList()[2].getLocationList()[0]);
+	selectedLocation = result.getServerList()[2].getLocationFromUrl("/www/pouet.html");
+	EXPECT_EQ(selectedLocation, &result.getServerList()[2].getLocationList()[1]);
+	selectedLocation = result.getServerList()[3].getLocationFromUrl("/www/pouet.html");
+	EXPECT_EQ(selectedLocation, &result.getServerList()[3].getLocationList()[0]);
+	selectedLocation = result.getServerList()[3].getLocationFromUrl("/www/downloads/pouet.html");
+	EXPECT_EQ(selectedLocation, &result.getServerList()[3].getLocationList()[1]);
+	selectedLocation = result.getServerList()[3].getLocationFromUrl("/dont_exist/nope/");
+	EXPECT_EQ(selectedLocation, (const LocationRules*)NULL);
 
 	std::set<int>	listeningPorts = result.getListeningPorts();
 	std::set<int>::iterator it = listeningPorts.begin();

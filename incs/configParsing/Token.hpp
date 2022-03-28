@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:11 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 13:55:24 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:03:27 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,6 @@ public:
 
 	bool	operator==( const Token& other ) const;
 	bool	operator!=( const Token& other ) const;
-
-	static bool	verbose;
 
 private:
 

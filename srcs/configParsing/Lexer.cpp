@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 10:00:33 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 14:43:07 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:03:27 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,22 +17,16 @@
 
 Lexer::Lexer( void )
 {
-	if (Lexer::verbose)
-		std::cout << "Empty constructor for Lexer called" << std::endl;
 	return;
 }
 
 Lexer::Lexer( std::string fileName )
 {
-	if (Lexer::verbose)
-		std::cout << "Standard constructor for Lexer called" << std::endl;
 	this->openFile(fileName);
 }
 
 Lexer::~Lexer( void )
 {
-	if (Lexer::verbose)
-		std::cout << "Destructor for Lexer called" << std::endl;
 	this->closeFile();
 	return;
 }
@@ -73,7 +67,8 @@ Token	Lexer::tokenizeWord( void )
 	do
 	{
 		word += advance();
-	} while (isalnum(_currentChar) || _currentChar == '.' || _currentChar == '_');
+	} while (isalnum(_currentChar) || _currentChar == '.' || _currentChar == '_'
+			|| _currentChar == '-');
 	return Token(Token::word, word);
 }
 
@@ -150,7 +145,8 @@ Token	Lexer::tokenizePath( void )
 	do
 	{
 		path += advance();
-	} while (isalnum(_currentChar) || isPathSpecialChar(_currentChar));
+	} while (isalnum(_currentChar) || isPathSpecialChar(_currentChar)
+				|| _currentChar == '_' || _currentChar == '-');
 	return Token(Token::path, path);
 }
 
@@ -166,20 +162,14 @@ std::string	Lexer::getNumber( void )
 void	Lexer::openFile( std::string fileName )
 {
 	this->closeFile();
-	if (Lexer::verbose)
-		std::cout << "Opening file: " << fileName << std::endl;
 	this->_configFile.open(fileName.c_str());
 	if (this->_configFile.fail())
 		throw ParsingException("Could not read file");
-	else if (Lexer::verbose)
-		std::cout << "Success opening file" << std::endl;
 	readFirstCharacter();
 }
 
 void	Lexer::closeFile( void )
 {
-	if (Lexer::verbose)
-		std::cout << "closing current file" << std::endl;
 	if (this->_configFile.is_open())
 		this->_configFile.close();
 }
@@ -226,6 +216,3 @@ void	Lexer::skipWhitespacesAndComments( void )
 	if (_currentChar == '#')
 		skipComments();
 }
-
-bool	Lexer::verbose = false;
-

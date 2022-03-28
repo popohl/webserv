@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:10:13 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 14:45:29 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:03:27 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,37 +15,27 @@
 
 Token::Token( void ): _type(Token::endOfFile), _value("")
 {
-	if (Token::verbose)
-		std::cout << "Default constructor for Token called" << std::endl;
 	return;
 }
 
 Token::Token( Token const & src )
 {
-	if (Token::verbose)
-		std::cout << "Copy constructor for Token called" << std::endl;
 	*this = src;
 	return;
 }
 
 Token::Token( tokenType type, tokenValue value ): _type(type), _value(value)
 {
-	if (Token::verbose)
-		std::cout << "Initialisation constructor for " << *this << std::endl;
 	return;
 }
 
 Token::~Token( void )
 {
-	if (Token::verbose)
-		std::cout << "Destructor for Token called" << std::endl;
 	return;
 }
 
 Token &	Token::operator=( Token const& src )
 {
-	if (Token::verbose)
-		std::cout << "Assignation operator for Token called" << std::endl;
 	if (this == &src)
 		return *this;
 	this->_type = src.getType();
@@ -138,5 +128,3 @@ std::ostream &	operator<<( std::ostream & ostr, Token const & instance)
 	ostr << instance.toStr();
 	return ostr;
 }
-
-bool	Token::verbose = false;
