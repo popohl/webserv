@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/26 17:51:09 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 13:53:19 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,17 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	std::cout << "value of recv "<< ret << std::endl << std::endl;
 //	client.addContent(buff);
 	std::string tmp(buff);
+//	std::cout << "received :|" << buff << "|" << std::endl;
 	if (!client._request)
+	{
+//		std::cout << "got here" << std::endl;
 		client._request = iRequest::createRequest(tmp);
-
+	}
+	else
+	{
+		client._request->_message.parseRequest(buff);
+	}
+	
 	if (!client._request || client._request->receivingisDone())
 	{
 		if(!client._request)
