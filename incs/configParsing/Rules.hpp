@@ -1,53 +1,46 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   LocationRules.hpp                                  :+:      :+:    :+:   */
+/*   Rules.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
+/*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/28 11:17:47 by pohl             ###   ########.fr       */
+/*   Created: 2022/03/28 11:09:00 by pohl              #+#    #+#             */
+/*   Updated: 2022/03/28 11:37:29 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LOCATIONRULES_HPP
-# define LOCATIONRULES_HPP
+#ifndef RULES_HPP
+# define RULES_HPP
 
 # include <iostream>
-# include <vector>
 # include <map>
-# include "ServerRules.hpp"
+# include <vector>
+# include "configParsing/AST/ServerNode.hpp"
 
-struct LocationRules: public IRulesNode
+struct Rules
 {
 
-	LocationRules( void );
-	LocationRules( const LocationRules& src );
-	LocationRules( const ServerRules& src );
-	~LocationRules( void );
+	Rules( void );
+	Rules( const Rules &src );
+	~Rules( void );
 
-	LocationRules	&operator=( const LocationRules &rhs );
+	Rules	&operator=( const Rules &src );
 
-	void	resetRules( void );
+	void	setValues( const ServerNode& server, const char* url );
 
 	static const char	GET			= 0b0001;
 	static const char	POST		= 0b0010;
 	static const char	DELETE		= 0b0100;
 	static const char	ALL_METHODS	= 0b0111;
 
-	void	allowMethod( std::string method );
-	void	allowMethod( char method );
-	void	forbidMethod( std::string method );
-	void	forbidMethod( char method );
+	bool 	isMethodAllowed( char selectedMethod ) const;
+	bool 	isMethodAllowed( std::string selectedMethod ) const;
 
-	void	addErrorPage( int errorCode, std::string errorPagePath );
-
-	// Helper functions
-	std::string	getPathFromLocation( std::string pathFromUrl ) const;
+	bool	isCgi( std::string uri ) const;
 
 	std::string					locationPath;
 	std::string					root;
-
 	char						allowedMethod;
 	bool						autoindex;
 	std::string					cgiExtension;
@@ -55,10 +48,20 @@ struct LocationRules: public IRulesNode
 	int							clientMaxBodySize;
 	std::map<int, std::string>	errorPage;
 	std::vector<std::string>	index;
+	int							listenPort;
+	std::string					listenAddress;
 	int							redirectCode;
 	std::string					redirectUri;
 	std::string					uploadPath;
+	std::vector<std::string> 	serverName;
+
+private:
+
+	void	setValuesFromServerRules( const ServerRules& serverRules );
+	void	setValuesFromLocationRules( const LocationRules* locationRules );
 
 };
+
+std::ostream	&operator<<( std::ostream &ostr, const Rules &instance );
 
 #endif
