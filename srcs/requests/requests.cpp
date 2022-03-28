@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/26 17:59:37 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 11:16:41 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -26,32 +26,35 @@ deleteRequest::deleteRequest() {}
 
 iRequest * iRequest::createRequest(std::string &input) //be able to remove first line from buffer
 {
-	//rewrite using strings
 	iRequest * result = NULL;
-	char * method = NULL;
-	char * requestUri = NULL;
-	char * httpVersion = NULL;
+	std::string method, requestUri, httpVersion;
 
+	//isolate first line and three string tokens
 	size_t eraseLen = input.find("\r\n");
 	std::string firstLine(input, 0, eraseLen);
 	if (eraseLen != std::string::npos)
 	{
-		method = strtok(const_cast<char *>(firstLine.c_str()), " ");
-		requestUri = strtok(NULL, " ");
-		httpVersion = strtok(NULL, "\r\n");
+		std::string requestLine(firstLine, 0, eraseLen);
+		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
+		
+		method = eatWord(requestLine);
+		requestUri = eatWord(requestLine);
+		httpVersion = eatWord(requestLine);
 	}
 
-	if (method && requestUri && httpVersion)
+	//allocate memory
+	if (method.length() && requestUri.length() && httpVersion.length())
 	{
-		if (parseMethod(method) && parseHttpVersion(httpVersion))
+		input.erase(0, eraseLen + 2);
+		if (method == "GET")
+			result = new getRequest;
+		else if (method == "POST")
+			result = new postRequest;
+		else if (method == "DELETE")
+			result = new deleteRequest;
+		if (result)
 		{
-			if (!strcmp(method, "GET"))
-				result = new getRequest;
-			if (!strcmp(method, "POST"))
-				result = new postRequest;
-			if (!strcmp(method, "DELETE"))
-				result = new deleteRequest;
-			input.erase(0, eraseLen + 2);
+			result->_requestURI = requestUri;
 			result->_message.parseRequest(input);
 		}
 	}
@@ -64,6 +67,17 @@ bool iRequest::receivingisDone()
 		return (true);
 	else
 		return (false);
+}
+
+std::string eatWord(std::string & line)
+{
+	size_t endOfWord = line.find(" ");
+	std::string word(line, 0, endOfWord);
+
+	line.erase(0, endOfWord);
+	for (std::string::iterator it = line.begin(); *it == ' '; it = line.begin())
+		line.erase(it);
+	return (word);
 }
 
 std::string getRequest::createResponse() {

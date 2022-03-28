@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/26 17:09:31 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 11:02:26 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,22 +28,24 @@ const std::pair<std::string, std::string>responseStatus[] = {
 
 
 std::string date();
+std::string eatWord(std::string & line);
 
 class iRequest
 {
 	public:
 //	virtual void parse(void) = 0;
 //	virtual void sendRequest(void) = 0;
+//	std::vector<requestHeaderToken> parseRequestHeader(const char *input);
+//	int _status;
 	static iRequest * createRequest(std::string &);
 
 	requestBase	_message;
-//	int _status;
 	bool receivingisDone();
 	virtual std::string createResponse() = 0;
-//	std::vector<requestHeaderToken> parseRequestHeader(const char *input);
-
 	virtual ~iRequest() {};
-
+	
+private:
+	std::string _requestURI;
 };
 
 class getRequest : public iRequest

@@ -2,7 +2,7 @@
 #include "requests/parsing.hpp"
 #include "requests/requests.hpp"
 #include "requests/requestHeaderToken.hpp"
-
+/*
 TEST(RequestSuite, parseMethodTests)
 {
 	const char * validTests[] = { "GET", "POST", "DELETE", NULL };
@@ -26,6 +26,7 @@ TEST(RequestSuite, parseHttpVersionTests)
 	for (int i = 0; invalidTests[i]; i++)
 		EXPECT_TRUE( parseHttpVersion( invalidTests[i ]) == NULL );
 }
+*/
 
 TEST(RequestSuite, createRequestTests)
 {

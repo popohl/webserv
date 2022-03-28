@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 12:23:52 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/17 16:47:29 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 11:13:04 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -40,9 +40,9 @@
 
 void parseRequestLine(std::string); //Input must be a line finished with \b\n
 
-const char *parseMethod(const char *);
+bool	checkMethod(const std::string &);
 const char *parseRequestURI(const char *);
-const char *parseHttpVersion(const char *);
+bool	checkHttpVersion(const std::string &);
 
 bool isCRLF(const char *input);
 
