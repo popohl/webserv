@@ -6,13 +6,13 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/28 10:12:47 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/28 15:51:23 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Socket.hpp"
-
-static int	contentSize(char *content)
+#include "socket/Server.hpp"
+/*
+static int	contentSize(const char *content)
 {
 	int i = 0;
 
@@ -20,25 +20,32 @@ static int	contentSize(char *content)
 		i++;
 	return (i);
 }
-
-void	sendMessage(int link, char *buff)
+*/
+void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
-	//TODO we have to analyse the message from the client and create the right content
-	char	content[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-	int		ret;
-	int		temp;
 
-	ret = 0;
-	while (ret < contentSize(content)) //resend the data if not everything have been sent
+	SocketClient	*client = dynamic_cast<SocketClient*>(tmp_socket);
+	std::string		response = client->getResponse();
+	int				ret;
+	size_t			total;
+
+	total = 0;
+	/*******
+	 * _response = prepare_response()
+	 * */
+	while (total < response.size())
 	{
-		if ((temp = send(link, &content[ret], contentSize(content), 0)) < 0)
+		if ((ret = send(client->getSocketFd(), response.c_str() + total, response.size(), 0)) < 0)
 		{
 			perror("Send failed:");
 			return ;
 		}
-		ret += temp;
-		std::cout << " Message bytes =" << contentSize(content) << " Bytes Sent =" << ret << std::endl;
+		total += ret;
+		std::cout << " Message bytes =" << response.size() << " Bytes Sent =" << ret << std::endl;
+		std::cout << "\n======== Message sent to client ========\n" << std::endl;
 	}
 
-	std::cout << "\n======== Message sent to client ========\n" << std::endl;
+	client->clearAll();
+	sets.writefds.remove(client->getSocketFd());
+	sets.readfds.add(client->getSocketFd());
 }
