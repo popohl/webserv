@@ -1,17 +1,17 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   requestHeaderToken.hpp                             :+:      :+:    :+:   //
+//   requestBase.hpp                                    :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/26 15:28:41 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 12:16:27 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#ifndef REQUESTHEADERTOKEN_HPP
-# define REQUESTHEADERTOKEN_HPP
+#ifndef REQUESTBASE_HPP
+# define REQUESTBASE_HPP
 
 #include <string>
 #include <vector>

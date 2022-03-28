@@ -6,11 +6,11 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/26 17:20:39 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 12:17:04 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "requests/requestHeaderToken.hpp"
+#include "requests/requestBase.hpp"
 #include <string.h>
 #include <cstring>
 #include <string>

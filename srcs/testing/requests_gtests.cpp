@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
-#include "requests/parsing.hpp"
 #include "requests/requests.hpp"
-#include "requests/requestHeaderToken.hpp"
+#include "requests/requestBase.hpp"
 /*
 TEST(RequestSuite, parseMethodTests)
 {
@@ -124,6 +123,7 @@ TEST(requestHeaderTokenSuite, FirefoxGetRequestTest)
 }
 */
 
+
 TEST(requestHeaderSuite, FirefoxGetRequestTestv2)
 {
 	const char * request_line = { "GET / HTTP/1.1\r\n" };
@@ -163,6 +163,34 @@ TEST(requestHeaderSuite, FirefoxGetRequestTestv2)
 	}
 	
 }
+
+TEST(requestSuite, TestWithCompleteHeader)
+{
+	std::string input ("GET / HTTP/1.1\r\nHost: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\r\nsec-ch-ua-mobile: ?0\r\nsec-ch-ua-platform: \"Linux\"\r\nUpgrade-Insecure-Requests: 1\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\r\nSec-Fetch-Site: none\r\nSec-Fetch-Mode: navigate\r\nSec-Fetch-User: ?1\r\nSec-Fetch-Dest: document\r\nAccept-Encoding: gzip, deflate, br\r\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\r\n\r\n");
+
+	iRequest * result = iRequest::createRequest(input);
+	EXPECT_TRUE(result != NULL) << "request did not allocate getRequest";
+	getRequest * cast_result = dynamic_cast<getRequest *>(result);
+	EXPECT_TRUE(cast_result != NULL) << "allocated iRequest is not a getRequest *";
+	EXPECT_STREQ(result->getRequestURI().c_str(), "/") << "for request URI, expected / and got " << result->getRequestURI();
+}
+
+TEST(requestSuite, TestWithHeaderInTwoParts)
+{
+	std::string input ("GET / HTTP/1.1\r\nHost: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\nsec-ch-ua: \" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"\r\nsec-ch-ua-mobile: ?0\r\nsec-ch-ua-platform: \"Linux\"\r\nUpgrade-Insecure-Requests: 1\r\n");
+	std::string input2 ("User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,/;q=0.8,application/signed-exchange;v=b3;q=0.9\r\nSec-Fetch-Site: none\r\nSec-Fetch-Mode: navigate\r\nSec-Fetch-User: ?1\r\nSec-Fetch-Dest: document\r\nAccept-Encoding: gzip, deflate, br\r\nAccept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7\r\n\r\n");
+
+	iRequest * result = iRequest::createRequest(input);
+	EXPECT_TRUE(result != NULL) << "request did not allocate getRequest";
+	getRequest * cast_result = dynamic_cast<getRequest *>(result);
+	EXPECT_TRUE(cast_result != NULL) << "allocated iRequest is not a getRequest *";
+	EXPECT_STREQ(result->getRequestURI().c_str(), "/") << "for request URI, expected / and got " << result->getRequestURI();
+	//state of the request before sending the second input
+	EXPECT_FALSE(result->receivingisDone());
+	result->_message.parseRequest(input2);
+	EXPECT_TRUE(result->receivingisDone());
+}
+
 
 TEST(requestHeaderSuite, InvalidHeaderRequestTests)
 {
@@ -208,7 +236,6 @@ TEST(requestHeaderSuite, InvalidSyntaxRequestTests)
 			}, unfinishedHeader);
 	}
 }
-
 
 TEST(RequestBodySuite, simpleTest)
 {

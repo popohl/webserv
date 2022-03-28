@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   requests.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/28 11:02:26 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 12:15:49 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 # define REQUESTS_HPP
 
 //#include "requests/requestHeaderToken.hpp"
-#include "requests/parsing.hpp"
-#include "requests/requestHeaderToken.hpp"
+#include "requests/requestBase.hpp"
 #include "responses/response.hpp"
 
 const std::pair<std::string, std::string>responseStatus[] = {
@@ -43,6 +42,8 @@ class iRequest
 	bool receivingisDone();
 	virtual std::string createResponse() = 0;
 	virtual ~iRequest() {};
+
+	const std::string & getRequestURI();
 	
 private:
 	std::string _requestURI;

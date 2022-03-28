@@ -6,12 +6,11 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/28 11:16:41 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 12:17:10 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "requests/requests.hpp"
-//#include "requests/requestHeaderToken.hpp"
 #include <cstddef>
 #include <cstring>
 #include <ctime>
@@ -31,10 +30,9 @@ iRequest * iRequest::createRequest(std::string &input) //be able to remove first
 
 	//isolate first line and three string tokens
 	size_t eraseLen = input.find("\r\n");
-	std::string firstLine(input, 0, eraseLen);
 	if (eraseLen != std::string::npos)
 	{
-		std::string requestLine(firstLine, 0, eraseLen);
+		std::string requestLine(input, 0, eraseLen);
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
 		
 		method = eatWord(requestLine);
@@ -78,6 +76,11 @@ std::string eatWord(std::string & line)
 	for (std::string::iterator it = line.begin(); *it == ' '; it = line.begin())
 		line.erase(it);
 	return (word);
+}
+
+const std::string & iRequest::getRequestURI()
+{
+	return (_requestURI);
 }
 
 std::string getRequest::createResponse() {
