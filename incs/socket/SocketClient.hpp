@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/26 14:29:09 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 17:01:42 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #define CLIENT 2
 #include "ASocket.hpp"
 #include "requests/requests.hpp"
+#include "configParsing/Parser.hpp"
 
 class SocketClient : public ASocket
 {
@@ -27,7 +28,7 @@ class SocketClient : public ASocket
 		std::string	_response;
 
 	public:
-		SocketClient(int port, int fd);
+	SocketClient(int port, int fd, ServerNode * ref);
 		SocketClient(SocketClient const & other );
 		virtual ~SocketClient();
 
@@ -37,8 +38,10 @@ class SocketClient : public ASocket
 		void	clearAll();
 		std::string	getResponse();
 	void	setResponse(std::string input);
-		//prepareResponse(iRequest *);
-		iRequest * _request; // allocation et suppression a chaque boucle de lecture/ecriture
+
+	//prepareResponse(iRequest *);
+	ServerNode *	_server;
+	iRequest *		_request; // allocation et suppression a chaque boucle de lecture/ecriture
 };
 
 #endif

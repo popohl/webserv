@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/28 12:17:10 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 17:14:07 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -83,9 +83,10 @@ const std::string & iRequest::getRequestURI()
 	return (_requestURI);
 }
 
-std::string getRequest::createResponse() {
+std::string getRequest::createResponse(ServerNode * server) {
 	std::string response;
 
+	std::cout << server << std::endl;
 	response += "HTTP/1.1 200 Ok\r\n";
 	if (_message._status != 500 && _message._status != 503)
 		response += date();
@@ -93,16 +94,19 @@ std::string getRequest::createResponse() {
 	response += "Content-length: 5\r\n"; //replace it with the length of the body to send
 	response += "\r\n";
 	//body
+//	if (
 	response += "Hello"; //body to send
 	return response;
 }
 
-std::string postRequest::createResponse() {
+std::string postRequest::createResponse(ServerNode * server) {
+	(void)server;
 	std::string response;
 	return response;
 }
 
-std::string deleteRequest::createResponse() {
+std::string deleteRequest::createResponse(ServerNode * server) {
+	(void)server;
 	std::string response;
 	return response;
 }
