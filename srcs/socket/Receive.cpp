@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/28 17:07:22 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 17:16:01 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ void	createClient(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & s
 		return ;
 	}
 	fcntl(temp_fd, F_SETFL, O_NONBLOCK);
+																			// Pierre : I need this part !
 	SocketClient *client = new SocketClient(socket_port.getPort(), temp_fd, socket_port._server);
 	socket.push_back(client);
 	sets.readfds.add(temp_fd);

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-//   Updated: 2022/03/28 16:50:42 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 18:09:40 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int main( int argc, char **argv )
 	(void)argc;(void)argv;
 	//protect for one argument usecase
 //	Parser			parser(argv[1]);
-	Parser  parser("./srcs/testing/config_files/everyRight.conf");
+	Parser  parser("./srcs/testing/config_files/basic_file.conf");
 	ConfigFileNode	config = parser.getConfigFile();
 
 	// Get all the port to listen from configuration file parsing

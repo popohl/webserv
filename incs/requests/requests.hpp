@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/28 17:08:51 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 19:38:05 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ public:
 	void parse(void) {};
 	void sendRequest(void) {};
 	std::string createResponse(ServerNode * server);
+	std::string createResponseBody(ServerNode *server);
 };
 
 class postRequest : public iRequest
