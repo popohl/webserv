@@ -12,7 +12,7 @@ CXXFLAGS += $(INCLUDE)
 
 MAIN = gtest_main.cpp
 
-FILES = lexerTests astTests parserTests
+FILES = lexerTests astTests parserTests rulesTests
 
 WEBSERV_OBJS_PATH = ../../objs/
 

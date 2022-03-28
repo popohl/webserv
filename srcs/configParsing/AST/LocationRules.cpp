@@ -6,12 +6,11 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/24 17:03:27 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/28 11:43:45 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configParsing/AST/LocationRules.hpp"
-#include "configParsing/helperFunctions.hpp"
 
 LocationRules::LocationRules( void )
 {
@@ -59,25 +58,6 @@ LocationRules &	LocationRules::operator=( LocationRules const & src )
 	this->uploadPath = src.uploadPath;
 	this->locationPath = src.locationPath;
 	return *this;
-}
-
-bool 	LocationRules::isMethodAllowed( char selectedMethod ) const
-{
-	if ((selectedMethod & allowedMethod) != 0)
-		return true;
-	return false;
-}
-
-bool	LocationRules::isMethodAllowed( std::string method ) const
-{
-	if (method == "GET")
-		return isMethodAllowed(LocationRules::GET);
-	else if (method == "POST")
-		return isMethodAllowed(LocationRules::POST);
-	else if (method == "DELETE")
-		return isMethodAllowed(LocationRules::DELETE);
-	else
-		throw std::exception();
 }
 
 void	LocationRules::resetRules( void )
@@ -144,9 +124,4 @@ std::string	LocationRules::getPathFromLocation( std::string pathFromUrl ) const
 
 	result.replace(0, locationPath.size(), root);
 	return result;
-}
-
-bool		LocationRules::isCgi( std::string uri ) const
-{
-	return hasCgiExtension(uri, this->cgiExtension);
 }

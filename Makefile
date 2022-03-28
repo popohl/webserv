@@ -15,8 +15,8 @@ SRCS	= cgi/cgi.cpp cgi/fork.cpp cgi/pipe.cpp configParsing/AST/ConfigFileNode.cp
 		  configParsing/AST/LocationRules.cpp \
 		  configParsing/AST/ServerNode.cpp configParsing/AST/ServerRules.cpp \
 		  configParsing/Lexer.cpp configParsing/Parser.cpp \
-		  configParsing/Token.cpp configParsing/helperFunctions.cpp \
-		  main.cpp
+		  configParsing/Rules.cpp configParsing/Token.cpp \
+		  configParsing/helperFunctions.cpp main.cpp
 
 # Compiler
 CC		= c++
