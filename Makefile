@@ -17,11 +17,7 @@ SRCS	= cgi/cgi.cpp cgi/fork.cpp cgi/pipe.cpp \
 		  configParsing/AST/ServerNode.cpp configParsing/AST/ServerRules.cpp \
 		  configParsing/Lexer.cpp configParsing/Parser.cpp \
 		  configParsing/Rules.cpp configParsing/Token.cpp \
-		  configParsing/helperFunctions.cpp main.cpp requests/requestHeader.cpp \
-		  requests/requests.cpp responses/response.cpp socket/ASocket.cpp \
-		  socket/FdSet.cpp socket/Receive.cpp socket/Send.cpp socket/Server.cpp \
-		  socket/SocketClient.cpp socket/SocketPort.cpp socket/conf_example \
-		  socket/info.txt socket/server socket/test.cpp
+		  configParsing/helperFunctions.cpp main.cpp
 
 # Compiler
 CC		= c++

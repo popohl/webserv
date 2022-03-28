@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 15:31:21 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/28 15:00:42 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/28 17:14:46 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include <sys/wait.h>
 
 #include <errno.h>
 
@@ -62,7 +63,28 @@ static void	writeFileToStdIn( const char* pathToFile )
 	}
 }
 
-static void	executeChildProcess( void )
+static std::string&	readCgiOutput( int pipeFd[2], std::string& cgiOutput )
+{
+	const int	bufferSize = 500;
+	int		ret;
+	char	buffer[bufferSize];
+
+	close(pipeFd[1]);
+	do
+	{
+		ret = read(pipeFd[0], buffer, bufferSize);
+		cgiOutput.append(buffer, ret);
+	} while (ret > 0);
+	close(pipeFd[0]);
+	if (ret < 0)
+	{
+		// 500 Internal Server Error
+		throw std::exception();
+	}
+	return cgiOutput;
+}
+
+static void	executeChildProcess( int pipeFd[2] )
 {
 	char**	execveEnvp;
 	char**	execveArgv;
@@ -70,6 +92,9 @@ static void	executeChildProcess( void )
 	char	program[] = "/usr/bin/php-cgi";
 	/* char	program[] = "/mnt/nfs/homes/pohl/Documents/42/webserv/research/ubuntu_cgi_tester"; */
 
+	close(pipeFd[0]);
+	dup2(pipeFd[1], STDOUT_FILENO);
+	close(pipeFd[1]);
 	std::cout << "Using " << program << std::endl;
 	execveEnvp = createEnvp();
 	execveArgv = createArgv(program, "/mnt/nfs/homes/pohl/Documents/b");
@@ -77,25 +102,20 @@ static void	executeChildProcess( void )
 	err = execve(program, execveArgv, execveEnvp);
 	if (err == -1)
 		throw std::logic_error(strerror(errno));
+	exit(0);
 }
 
 std::string	executeCgi( void )
 {
 	int			pipeFd[2];
 	int			forkPid;
-	std::string	cgiResult;
+	std::string	cgiOutput;
 
 	createPipe(pipeFd);
 	forkPid = createFork();
-	// if child process
 	if (isChildProcess(forkPid))
-		executeChildProcess();
-	// if parent
-	else
-	{
-	//		wait for cgi execution
-	//		maybe parse the cgi header? if so set the http header
-	//		return result string
-	}
-	return cgiResult;
+		executeChildProcess(pipeFd);
+	waitpid(forkPid, NULL, WNOHANG);
+	cgiOutput = readCgiOutput(pipeFd, cgiOutput);
+	return cgiOutput;
 }
