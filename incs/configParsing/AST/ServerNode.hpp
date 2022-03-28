@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 14:54:43 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/23 12:15:27 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 16:35:50 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ public:
 	const std::vector<LocationRules>	&getLocationList( void ) const;
 	ServerRules							&getServerRules( void );
 	const ServerRules					&getServerRules( void ) const;
-	LocationRules						&LatestLocation( void );
+	LocationRules						&latestLocation( void );
 
 	const LocationRules*	getLocationFromUrl( std::string pathFromUrl ) const;
 	bool	isCgi( std::string uri, const LocationRules* location ) const;

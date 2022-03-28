@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/03/22 15:34:56 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:00:50 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,23 @@
 
 ServerRules::ServerRules( void )
 {
-	if (ServerRules::verbose)
-		std::cout << "Default constructor for ServerRules called" << std::endl;
 	resetRules();
 	return;
 }
 
 ServerRules::ServerRules( ServerRules const & src )
 {
-	if (ServerRules::verbose)
-		std::cout << "Copy constructor for ServerRules called" << std::endl;
 	*this = src;
 	return;
 }
 
 ServerRules::~ServerRules( void )
 {
-	if (ServerRules::verbose)
-		std::cout << "Destructor for ServerRules called" << std::endl;
 	return;
 }
 
 ServerRules &	ServerRules::operator=( ServerRules const & src )
 {
-	if (ServerRules::verbose)
-		std::cout << "Assignement operator for ServerRules called" << std::endl;
 	if (this == &src)
 		return *this;
 	this->autoindex = src.autoindex;
@@ -71,14 +63,7 @@ void	ServerRules::addErrorPage( int errorCode, std::string errorPagePath )
 	this->errorPage[errorCode] = errorPagePath;
 }
 
-void	ServerRules::addIndex( std::string newIndex )
-{
-	this->index.push_back(newIndex);
-}
-
 void	ServerRules::addServerName( std::string newServerName )
 {
 	this->serverName.push_back(newServerName);
 }
-
-bool	ServerRules::verbose = false;

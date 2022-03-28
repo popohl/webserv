@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/24 13:26:58 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/24 17:08:57 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,27 +14,15 @@
 #include "configParsing/Parser.hpp"
 #include "configParsing/Exception.hpp"
 
-Parser::Parser( void ): readLocationRules(false)
-{
-	if (Parser::verbose)
-		std::cout << "Default constructor for Parser called" << std::endl;
-	return;
-}
+Parser::Parser( void ): readLocationRules(false) { return; }
 
 Parser::Parser( const std::string inputFileName ): readLocationRules(false)
 {
-	if (Parser::verbose)
-		std::cout << "input file constructor for Parser called" << std::endl;
 	this->openFile(inputFileName);
 	return;
 }
 
-Parser::~Parser( void )
-{
-	if (Parser::verbose)
-		std::cout << "Destructor for Parser called" << std::endl;
-	return;
-}
+Parser::~Parser( void ) { return; }
 
 void	Parser::eat( Token::tokenType expectedType )
 {
@@ -82,7 +70,7 @@ std::string	Parser::createEatErrorMsg( Token::tokenType expectedType )
 		<< std::endl;
 	if (this->readLocationRules)
 		out << "           location number: "
-			<< configFile.LatestServer().getLocationList().size() << std::endl;
+			<< configFile.latestServer().getLocationList().size() << std::endl;
 	out << "           expected: " << Token(expectedType, "").getTypeName()
 		<< std::endl;
 	return out.str();
@@ -136,22 +124,23 @@ void	Parser::parseServer( void )
 void	Parser::parseServerRule( void )
 {
 	std::string	ruleName = currentToken.getValue();
+	ServerRules& serverRules = configFile.latestServer().getServerRules();
 
 	eat(Token::word);
 	if (ruleName == "autoindex")
-		parseAutoindexRule();
+		parseAutoindexRule(serverRules.autoindex);
 	else if (ruleName == "client_max_body_size")
-		parseClientMaxBodySizeRule();
+		parseClientMaxBodySizeRule(serverRules.clientMaxBodySize);
 	else if (ruleName == "cgi")
-		parseCgiRule();
+		parseCgiRule(serverRules.cgiExtension, serverRules.cgiPath);
 	else if (ruleName == "error_page")
-		parseErrorPageRule();
+		parseErrorPageRule(serverRules.errorPage);
 	else if (ruleName == "index")
-		 parseIndexRule();
+		 parseIndexRule(serverRules.index);
 	else if (ruleName == "listen")
-		parseListenRule();
+		parseListenRule(serverRules);
 	else if (ruleName == "server_name")
-		parseServerNameRule();
+		parseServerNameRule(serverRules);
 	else
 		throw ParsingException("rule name invalid");
 	eat(Token::semicolon);
@@ -161,9 +150,9 @@ void	Parser::parseLocation( void )
 {
 	if (currentToken.getValue() != "location")
 		throw ParsingException("Unknown keyword encountered");
-	configFile.LatestServer().createNewLocationNode();
+	configFile.latestServer().createNewLocationNode();
 	eat(Token::word);
-	configFile.LatestServer().LatestLocation().locationPath
+	configFile.latestServer().latestLocation().locationPath
 		= currentToken.getValue();
 	eat(Token::path);
 	eat(Token::openingBracket);
@@ -175,49 +164,45 @@ void	Parser::parseLocation( void )
 void	Parser::parseLocationRule( void )
 {
 	std::string	ruleName = currentToken.getValue();
+	LocationRules& locationRules = configFile.latestServer().latestLocation();
 
 	eat(Token::word);
 	if (ruleName == "allowed_method")
-		parseAllowedMethod();
+		parseAllowedMethod(locationRules);
 	else if (ruleName == "autoindex")
-		parseAutoindexRule();
+		parseAutoindexRule(locationRules.autoindex);
 	else if (ruleName == "cgi")
-		parseCgiRule();
+		parseCgiRule(locationRules.cgiExtension, locationRules.cgiPath);
 	else if (ruleName == "client_max_body_size")
-		parseClientMaxBodySizeRule();
+		parseClientMaxBodySizeRule(locationRules.clientMaxBodySize);
 	else if (ruleName == "error_page")
-		parseErrorPageRule();
+		parseErrorPageRule(locationRules.errorPage);
 	else if (ruleName == "index")
-		parseIndexRule();
+		parseIndexRule(locationRules.index);
 	else if (ruleName == "redirect")
-		parseRedirectRule();
+		parseRedirectRule(locationRules);
 	else if (ruleName == "root")
-		parseRootRule();
+		parseRootRule(locationRules.root);
 	else if (ruleName == "upload_path")
-		parseUploadPathRule();
+		parseUploadPathRule(locationRules.uploadPath);
 	else
 		throw ParsingException("rule name invalid");
 	eat(Token::semicolon);
 }
 
-void	Parser::parseAllowedMethod( void )
+void	Parser::parseAllowedMethod( LocationRules& locationRules )
 {
-	configFile.LatestServer().LatestLocation()
-		.forbidMethod(LocationRules::ALL_METHODS);
+	locationRules.forbidMethod(LocationRules::ALL_METHODS);
 	while (currentToken.getType() == Token::word)
 	{
-		configFile.LatestServer().LatestLocation()
-			.allowMethod(currentToken.getValue());
+		locationRules.allowMethod(currentToken.getValue());
 		eat(Token::word);
 	}
 }
 
-void	Parser::parseAutoindexRule( void )
+void	Parser::parseAutoindexRule( bool& autoindex )
 {
 	std::string toggleValue = currentToken.getValue();
-	bool&	autoindex = readLocationRules
-		? configFile.LatestServer().LatestLocation().autoindex
-		: configFile.LatestServer().getServerRules().autoindex;
 
 	eat(Token::word);
 	if (toggleValue == "on")
@@ -226,18 +211,10 @@ void	Parser::parseAutoindexRule( void )
 		autoindex = false;
 	else
 		throw ParsingException("autoindex value invalid");
-		
 }
 
-void	Parser::parseCgiRule( void )
+void	Parser::parseCgiRule( std::string& cgiExtension, std::string& cgiPath )
 {
-	std::string&	cgiExtension = readLocationRules ?
-		configFile.LatestServer().LatestLocation().cgiExtension :
-		configFile.LatestServer().getServerRules().cgiExtension;
-	std::string&	cgiPath = readLocationRules ?
-		configFile.LatestServer().LatestLocation().cgiPath :
-		configFile.LatestServer().getServerRules().cgiPath;
-
 	if (currentToken.getType() == Token::word)
 	{
 		cgiExtension = currentToken.getValue();
@@ -254,7 +231,7 @@ void	Parser::parseCgiRule( void )
 	}
 }
 
-void	Parser::parseClientMaxBodySizeRule( void )
+void	Parser::parseClientMaxBodySizeRule( int& clientMaxBodySize )
 {
 	Token	sizeToken = currentToken;
 
@@ -262,30 +239,20 @@ void	Parser::parseClientMaxBodySizeRule( void )
 		eat(Token::number);
 	else
 		eat(Token::size);
-	if (readLocationRules)
-		configFile.LatestServer().LatestLocation().clientMaxBodySize
-			= sizeToken.sizeAtoi();
-	else
-		configFile.LatestServer().getServerRules().clientMaxBodySize
-			= sizeToken.sizeAtoi();
+	clientMaxBodySize = sizeToken.sizeAtoi();
 }
 
-void	Parser::parseErrorPageRule( void )
+void	Parser::parseErrorPageRule( std::map<int, std::string>& errorPage )
 {
 	int	errorCode = currentToken.sizeAtoi();
-	std::map<int, std::string>& errorPageRule = readLocationRules ?
-		configFile.LatestServer().LatestLocation().errorPage :
-		configFile.LatestServer().getServerRules().errorPage;
 
 	eat(Token::number);
-	errorPageRule[errorCode] = currentToken.getValue();
+	errorPage[errorCode] = currentToken.getValue();
 	eat(Token::path);
 }
 
-void	Parser::parseListenRule( void )
+void	Parser::parseListenRule( ServerRules& serverRules )
 {
-	ServerRules&	serverRules = configFile.LatestServer().getServerRules();
-
 	switch (currentToken.getType())
 	{
 		case Token::ipAddress:
@@ -311,31 +278,25 @@ void	Parser::parseListenRule( void )
 	}
 }
 
-void	Parser::parseIndexRule( void )
+void	Parser::parseIndexRule( std::vector<std::string>& index )
 {
-	std::vector<std::string>&	indexList = readLocationRules ?
-		configFile.LatestServer().LatestLocation().index :
-		configFile.LatestServer().getServerRules().index;
-
-	indexList.clear();
+	index.clear();
 	while (currentToken.getType() == Token::word)
 	{
-		indexList.push_back(currentToken.getValue());
+		index.push_back(currentToken.getValue());
 		eat(Token::word);
 	}
 	if (currentToken.getType() == Token::path)
 	{
-		indexList.push_back(currentToken.getValue());
+		index.push_back(currentToken.getValue());
 		eat(Token::path);
 	}
-	if (indexList.empty())
+	if (index.empty())
 		throw ParsingException("index rule cannot be empty");
 }
 
-void	Parser::parseRedirectRule( void )
+void	Parser::parseRedirectRule( LocationRules& locationRules )
 {
-	LocationRules&	locationRules = configFile.LatestServer().LatestLocation();
-
 	if (currentToken.getType() == Token::number)
 	{
 		locationRules.redirectCode = currentToken.sizeAtoi();
@@ -350,31 +311,28 @@ void	Parser::parseRedirectRule( void )
 		eat(Token::path);
 }
 
-void	Parser::parseRootRule( void )
+void	Parser::parseRootRule( std::string& root )
 {
-	configFile.LatestServer().LatestLocation().root = currentToken.getValue();
+	root = currentToken.getValue();
 	eat(Token::path);
 }
 
-void	Parser::parseUploadPathRule( void )
+void	Parser::parseServerNameRule( ServerRules& serverRules )
 {
-	configFile.LatestServer().LatestLocation().uploadPath = currentToken.getValue();
-	eat(Token::path);
-}
-
-void	Parser::parseServerNameRule( void )
-{
-	std::vector<std::string>	&serverNameList
-		= configFile.LatestServer().getServerRules().serverName;
-
-	serverNameList.clear();
+	serverRules.serverName.clear();
 	while (currentToken.getType() == Token::word)
 	{
-		serverNameList.push_back(currentToken.getValue());
+		serverRules.addServerName(currentToken.getValue());
 		eat(Token::word);
 	}
-	if (serverNameList.empty())
+	if (serverRules.serverName.empty())
 		throw ParsingException("server_name rule cannot be empty");
+}
+
+void	Parser::parseUploadPathRule( std::string& uploadPath )
+{
+	uploadPath = currentToken.getValue();
+	eat(Token::path);
 }
 
 const ConfigFileNode	&Parser::getConfigFile( void ) const
@@ -386,5 +344,3 @@ ConfigFileNode			&Parser::getConfigFile( void )
 {
 	return this->configFile;
 }
-
-bool	Parser::verbose = false;
