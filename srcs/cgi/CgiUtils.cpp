@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   childProcess.cpp                                   :+:      :+:    :+:   */
+/*   CgiUtils.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/29 10:14:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/29 13:34:16 by pohl             ###   ########.fr       */
+/*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
+/*   Updated: 2022/03/29 15:25:49 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cgi.hpp"
+#include "cgi/Cgi.hpp"
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,7 +19,7 @@
 #include <errno.h>
 #include <exception>
 
-static char**	createArgv( const char* binPath, const char* filePath )
+char**	Cgi::createArgv( const char* binPath, const char* filePath )
 {
 	char** argv;
 
@@ -30,13 +30,13 @@ static char**	createArgv( const char* binPath, const char* filePath )
 	return argv;
 }
 
-static char**	generateEnvpPtrFromMap( std::map<std::string, std::string> envp)
+char**	Cgi::generateEnvpPtrFromMap( std::map<std::string, std::string> envp)
 {
 	(void)envp;
 	return NULL;
 }
 
-static char**	createEnvp( const Rules& rules )
+char**	Cgi::createEnvp( const Rules& rules )
 {
 	std::map<std::string, std::string>	envp;
 
@@ -53,29 +53,43 @@ static char**	createEnvp( const Rules& rules )
 	return generateEnvpPtrFromMap(envp);
 }
 
-static void	writeBodyToStdIn( void )
+void	Cgi::writeBodyToStdIn( void )
 {
 	std::string body = "name=paul&last_name=ohl";
 
 	write(STDIN_FILENO, body.c_str(), body.size());
 }
 
-void	executeChildProcess( const Rules &rules, int pipeFd[2] )
+int	Cgi::createFork( void )
 {
-	char	requested_document[] = "/mnt/nfs/homes/pohl/Documents/b";
-	char	request_type[] = "POST";
+	int forkPid = fork();
 
-	char**	execveEnvp;
-	char**	execveArgv;
-	int		err;
+	if (forkPid == -1)
+	{
+		// 500 Internal Server Error
+		throw std::exception();
+	}
+	return forkPid;
+}
 
-	dup2(pipeFd[1], STDOUT_FILENO);
-	closePipe(pipeFd);
-	execveEnvp = createEnvp(rules);
-	execveArgv = createArgv(rules.cgiPath.c_str(), requested_document);
-	if (strcmp(request_type, "POST") == 0)
-		writeBodyToStdIn();
-	err = execve(rules.cgiPath.c_str(), execveArgv, execveEnvp);
-	if (err == -1)
-		throw std::logic_error(strerror(errno)); // error 500
+bool	Cgi::isChildProcess( int forkPid )
+{
+	return (forkPid != 0);
+}
+
+void	Cgi::createPipe( int pipeFd[2] )
+{
+	int returnValue = pipe(pipeFd);
+
+	if (returnValue != 0)
+	{
+		// 500 Internal Server Error
+		throw std::exception();
+	}
+}
+
+void	Cgi::closePipe( int pipeFd[2] )
+{
+	close(pipeFd[0]);
+	close(pipeFd[1]);
 }
