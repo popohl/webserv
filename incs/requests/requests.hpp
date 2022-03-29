@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/29 10:37:57 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 13:55:02 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,6 @@
 #include "requests/requestBase.hpp"
 #include "responses/response.hpp"
 #include "configParsing/Parser.hpp"
-
-const std::pair<std::string, std::string>responseStatus[] = {
-	std::make_pair("100", "Continue"),
-	std::make_pair("200", "OK"),
-	std::make_pair("400", "Bad Request"),
-	
-	std::make_pair("405", "Method Not Allowed"),
-};
-
 
 std::string date();
 std::string eatWord(std::string & line);
@@ -40,7 +31,7 @@ class iRequest
 	response	_response;
 	
 	bool receivingisDone();
-	virtual std::string createResponse() = 0;
+	virtual response createResponse() = 0;
 	virtual ~iRequest() {};
 
 	const std::string & getRequestURI();
@@ -48,6 +39,8 @@ class iRequest
 protected:
 	ServerNode	*_server;
 	std::string _requestURI;
+
+	std::string createFilePath();
 };
 
 class getRequest : public iRequest
@@ -59,9 +52,10 @@ public:
 
 //	response createResponse();
 
-	void sendRequest(void) {};
-	std::string createResponse();
+//	void sendRequest(void) {};
+	response createResponse();
 	std::string	createResponseBody();
+//private:
 };
 
 class postRequest : public iRequest
@@ -71,8 +65,8 @@ class postRequest : public iRequest
 	~postRequest() {};
 
 
-	void sendRequest(void) {};
-	std::string createResponse();
+//	void sendRequest(void) {};
+	response createResponse();
 };
 
 class deleteRequest : public iRequest
@@ -81,8 +75,8 @@ class deleteRequest : public iRequest
 	deleteRequest();
 	~deleteRequest() {};
 
-	void	sendRequest(void) {};
-	std::string createResponse();
+//	void	sendRequest(void) {};
+	response createResponse();
 };
 
 #endif

@@ -26,7 +26,7 @@ SRCS	= configParsing/AST/ConfigFileNode.cpp \
 # Compiler
 CC		= c++
 # Compiler flags
-CFLAGS	+= -Wall -Wextra -g -std=c++98
+CFLAGS	+= -Wall -Wextra -g3 -std=c++98
 # Linker flags
 LDFLAGS	=
 

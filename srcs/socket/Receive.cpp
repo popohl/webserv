@@ -6,12 +6,14 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/29 10:25:31 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 14:34:27 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/Server.hpp"
 #include "requests/requests.hpp"
+
+#define GENERIC_MSG "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!"
 
 static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
@@ -57,7 +59,12 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		if(!client._request)
 			client.setResponse(tmp + " 405 Method Not Allowed\r\n\r\n");
 		if (client._request && client._request->receivingisDone())
-			client.setResponse(client._request->createResponse());
+		{
+			response test = client._request->createResponse();
+//			std::cout << "this is the result : "<< test.createFormattedResponse() << std::endl;
+			client.setResponse(test.createFormattedResponse());
+//			client.setResponse(GENERIC_MSG);
+		}
 
 		//use this to switch from read to write
 		sets.readfds.remove(client.getSocketFd());

@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/29 10:31:33 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 14:33:50 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -84,26 +84,36 @@ const std::string & iRequest::getRequestURI()
 	return (_requestURI);
 }
 
-std::string getRequest::createResponse() {
-	std::string response;
+response getRequest::createResponse() {
+	response response;
 
-	std::cout << _server << std::endl;
-	response += "HTTP/1.1 200 Ok\r\n";
-	if (_message._status != 500 && _message._status != 503)
-		response += date();
-	response += "Accept: /text/html\r\n";
+	std::string filePath = createFilePath();
+	if (filePath.length())
+	{
+		response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+		response.tryToOpenAndReadFile(filePath);
+	}
+	response.setStatusLine();	
+//	reponse;
 
-	response += "Content-length: 108\r\n"; //replace it with the length of the body to send
-	response += "\r\n";
-	//body
+	/*
+	  std::cout << _server << std::endl;
+	  response += "HTTP/1.1 200 Ok\r\n";
+	  if (_message._status != 500 && _message._status != 503)
+	  response += date();
+	  response += "Accept: /text/html\r\n";
+
+	  response += "Content-length: 108\r\n"; //replace it with the length of the body to send
+	  response += "\r\n";
+	  //body
 
 
-	response += createResponseBody();
-
+	  response += createResponseBody();
+	*/
 	return response;
 }
-
-std::string getRequest::createResponseBody()
+/*
+response getRequest::createResponseBody()
 {
 	std::string body;
 
@@ -122,19 +132,27 @@ std::string getRequest::createResponseBody()
 			body += std::string(buffer);
 		}
 	}
-	return (body);
-	
+	return (body);	
+}
+*/
+std::string iRequest::createFilePath()
+{
+	const LocationRules * location = _server->getLocationFromUrl(getRequestURI());
+	std::string filePath;
+	if (location)
+		filePath = (location->root + getRequestURI());
+	return (filePath);
 }
 
-std::string postRequest::createResponse() {
+response postRequest::createResponse() {
 
-	std::string response;
+	response response;
 	return response;
 }
 
-std::string deleteRequest::createResponse() {
+response deleteRequest::createResponse() {
 
-	std::string response;
+	response response;
 	return response;
 }
 
@@ -146,7 +164,7 @@ std::string date()
 	time_t now = time(0);
 	tm * gmt = gmtime(&now);	
 
-	std::string result("Date:");
+	std::string result;
 	std::stringstream tmp;
 	tmp << " " << days[gmt->tm_wday];
 	tmp << ", " << gmt->tm_mday;
@@ -157,7 +175,7 @@ std::string date()
 	tmp << ":" << gmt->tm_sec;
 
 	result += tmp.str();
-	result += " GMT\r\n";
+	result += " GMT";
 	return (result);
 }
 
