@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 10:14:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/29 10:18:27 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/29 13:34:16 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,45 +30,40 @@ static char**	createArgv( const char* binPath, const char* filePath )
 	return argv;
 }
 
-static char**	createEnvp( void )
+static char**	generateEnvpPtrFromMap( std::map<std::string, std::string> envp)
 {
-	char**		envp;
-	/* std::string	document_root = "DOCUMENT_ROOT="; */
+	(void)envp;
+	return NULL;
+}
+
+static char**	createEnvp( const Rules& rules )
+{
+	std::map<std::string, std::string>	envp;
 
 	/* document_root += get_current_dir_name(); */
-	envp = (char**)malloc(sizeof(*envp) * 6);
-	envp[0] = strdup("REQUEST_METHOD=POST");
-	envp[1] = strdup("SERVER_PROTOCOL=HTTP/1.1");
+	/* envp = (char**)malloc(sizeof(*envp) * 6); */
+	/* envp[0] = strdup("REQUEST_METHOD=POST"); */
+	/* envp[1] = strdup("SERVER_PROTOCOL=HTTP/1.1"); */
 	/* envp[2] = strdup("PATH_INFO=a"); */
 	/* envp[3] = strdup(document_root.c_str()); */
-	envp[2] = strdup("PATH_TRANSLATED=/mnt/nfs/homes/pohl/Documents/a");
-	envp[3] = strdup("REDIRECT_STATUS=1");
-	envp[4] = 0;
-	return envp;
+	/* envp[2] = strdup("PATH_TRANSLATED=/mnt/nfs/homes/pohl/Documents/a"); */
+	/* envp[3] = strdup("REDIRECT_STATUS=1"); */
+	/* envp[4] = 0; */
+	(void)rules;
+	return generateEnvpPtrFromMap(envp);
 }
 
-static void	writeFileToStdIn( const char* pathToFile )
+static void	writeBodyToStdIn( void )
 {
-	int	fd = open(pathToFile, O_RDONLY);
+	std::string body = "name=paul&last_name=ohl";
 
-	if (fd == -1)
-	{
-		// 500 Internal Server Error
-		throw std::exception();
-	}
-	if (dup2(fd, STDIN_FILENO) == -1)
-	{
-		// 500 Internal Server Error
-		throw std::exception();
-	}
+	write(STDIN_FILENO, body.c_str(), body.size());
 }
 
-void	executeChildProcess( int pipeFd[2] )
+void	executeChildProcess( const Rules &rules, int pipeFd[2] )
 {
-	const char	programName[] = "/usr/bin/php";
-	/* const char	programName[] = "/usr/bin/php-cgi"; */
-	/* const char	programName[] = "/usr/bin/perl"; */
-	/* const char	programName[] = "/usr/bin/python3"; */
+	char	requested_document[] = "/mnt/nfs/homes/pohl/Documents/b";
+	char	request_type[] = "POST";
 
 	char**	execveEnvp;
 	char**	execveArgv;
@@ -76,10 +71,11 @@ void	executeChildProcess( int pipeFd[2] )
 
 	dup2(pipeFd[1], STDOUT_FILENO);
 	closePipe(pipeFd);
-	execveEnvp = createEnvp();
-	execveArgv = createArgv(programName, "/mnt/nfs/homes/pohl/Documents/b");
-	writeFileToStdIn("/mnt/nfs/homes/pohl/Documents/c");
-	err = execve(programName, execveArgv, execveEnvp);
+	execveEnvp = createEnvp(rules);
+	execveArgv = createArgv(rules.cgiPath.c_str(), requested_document);
+	if (strcmp(request_type, "POST") == 0)
+		writeBodyToStdIn();
+	err = execve(rules.cgiPath.c_str(), execveArgv, execveEnvp);
 	if (err == -1)
 		throw std::logic_error(strerror(errno)); // error 500
 }

@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 15:31:21 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/29 10:47:19 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/29 10:56:14 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static std::string	readCgiOutput( int pipeFd[2] )
 	return cgiOutput;
 }
 
-std::string	executeCgi( void )
+std::string	executeCgi( const Rules &rules )
 {
 	int			pipeFd[2];
 	int			forkPid;
@@ -47,7 +47,7 @@ std::string	executeCgi( void )
 	forkPid = createFork();
 	if (isChildProcess(forkPid))
 	{
-		executeChildProcess(pipeFd);
+		executeChildProcess(rules, pipeFd);
 		exit(0);
 	}
 	waitpid(forkPid, NULL, WNOHANG);

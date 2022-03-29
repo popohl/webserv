@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/28 17:15:04 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/29 13:36:49 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ int main( int argc, char **argv )
 	Parser			parser("./srcs/testing/config_files/everyRight.conf");
 	ConfigFileNode	result = parser.getConfigFile();
 
-	std::cout << executeCgi() << std::endl;
+	Rules rules;
+	rules.setValues(result.latestServer(), "/bonjour.py");
+	std::cout << executeCgi(rules) << std::endl;
 	// Get all the port to listen from Paul's Parsing
 	/* std::vector<int>	allPort; */
 	/* allPort.push_back(8080); */
