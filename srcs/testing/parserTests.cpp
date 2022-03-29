@@ -72,12 +72,27 @@ TEST(ParserSuite, EveryRightPossibilityFile)
 	selectedLocation = result.getServerList()[3].getLocationFromUrl("/dont_exist/nope/");
 	EXPECT_EQ(selectedLocation, (const LocationRules*)NULL);
 
-	std::set<int>	listeningPorts = result.getListeningPorts();
-	std::set<int>::iterator it = listeningPorts.begin();
-	EXPECT_EQ(*(it++), 7000);
-	EXPECT_EQ(*(it++), 8000);
-	EXPECT_EQ(*(it++), 9000);
+	mapPortToServers	listeningPorts = result.getListeningPorts();
+	mapPortToServers::iterator it = listeningPorts.begin();
+	EXPECT_EQ((it++)->first, 7000);
+	EXPECT_EQ((it++)->first, 8000);
+	EXPECT_EQ((it++)->first, 9000);
 	EXPECT_EQ(it, listeningPorts.end());
+}
+
+TEST(ParserSuite, OneSocketMultServers)
+{
+	Parser	parser("./config_files/one_socket_mult_servers.conf");
+	ConfigFileNode	result = parser.getConfigFile();
+
+	mapPortToServers	listeningPorts = result.getListeningPorts();
+	mapPortToServers::iterator it = listeningPorts.begin();
+	EXPECT_EQ(it->first, 6000);
+	EXPECT_EQ(it->second.size(), (size_t)1);
+	it++;
+	EXPECT_EQ(it->first, 7000);
+	EXPECT_EQ(it->second.size(), (size_t)5);
+	EXPECT_EQ(it->second[0].getServerRules().serverName[0], "hello.com");
 }
 
 bool checkErrorParsing( std::string fileName )

@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 14:52:06 by pohl              #+#    #+#             */
-//   Updated: 2022/03/28 16:37:53 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/03/29 13:49:24 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include <vector>
 # include <set>
 # include <map>
+
+typedef std::map<int, std::vector<ServerNode> >	mapPortToServers;
 
 class ConfigFileNode
 {
@@ -31,7 +33,7 @@ public:
 
 	std::vector<ServerNode>			&getServerList( void );
 	const std::vector<ServerNode>	&getServerList( void ) const;
-	std::map<int, ServerNode>		getListeningPorts( void ) const;
+	mapPortToServers				getListeningPorts( void ) const;
 	ServerNode						&latestServer( void );
 
 	ServerNode&	createNewServerNode( void );
