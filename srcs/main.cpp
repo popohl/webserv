@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-//   Updated: 2022/03/28 18:09:40 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/03/29 14:14:35 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,17 +26,17 @@ int main( int argc, char **argv )
 	ConfigFileNode	config = parser.getConfigFile();
 
 	// Get all the port to listen from configuration file parsing
-	std::map<int, ServerNode> listeningPorts = config.getListeningPorts();
+	mapPortToServers listeningPorts = config.getListeningPorts();
 
 	//Create a containers of Socket pointer.
 	//The Class Socket initialize the bind and the listening for every Socket
 	std::vector<ASocket*>	socket;
 	ASocket					*temp;
-	for (std::map<int, ServerNode>::iterator serverIt = listeningPorts.begin();
+	for (mapPortToServers::iterator serverIt = listeningPorts.begin();
 		 serverIt != listeningPorts.end();
 		 serverIt++)
 	{
-		temp = createSocket(serverIt->first, &serverIt->second);
+		temp = createSocket(serverIt->first, serverIt->second[0]);
 		if (temp)
 			socket.push_back(temp);
 	}
