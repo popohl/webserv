@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 15:31:17 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/28 09:32:45 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/29 10:16:11 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,22 @@
 
 # include <iostream>
 
-std::string	executeCgi( void );
+/*
+ * pipe.cpp
+ */
 void		createPipe( int pipeFd[2] );
+void		closePipe( int pipeFd[2] );
+
+/*
+ * fork.cpp
+ */
+std::string	executeCgi( void );
 int			createFork( void );
 bool		isChildProcess( int forkPid );
+
+/*
+ * childProcess.cpp
+ */
+void	executeChildProcess( int pipeFd[2] );
 
 #endif

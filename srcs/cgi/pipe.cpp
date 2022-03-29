@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 09:20:36 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/28 10:15:26 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/29 09:42:48 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,4 +22,10 @@ void	createPipe( int pipeFd[2] )
 		// 500 Internal Server Error
 		throw std::exception();
 	}
+}
+
+void	closePipe( int pipeFd[2] )
+{
+	close(pipeFd[0]);
+	close(pipeFd[1]);
 }

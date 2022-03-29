@@ -11,11 +11,10 @@ D		= deps/
 NAME	= webserv
 
 # list of your source files
-SRCS	= cgi/cgi.cpp cgi/fork.cpp cgi/pipe.cpp \
-		  configParsing/AST/ConfigFileNode.cpp \
-		  configParsing/AST/LocationRules.cpp \
+SRCS	= cgi/cgi.cpp cgi/fork.cpp cgi/pipe.cpp cgi/childProcess.cpp \
+		  configParsing/AST/ConfigFileNode.cpp configParsing/Lexer.cpp \
+		  configParsing/AST/LocationRules.cpp configParsing/Parser.cpp \
 		  configParsing/AST/ServerNode.cpp configParsing/AST/ServerRules.cpp \
-		  configParsing/Lexer.cpp configParsing/Parser.cpp \
 		  configParsing/Rules.cpp configParsing/Token.cpp \
 		  configParsing/helperFunctions.cpp main.cpp
 
@@ -27,7 +26,7 @@ CFLAGS	+= -Wall -Wextra -g -std=c++98
 LDFLAGS	=
 
 # Run command
-RUN_COMMAND	= # For the moment, make run is alias to make test
+RUN_COMMAND	= ./webserv
 
 # The rest is automatic
 
@@ -77,7 +76,7 @@ fclean: clean
 re: fclean all
 
 .PHONY: run
-run: test
+run: $(NAME)
 	$(RUN_COMMAND)
 
 valgrind: $(NAME)
