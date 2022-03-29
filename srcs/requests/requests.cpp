@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/28 19:44:23 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 10:31:33 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -23,7 +23,7 @@ getRequest::getRequest() {}
 postRequest::postRequest() {}
 deleteRequest::deleteRequest() {}
 
-iRequest * iRequest::createRequest(std::string &input) //be able to remove first line from buffer
+iRequest * iRequest::createRequest(std::string &input, ServerNode * server) //be able to remove first line from buffer
 {
 	iRequest * result = NULL;
 	std::string method, requestUri, httpVersion;
@@ -52,6 +52,7 @@ iRequest * iRequest::createRequest(std::string &input) //be able to remove first
 			result = new deleteRequest;
 		if (result)
 		{
+			result->_server = server;
 			result->_requestURI = requestUri;
 			result->_message.parseRequest(input);
 		}
@@ -83,10 +84,10 @@ const std::string & iRequest::getRequestURI()
 	return (_requestURI);
 }
 
-std::string getRequest::createResponse(ServerNode * server) {
+std::string getRequest::createResponse() {
 	std::string response;
 
-	std::cout << server << std::endl;
+	std::cout << _server << std::endl;
 	response += "HTTP/1.1 200 Ok\r\n";
 	if (_message._status != 500 && _message._status != 503)
 		response += date();
@@ -97,19 +98,19 @@ std::string getRequest::createResponse(ServerNode * server) {
 	//body
 
 
-	response += createResponseBody(server);
+	response += createResponseBody();
 
 	return response;
 }
 
-std::string getRequest::createResponseBody(ServerNode * server)
+std::string getRequest::createResponseBody()
 {
 	std::string body;
 
 	char buffer[1048];
 	memset(&buffer[0], 0, 1048);
 
-	const LocationRules * location = server->getLocationFromUrl(getRequestURI());
+	const LocationRules * location = _server->getLocationFromUrl(getRequestURI());
 	if (location)
 	{
 		std::string filePath(location->root + getRequestURI());
@@ -125,14 +126,14 @@ std::string getRequest::createResponseBody(ServerNode * server)
 	
 }
 
-std::string postRequest::createResponse(ServerNode * server) {
-	(void)server;
+std::string postRequest::createResponse() {
+
 	std::string response;
 	return response;
 }
 
-std::string deleteRequest::createResponse(ServerNode * server) {
-	(void)server;
+std::string deleteRequest::createResponse() {
+
 	std::string response;
 	return response;
 }

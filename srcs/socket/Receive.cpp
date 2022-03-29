@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/28 17:16:01 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 10:25:31 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	std::string tmp(buff);
 	//hide the details later
 	if (!client._request)
-		client._request = iRequest::createRequest(tmp);
+		client._request = iRequest::createRequest(tmp, client._server);
 	else
 		client._request->_message.parseRequest(buff);
 	
@@ -57,7 +57,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		if(!client._request)
 			client.setResponse(tmp + " 405 Method Not Allowed\r\n\r\n");
 		if (client._request && client._request->receivingisDone())
-			client.setResponse(client._request->createResponse(client._server));
+			client.setResponse(client._request->createResponse());
 
 		//use this to switch from read to write
 		sets.readfds.remove(client.getSocketFd());
