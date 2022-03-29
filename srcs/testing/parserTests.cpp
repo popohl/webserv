@@ -92,7 +92,7 @@ TEST(ParserSuite, OneSocketMultServers)
 	it++;
 	EXPECT_EQ(it->first, 7000);
 	EXPECT_EQ(it->second.size(), (size_t)5);
-	EXPECT_EQ(it->second[0].getServerRules().serverName[0], "hello.com");
+	EXPECT_EQ(it->second[0]->getServerRules().serverName[0], "hello.com");
 }
 
 bool checkErrorParsing( std::string fileName )

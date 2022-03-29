@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 16:06:20 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/29 13:52:05 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/29 14:13:08 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ const std::vector<ServerNode>	&ConfigFileNode::getServerList( void ) const
 	return serverList;
 }
 
-mapPortToServers	ConfigFileNode::getListeningPorts( void ) const
+mapPortToServers	ConfigFileNode::getListeningPorts( void )
 {
 	mapPortToServers	listeningPorts;
 
-	for (std::vector<ServerNode>::const_iterator it = serverList.begin();
+	for (std::vector<ServerNode>::iterator it = serverList.begin();
 			it != serverList.end(); it++)
-		listeningPorts[it->getServerRules().listenPort].push_back(*it);
+		listeningPorts[it->getServerRules().listenPort].push_back(&(*it));
 	return listeningPorts;
 }
 
