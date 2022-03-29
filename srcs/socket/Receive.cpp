@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/29 14:34:27 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 15:03:22 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		if (client._request && client._request->receivingisDone())
 		{
 			response test = client._request->createResponse();
-//			std::cout << "this is the result : "<< test.createFormattedResponse() << std::endl;
+			std::cout << "this is the result : |"<< test.createFormattedResponse() << "|" << std::endl;
 			client.setResponse(test.createFormattedResponse());
 //			client.setResponse(GENERIC_MSG);
 		}

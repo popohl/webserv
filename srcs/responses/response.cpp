@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/29 14:32:32 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 15:10:02 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -143,6 +143,16 @@ void response::setStatusLine()
 	_statusLine += to_string(_status);
 	_statusLine += " ";
 	_statusLine += findStatus(_status);
+	_statusLine += "\r\n";
+}
+
+void response::setFileNotFound()
+{	
+	_statusLine = "HTTP/1.1";
+	_statusLine += " ";
+	_statusLine += to_string(404);
+	_statusLine += " ";
+	_statusLine += findStatus(404);
 	_statusLine += "\r\n";
 }
 

@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/29 14:33:50 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 15:12:06 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -87,54 +87,27 @@ const std::string & iRequest::getRequestURI()
 response getRequest::createResponse() {
 	response response;
 
-	std::string filePath = createFilePath();
-	if (filePath.length())
-	{
-		response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-		response.tryToOpenAndReadFile(filePath);
-	}
-	response.setStatusLine();	
-//	reponse;
-
-	/*
-	  std::cout << _server << std::endl;
-	  response += "HTTP/1.1 200 Ok\r\n";
-	  if (_message._status != 500 && _message._status != 503)
-	  response += date();
-	  response += "Accept: /text/html\r\n";
-
-	  response += "Content-length: 108\r\n"; //replace it with the length of the body to send
-	  response += "\r\n";
-	  //body
-
-
-	  response += createResponseBody();
-	*/
-	return response;
-}
-/*
-response getRequest::createResponseBody()
-{
-	std::string body;
-
-	char buffer[1048];
-	memset(&buffer[0], 0, 1048);
-
-	const LocationRules * location = _server->getLocationFromUrl(getRequestURI());
-	if (location)
-	{
-		std::string filePath(location->root + getRequestURI());
-		std::ifstream file;
-		file.open(filePath.c_str());
-		if (file.good())
+	try {
+		std::string filePath = createFilePath();
+		if (filePath.length())
 		{
-			file.readsome(&buffer[0], 1048);
-			body += std::string(buffer);
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+			response.tryToOpenAndReadFile(filePath);
 		}
 	}
-	return (body);	
+	catch (std::exception &e){
+		std::cout << e.what() << std::endl;
+
+		response.setFileNotFound();
+		response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
+		response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(8)));
+		response._body = "Not Found";
+		return (response);
+	}
+	response.setStatusLine();	
+	return response;
 }
-*/
+
 std::string iRequest::createFilePath()
 {
 	const LocationRules * location = _server->getLocationFromUrl(getRequestURI());

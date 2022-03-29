@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/29 14:17:25 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 15:12:24 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -43,13 +43,13 @@ public:
 struct response
 {
 //	void buildResponseMessage(iRequest *);
-
+	std::string	_body;
 private:
 	std::map<std::string, std::string> _headerFields;
 	int			_status;
 	std::string _statusLine;
 	std::string	_header;
-	std::string	_body;
+
 
 public:
 
@@ -62,7 +62,7 @@ public:
 	void		addFieldToHeaderMap(std::pair<std::string, std::string>input);
 	void		tryToOpenAndReadFile(std::string RequestUri);
 	void		setStatusLine();	
-
+	void		setFileNotFound();
 private:	
 	void		createHeader();
 
