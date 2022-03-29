@@ -8,3 +8,5 @@ compile_commands.json
 webserv
 .vscode
 *~
+*.o
+srcs/testing/gtests

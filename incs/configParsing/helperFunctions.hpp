@@ -1,19 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   helperFunctions.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/16 12:12:35 by fmonbeig         ###   ########.fr       */
+/*   Created: 2022/03/23 12:01:41 by pohl              #+#    #+#             */
+/*   Updated: 2022/03/23 12:15:14 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-#define SERVER_HPP
+#include <string>
 
-void	sendMessage(int link, char *buff);
-
-
-#endif
+bool	hasCgiExtension( std::string uri, std::string cgiExtension );

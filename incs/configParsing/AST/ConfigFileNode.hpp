@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 14:52:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/18 12:26:43 by pohl             ###   ########.fr       */
+//   Updated: 2022/03/28 16:37:53 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "configParsing/AST/ServerNode.hpp"
 # include <vector>
 # include <set>
+# include <map>
 
 class ConfigFileNode
 {
@@ -30,12 +31,10 @@ public:
 
 	std::vector<ServerNode>			&getServerList( void );
 	const std::vector<ServerNode>	&getServerList( void ) const;
-	std::set<int>					getListeningPorts( void ) const;
-	ServerNode						&LatestServer( void );
+	std::map<int, ServerNode>		getListeningPorts( void ) const;
+	ServerNode						&latestServer( void );
 
 	ServerNode&	createNewServerNode( void );
-
-	static bool	verbose;
 
 private:
 
