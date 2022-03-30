@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/29 15:25:49 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/30 18:20:32 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,38 +19,42 @@
 #include <errno.h>
 #include <exception>
 
-char**	Cgi::createArgv( const char* binPath, const char* filePath )
+void	Cgi::createArgv( const char* binPath, const char* filePath )
 {
-	char** argv;
-
-	argv = (char**)malloc(sizeof(*argv) * 3);
-	argv[0] = strdup(binPath);
-	argv[1] = strdup(filePath);
-	argv[2] = 0;
-	return argv;
+	_argv = (char**)malloc(sizeof(*_argv) * (3 + 1));
+	_argv[0] = strdup(binPath);
+	_argv[1] = strdup(filePath);
+	_argv[2] = 0;
 }
 
-char**	Cgi::generateEnvpPtrFromMap( std::map<std::string, std::string> envp)
+void	Cgi::writeToEnvp( std::map<std::string, std::string> mapEnvp)
 {
-	(void)envp;
-	return NULL;
+	std::string	tmp;
+	size_t		index = 0;
+
+	_envp = (char**)malloc(sizeof(*_envp) * (mapEnvp.size() + 1));
+	for (std::map<std::string, std::string>::iterator it = mapEnvp.begin();
+			it != mapEnvp.end(); it++)
+	{
+		tmp = it->first;
+		tmp += "=";
+		tmp += it->second;
+		_envp[index++] = strdup(tmp.c_str());
+	}
+	_envp[index++] = 0;
 }
 
-char**	Cgi::createEnvp( const Rules& rules )
+void	Cgi::createEnvp( void )
 {
 	std::map<std::string, std::string>	envp;
 
 	/* document_root += get_current_dir_name(); */
-	/* envp = (char**)malloc(sizeof(*envp) * 6); */
-	/* envp[0] = strdup("REQUEST_METHOD=POST"); */
-	/* envp[1] = strdup("SERVER_PROTOCOL=HTTP/1.1"); */
-	/* envp[2] = strdup("PATH_INFO=a"); */
-	/* envp[3] = strdup(document_root.c_str()); */
-	/* envp[2] = strdup("PATH_TRANSLATED=/mnt/nfs/homes/pohl/Documents/a"); */
-	/* envp[3] = strdup("REDIRECT_STATUS=1"); */
-	/* envp[4] = 0; */
-	(void)rules;
-	return generateEnvpPtrFromMap(envp);
+	envp["REQUEST_METHOD"] = "POST";
+	envp["SERVER_PROTOCOL"] = "HTTP/1.1";
+	envp["PATH_INFO"] = "a";
+	envp["PATH_TRANSLATED"] = "/mnt/nfs/homes/pohl/Documents/a";
+	envp["REDIRECT_STATUS"] = "1";
+	writeToEnvp(envp);
 }
 
 void	Cgi::writeBodyToStdIn( void )
@@ -77,9 +81,9 @@ bool	Cgi::isChildProcess( int forkPid )
 	return (forkPid != 0);
 }
 
-void	Cgi::createPipe( int pipeFd[2] )
+void	Cgi::createPipe( void )
 {
-	int returnValue = pipe(pipeFd);
+	int returnValue = pipe(_pipeFd);
 
 	if (returnValue != 0)
 	{
@@ -88,8 +92,23 @@ void	Cgi::createPipe( int pipeFd[2] )
 	}
 }
 
-void	Cgi::closePipe( int pipeFd[2] )
+void	Cgi::freeEnvp( void )
 {
-	close(pipeFd[0]);
-	close(pipeFd[1]);
+	freeStringPointer(_envp);
+	_envp = NULL;
+}
+
+void	Cgi::freeArgv( void )
+{
+	freeStringPointer(_argv);
+	_argv = NULL;
+}
+
+void	Cgi::freeStringPointer( char** stringPtr )
+{
+	if (!stringPtr)
+		return;
+	for (size_t i = 0; stringPtr[i] != NULL; i++)
+		free(stringPtr[i]);
+	free(stringPtr);
 }

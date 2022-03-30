@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:55 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/29 15:25:36 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/30 18:20:56 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,20 +31,24 @@ private:
 	Cgi( const Cgi &src );
 	Cgi	&operator=( const Cgi &src );
 
-	std::string	readCgiOutput( int pipeFd[2] );
-	void	executeChildProcess( const Rules &rules, int pipeFd[2] );
+	std::string	readCgiOutput( void );
+	void	executeChildProcess( void );
 
-	char**	createArgv( const char* binPath, const char* filePath );
-	char**	generateEnvpPtrFromMap( std::map<std::string, std::string> envp);
-	char**	createEnvp( const Rules& rules );
+	void	createArgv( const char* binPath, const char* filePath );
+	void	writeToEnvp( std::map<std::string, std::string> envp);
+	void	createEnvp( void );
 	void	writeBodyToStdIn( void );
 	int		createFork( void );
 	bool	isChildProcess( int forkPid );
-	void	createPipe( int pipeFd[2] );
-	void	closePipe( int pipeFd[2] );
+	void	createPipe( void );
+	void	freeStringPointer( char** stringPtr );
+	void	freeEnvp( void );
+	void	freeArgv( void );
 
 	Rules&	_rules;
 	int		_pipeFd[2];
+	char**	_envp;
+	char**	_argv;
 
 };
 
