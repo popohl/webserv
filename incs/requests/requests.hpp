@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/29 19:19:28 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 14:05:05 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,13 @@
 
 std::string date();
 std::string eatWord(std::string & line);
+bool fileExists(std::string file);
 
 class iRequest
 {
 	public:
 //	int _status;
-	static iRequest * createRequest(std::string &, ServerNode *);
+	static iRequest * createRequest(std::string &, const std::vector<ServerNode *> & ref);
 
 	requestBase	_message;
 //	response	_response;
@@ -37,21 +38,22 @@ class iRequest
 	const std::string & getRequestURI();
 	
 protected:
-	ServerNode	*_server;
+	const std::vector<ServerNode *> *_server;
 	std::string _requestURI;
 
 	std::string createFilePath();
+	ServerNode * findServer();
+private:
+	std::string testIndexFile(std::string root, const std::vector<std::string> & indexList);
 };
 
 class getRequest : public iRequest
 {
-	//get request has no body !
 public:
 	getRequest();
 	~getRequest() {};
 
 //	response createResponse();
-
 //	void sendRequest(void) {};
 	response createResponse();
 	std::string	createResponseBody();

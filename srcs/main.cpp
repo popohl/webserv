@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/29 14:14:35 by pohl             ###   ########.fr       */
+//   Updated: 2022/03/30 10:51:50 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int main( int argc, char **argv )
 		 serverIt != listeningPorts.end();
 		 serverIt++)
 	{
-		temp = createSocket(serverIt->first, serverIt->second[0]);
+		temp = createSocket(serverIt->first, serverIt->second);
 		if (temp)
 			socket.push_back(temp);
 	}

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/28 16:48:53 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 11:06:42 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,9 @@
 //   CONSTRUCTOR OVERLOAD 					    //
 // +------------------------------------------+ //
 
-SocketPort::SocketPort(int port, ServerNode * server):
-	ASocket(port, socket(AF_INET, SOCK_STREAM, 0), PORT),
-	_addrlen(sizeof(_address)),
-	_server(server)
+SocketPort::SocketPort(int port, const std::vector<ServerNode *> & server):
+	ASocket(port, socket(AF_INET, SOCK_STREAM, 0), PORT, server),
+	_addrlen(sizeof(_address))
 {
 	if (_socket_fd == 0) //AF_INET pour utilisation en IPV4
 	{
@@ -37,12 +36,11 @@ SocketPort::SocketPort(int port, ServerNode * server):
 //   CANONICAL FORM 					        //
 // +------------------------------------------+ //
 
-SocketPort::SocketPort(void) : ASocket(), _addrlen(sizeof(_address)), _server() {}
+SocketPort::SocketPort(void) : ASocket(), _addrlen(sizeof(_address)) {}
 
 SocketPort::SocketPort (const SocketPort &other):
 	ASocket(other), _address(other._address),
-	_addrlen(other._addrlen),
-	_server(other._server) {}
+	_addrlen(other._addrlen) {}
 
 SocketPort::~SocketPort(void) {}
 

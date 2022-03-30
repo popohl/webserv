@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/30 10:49:39 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 12:16:46 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class SocketPort : public ASocket
 	public:
 		SocketPort();
 
-		SocketPort(int port, ServerNode * _server);
+	SocketPort(int port, const std::vector<ServerNode *> & _server);
 		SocketPort(SocketPort const & other );
 		virtual ~SocketPort();
 
@@ -38,7 +38,7 @@ class SocketPort : public ASocket
 		struct sockaddr_in	_address; // it's public otherwise we have to make a geter function on is address
 		int					_addrlen;
 	
-		ServerNode * _server;
+//		ServerNode * _server;
 //		std::vector<ServerNode *> _servers;
 };
 

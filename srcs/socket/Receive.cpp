@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/29 15:03:22 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 11:11:55 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	std::string tmp(buff);
 	//hide the details later
 	if (!client._request)
-		client._request = iRequest::createRequest(tmp, client._server);
+		client._request = iRequest::createRequest(tmp, client._servers);
 	else
 		client._request->_message.parseRequest(buff);
 	
@@ -84,7 +84,7 @@ void	createClient(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & s
 	}
 	fcntl(temp_fd, F_SETFL, O_NONBLOCK);
 																			// Pierre : I need this part !
-	SocketClient *client = new SocketClient(socket_port.getPort(), temp_fd, socket_port._server);
+	SocketClient *client = new SocketClient(socket_port.getPort(), temp_fd, socket_port._servers);
 	socket.push_back(client);
 	sets.readfds.add(temp_fd);
 	std::cout << "New client is created // FD = " << client->getSocketFd() << std::endl;
