@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/29 13:55:02 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 19:19:28 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ class iRequest
 	static iRequest * createRequest(std::string &, ServerNode *);
 
 	requestBase	_message;
-	response	_response;
+//	response	_response;
 	
 	bool receivingisDone();
 	virtual response createResponse() = 0;

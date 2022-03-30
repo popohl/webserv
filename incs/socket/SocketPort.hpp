@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/28 16:48:31 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 10:49:39 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class SocketPort : public ASocket
 		int					_addrlen;
 	
 		ServerNode * _server;
+//		std::vector<ServerNode *> _servers;
 };
 
 #endif

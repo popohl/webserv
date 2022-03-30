@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/29 15:10:02 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 10:38:43 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -26,6 +26,12 @@ fileNotFound::fileNotFound() {}
 
 const char * fileNotFound::what() const throw() {
 	return ("File could not be found");
+}
+
+fileCouldNotBeOpen::fileCouldNotBeOpen() {}
+
+const char * fileCouldNotBeOpen::what() const throw() {
+	return ("File could not be open");
 }
 
 response::response() : _headerFields(), _status(), _statusLine(), _header(), _body()
@@ -56,7 +62,6 @@ std::string response::createFormattedResponse()
 	std::string result;
 
 	result = _statusLine;
-//	result += "\r\n";
 	if (!_header.length())
 		createHeader();
 	result += _header;
@@ -114,16 +119,14 @@ void response::tryToOpenAndReadFile(std::string filePath)
 		file.close();
 	}
 	else
-		throw fileNotFound();
+		throw fileCouldNotBeOpen();
 	_body = body;
 	if (_body.length())
 	{
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/html"));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
-		_status = 200;
+		setStatusLine(200);
 	}
-	else
-		_status = 404;
 }
 
 std::string findStatus(int status)
@@ -136,24 +139,22 @@ std::string findStatus(int status)
 	return (std::string(""));
 }
 
-void response::setStatusLine()
+void response::setStatusLine(int status)
 {
 	_statusLine = "HTTP/1.1";
 	_statusLine += " ";
-	_statusLine += to_string(_status);
+	_statusLine += to_string(status);
 	_statusLine += " ";
-	_statusLine += findStatus(_status);
+	_statusLine += findStatus(status);
 	_statusLine += "\r\n";
 }
 
-void response::setFileNotFound()
+void response::setError404()
 {	
-	_statusLine = "HTTP/1.1";
-	_statusLine += " ";
-	_statusLine += to_string(404);
-	_statusLine += " ";
-	_statusLine += findStatus(404);
-	_statusLine += "\r\n";
+	setStatusLine(404);
+	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
+	_body = "Error 404\nNot Found";
+	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
 }
 
 std::string to_string(int n)
@@ -166,15 +167,3 @@ std::string to_string(int n)
 	tmp >> result;
 	return (result);
 }
-/*
-std::string to_string(std::streamsize n)
-{
-	std::stringstream tmp;
-
-	tmp << n;
-	std::string result;
-
-	tmp >> result;
-	return (result);
-}
-*/

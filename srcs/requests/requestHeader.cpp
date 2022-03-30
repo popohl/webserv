@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/28 12:17:04 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 10:27:41 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ unfinishedHeader::unfinishedHeader() {};
 const char * unfinishedHeader::what() const throw() {
 	return ("Header is not correctly terminated");
 }
-
 
 fieldAlreadyExists::fieldAlreadyExists() {};
 const char * fieldAlreadyExists::what() const throw() {

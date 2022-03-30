@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/29 15:12:06 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 10:34:56 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -36,8 +36,16 @@ iRequest * iRequest::createRequest(std::string &input, ServerNode * server) //be
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
 		std::cout << requestLine << std::endl;
 		method = eatWord(requestLine);
+		// expect an URI or replace it with / if field is empty
 		requestUri = eatWord(requestLine);
-		httpVersion = eatWord(requestLine);
+		if (requestUri.find("HTTP") != std::string::npos)
+		{
+			httpVersion = requestUri;
+			requestUri = std::string("/");
+		}
+		else
+			httpVersion = eatWord(requestLine);
+		//check httpVersion
 	}
 
 	//allocate memory
@@ -96,15 +104,13 @@ response getRequest::createResponse() {
 		}
 	}
 	catch (std::exception &e){
+		//file not found
 		std::cout << e.what() << std::endl;
-
-		response.setFileNotFound();
-		response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
-		response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(8)));
-		response._body = "Not Found";
+		response.setError404();
+		response.setStatusLine(404);
 		return (response);
 	}
-	response.setStatusLine();	
+	response.setStatusLine(200);	
 	return response;
 }
 
@@ -151,4 +157,3 @@ std::string date()
 	result += " GMT";
 	return (result);
 }
-
