@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/30 10:38:43 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 17:13:21 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -156,6 +156,15 @@ void response::setError404()
 	_body = "Error 404\nNot Found";
 	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
 }
+
+void response::setError400()
+{	
+	setStatusLine(400;
+	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
+	_body = "Error 400\nBadRequest";
+	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
+}
+
 
 std::string to_string(int n)
 {

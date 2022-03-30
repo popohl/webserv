@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/30 10:33:53 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 17:13:05 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -19,6 +19,8 @@
 #include <map>
 #include <iostream>
 #include <fstream>
+#include "configParsing/Parser.hpp"
+
 //#include "requests/requests.hpp"
 
 /*
@@ -57,6 +59,8 @@ private:
 	std::string	_header;
 	std::string	_body;
 
+	ServerNode * _server;
+
 public:
 
 	response();
@@ -68,8 +72,9 @@ public:
 	void		addFieldToHeaderMap(std::pair<std::string, std::string>input);
 	void		tryToOpenAndReadFile(std::string RequestUri);
 	void		setStatusLine(int status);	
+	void		setError400();
 	void		setError404();
-	
+
 private:
 	void		createHeader();
 

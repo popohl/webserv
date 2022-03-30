@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/30 14:06:30 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 16:56:40 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -96,6 +96,11 @@ const std::string & iRequest::getRequestURI()
 response getRequest::createResponse() {
 	response response;
 
+	if (_message._header.find("Host") == _message._header.end())
+	{
+		response.setError400();
+		return (response);
+	}
 	try {
 		std::string filePath = createFilePath();
 		if (filePath.length())
@@ -108,7 +113,6 @@ response getRequest::createResponse() {
 		//file not found
 		std::cout << e.what() << std::endl;
 		response.setError404();
-//		response.setStatusLine(404);
 		return (response);
 	}
 	response.setStatusLine(200);	
@@ -123,15 +127,32 @@ bool fileExists(std::string file)
 		return (false);
 }
 
+bool containsPort(std::string hostname)
+{
+	size_t portStart(hostname.rfind(":"));
+	if (portStart != std::string::npos)
+	{
+		for (size_t index = 1; (portStart + index < hostname.length()) && (index < 6); index++)
+		{
+			if (!isdigit(hostname[portStart + index]))
+				return (false);
+		}
+		return (true);
+	}
+	else
+		return (false);
+}
+
 std::string iRequest::createFilePath()
 {
 	//check each location for the vector
+	std::string filePath;
 	const ServerNode * test = findServer();
 	std::cout << "findServer result : " << test << std::endl;
 	if (test)
 	{
 		const LocationRules * location = test->getLocationFromUrl(getRequestURI());
-		std::string filePath;
+
 		if (location)
 		{
 			if (getRequestURI() == "/")
@@ -146,10 +167,10 @@ std::string iRequest::createFilePath()
 			else
 				filePath = (location->root + getRequestURI());
 		}
-			
-		return (filePath);
 	}
-	return (std::string());
+	if (!filePath.length())
+		throw fileNotFound();
+	return (filePath);
 }
 
 std::string iRequest::testIndexFile(std::string root, const std::vector<std::string> & indexList)
@@ -173,22 +194,16 @@ ServerNode * iRequest::findServer()
 	{
 		ServerRules tmpServerRules = (*it)->getServerRules();
 		int port = tmpServerRules.listenPort;
-		std::cout << port << std::endl;
-		std::cout << tmpServerRules.serverName.size() << std::endl;
 		for (std::vector<std::string>::iterator names = tmpServerRules.serverName.begin(); names != tmpServerRules.serverName.end(); names++)
 		{
 			serverName = *names;
-
-			serverName += (":" + to_string(port));
-			std::cout << "server name : " << serverName << " host :" << host << std::endl;
+			if (containsPort(host))
+				serverName += (":" + to_string(port));
 			if (serverName == host)
 				return (*it);
+		}
 	}
-
-		std::cout << *it << std::endl;
-
-	}
-	return (NULL);
+	return (*(_server->begin()));
 }
 
 response postRequest::createResponse() {

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/30 10:27:41 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 14:55:25 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
 	//here we could handle the case of a field unfinished with :
 	std::string key(line, 0, sep_index);
 	if (sep_index != std::string::npos)
-		sep_index += 2;
+		sep_index += 1;
 	line.erase(0, sep_index);
 	std::string value(line, 0, line.length());
 

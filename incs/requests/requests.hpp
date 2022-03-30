@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/30 14:05:05 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 15:08:32 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 std::string date();
 std::string eatWord(std::string & line);
 bool fileExists(std::string file);
+bool containsPort(std::string hostname);
 
 class iRequest
 {
