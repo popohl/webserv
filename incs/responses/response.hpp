@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/30 17:13:05 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 19:11:00 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -33,6 +33,7 @@
 */
 
 std::string to_string(int n);
+std::string formatErrorMessage(int errorStatus);
 //std::string to_string(std::streamsize n);
 
 class fileNotFound : public std::exception
@@ -59,7 +60,7 @@ private:
 	std::string	_header;
 	std::string	_body;
 
-	ServerNode * _server;
+//	ServerNode * _server;
 
 public:
 
@@ -72,8 +73,7 @@ public:
 	void		addFieldToHeaderMap(std::pair<std::string, std::string>input);
 	void		tryToOpenAndReadFile(std::string RequestUri);
 	void		setStatusLine(int status);	
-	void		setError400();
-	void		setError404();
+	void		setErrorMessage(int errorStatus);
 
 private:
 	void		createHeader();

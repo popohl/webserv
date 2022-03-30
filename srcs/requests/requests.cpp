@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/30 16:56:40 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 19:10:25 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -91,32 +91,6 @@ std::string eatWord(std::string & line)
 const std::string & iRequest::getRequestURI()
 {
 	return (_requestURI);
-}
-
-response getRequest::createResponse() {
-	response response;
-
-	if (_message._header.find("Host") == _message._header.end())
-	{
-		response.setError400();
-		return (response);
-	}
-	try {
-		std::string filePath = createFilePath();
-		if (filePath.length())
-		{
-			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-			response.tryToOpenAndReadFile(filePath);
-		}
-	}
-	catch (std::exception &e){
-		//file not found
-		std::cout << e.what() << std::endl;
-		response.setError404();
-		return (response);
-	}
-	response.setStatusLine(200);	
-	return response;
 }
 
 bool fileExists(std::string file)
@@ -205,6 +179,39 @@ ServerNode * iRequest::findServer()
 	}
 	return (*(_server->begin()));
 }
+
+response getRequest::createResponse() {
+	response response;
+
+	if (_message._header.find("Host") == _message._header.end())
+	{
+		response.setErrorMessage(400);
+		return (response);
+	}
+	const LocationRules * location = findServer()->getLocationFromUrl(_requestURI);
+	if (location && !(location->allowedMethod & LocationRules::GET))
+	{
+		response.setErrorMessage(405);
+		return (response);
+	}
+	try {
+		std::string filePath = createFilePath();
+		if (filePath.length())
+		{
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+			response.tryToOpenAndReadFile(filePath);
+		}
+	}
+	catch (std::exception &e){
+		//file not found
+		std::cout << e.what() << std::endl;
+		response.setErrorMessage(404);
+		return (response);
+	}
+	response.setStatusLine(200);	
+	return response;
+}
+
 
 response postRequest::createResponse() {
 

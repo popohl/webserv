@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/30 17:13:21 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 19:10:47 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -149,22 +149,13 @@ void response::setStatusLine(int status)
 	_statusLine += "\r\n";
 }
 
-void response::setError404()
+void response::setErrorMessage(int errorStatus)
 {	
-	setStatusLine(404);
+	setStatusLine(errorStatus);
 	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
-	_body = "Error 404\nNot Found";
+	_body = formatErrorMessage(errorStatus);
 	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
 }
-
-void response::setError400()
-{	
-	setStatusLine(400;
-	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
-	_body = "Error 400\nBadRequest";
-	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
-}
-
 
 std::string to_string(int n)
 {
@@ -174,5 +165,24 @@ std::string to_string(int n)
 	std::string result;
 
 	tmp >> result;
+	return (result);
+}
+
+std::string formatErrorMessage(int errorStatus)
+{
+	std::string result;
+
+	for (int i = 0; responseStatus[i].first; i++)
+	{
+		if (responseStatus[i].first == errorStatus)
+		{
+			result = "Error ";
+			result += to_string(errorStatus);
+			result += "\n";
+			result += responseStatus[i].second;
+			return (result);
+		}
+	}
+	result = "Very bad Error, you should never see this message\nIt means that no responseStatus were found.";
 	return (result);
 }
