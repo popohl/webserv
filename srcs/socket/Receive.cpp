@@ -6,12 +6,14 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/29 10:25:31 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 14:42:53 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/Server.hpp"
 #include "requests/requests.hpp"
+
+#define GENERIC_MSG "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!"
 
 static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
@@ -46,9 +48,10 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	}
 	std::cout << "value of recv "<< ret << std::endl << std::endl;
 	std::string tmp(buff);
+	std::cout << buff << std::endl;
 	//hide the details later
 	if (!client._request)
-		client._request = iRequest::createRequest(tmp, client._server);
+		client._request = iRequest::createRequest(tmp, client._servers);
 	else
 		client._request->_message.parseRequest(buff);
 	
@@ -57,7 +60,12 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		if(!client._request)
 			client.setResponse(tmp + " 405 Method Not Allowed\r\n\r\n");
 		if (client._request && client._request->receivingisDone())
-			client.setResponse(client._request->createResponse());
+		{
+			response test = client._request->createResponse();
+			std::cout << "this is the result : |"<< test.createFormattedResponse() << "|" << std::endl;
+			client.setResponse(test.createFormattedResponse());
+//			client.setResponse(GENERIC_MSG);
+		}
 
 		//use this to switch from read to write
 		sets.readfds.remove(client.getSocketFd());
@@ -77,7 +85,7 @@ void	createClient(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & s
 	}
 	fcntl(temp_fd, F_SETFL, O_NONBLOCK);
 																			// Pierre : I need this part !
-	SocketClient *client = new SocketClient(socket_port.getPort(), temp_fd, socket_port._server);
+	SocketClient *client = new SocketClient(socket_port.getPort(), temp_fd, socket_port._servers);
 	socket.push_back(client);
 	sets.readfds.add(temp_fd);
 	std::cout << "New client is created // FD = " << client->getSocketFd() << std::endl;

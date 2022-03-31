@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/29 10:31:33 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 19:10:25 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -18,12 +18,13 @@
 #include <string.h>
 #include <iostream>
 #include <time.h>
+#include <unistd.h>
 
 getRequest::getRequest() {}
 postRequest::postRequest() {}
 deleteRequest::deleteRequest() {}
 
-iRequest * iRequest::createRequest(std::string &input, ServerNode * server) //be able to remove first line from buffer
+iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerNode *> & server) //be able to remove first line from buffer
 {
 	iRequest * result = NULL;
 	std::string method, requestUri, httpVersion;
@@ -36,8 +37,16 @@ iRequest * iRequest::createRequest(std::string &input, ServerNode * server) //be
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
 		std::cout << requestLine << std::endl;
 		method = eatWord(requestLine);
+		// expect an URI or replace it with / if field is empty
 		requestUri = eatWord(requestLine);
-		httpVersion = eatWord(requestLine);
+		if (requestUri.find("HTTP") != std::string::npos)
+		{
+			httpVersion = requestUri;
+			requestUri = std::string("/");
+		}
+		else
+			httpVersion = eatWord(requestLine);
+		//check httpVersion
 	}
 
 	//allocate memory
@@ -52,7 +61,7 @@ iRequest * iRequest::createRequest(std::string &input, ServerNode * server) //be
 			result = new deleteRequest;
 		if (result)
 		{
-			result->_server = server;
+			result->_server = &server;
 			result->_requestURI = requestUri;
 			result->_message.parseRequest(input);
 		}
@@ -84,57 +93,135 @@ const std::string & iRequest::getRequestURI()
 	return (_requestURI);
 }
 
-std::string getRequest::createResponse() {
-	std::string response;
-
-	std::cout << _server << std::endl;
-	response += "HTTP/1.1 200 Ok\r\n";
-	if (_message._status != 500 && _message._status != 503)
-		response += date();
-	response += "Accept: /text/html\r\n";
-
-	response += "Content-length: 108\r\n"; //replace it with the length of the body to send
-	response += "\r\n";
-	//body
-
-
-	response += createResponseBody();
-
-	return response;
+bool fileExists(std::string file)
+{
+	if (!access(file.c_str(), F_OK | R_OK))
+		return (true);
+	else
+		return (false);
 }
 
-std::string getRequest::createResponseBody()
+bool containsPort(std::string hostname)
 {
-	std::string body;
-
-	char buffer[1048];
-	memset(&buffer[0], 0, 1048);
-
-	const LocationRules * location = _server->getLocationFromUrl(getRequestURI());
-	if (location)
+	size_t portStart(hostname.rfind(":"));
+	if (portStart != std::string::npos)
 	{
-		std::string filePath(location->root + getRequestURI());
-		std::ifstream file;
-		file.open(filePath.c_str());
-		if (file.good())
+		for (size_t index = 1; (portStart + index < hostname.length()) && (index < 6); index++)
 		{
-			file.readsome(&buffer[0], 1048);
-			body += std::string(buffer);
+			if (!isdigit(hostname[portStart + index]))
+				return (false);
+		}
+		return (true);
+	}
+	else
+		return (false);
+}
+
+std::string iRequest::createFilePath()
+{
+	//check each location for the vector
+	std::string filePath;
+	const ServerNode * test = findServer();
+	std::cout << "findServer result : " << test << std::endl;
+	if (test)
+	{
+		const LocationRules * location = test->getLocationFromUrl(getRequestURI());
+
+		if (location)
+		{
+			if (getRequestURI() == "/")
+			{
+				std::cout << "got here" << std::endl;
+				if (test->getServerRules().autoindex == true)
+//display an autoindex;
+					std::cout << "autoindex is on" << std::endl;
+				else
+					filePath = testIndexFile(location->root + "/", test->getServerRules().index);
+			}
+			else
+				filePath = (location->root + getRequestURI());
 		}
 	}
-	return (body);
-	
+	if (!filePath.length())
+		throw fileNotFound();
+	return (filePath);
 }
 
-std::string postRequest::createResponse() {
+std::string iRequest::testIndexFile(std::string root, const std::vector<std::string> & indexList)
+{
+	std::string file;
+	for (std::vector<std::string>::const_iterator it = indexList.begin(); it != indexList.end(); it++)
+	{
+		file = root + *it;
+		if (fileExists(file))
+			break ;
+	}
+	return (file);
+}
 
-	std::string response;
+ServerNode * iRequest::findServer()
+{
+	std::string host = _message._header["Host"];
+	std::string serverName ;
+
+	for (std::vector<ServerNode *>::const_iterator it = _server->begin(); it != _server->end(); it++)
+	{
+		ServerRules tmpServerRules = (*it)->getServerRules();
+		int port = tmpServerRules.listenPort;
+		for (std::vector<std::string>::iterator names = tmpServerRules.serverName.begin(); names != tmpServerRules.serverName.end(); names++)
+		{
+			serverName = *names;
+			if (containsPort(host))
+				serverName += (":" + to_string(port));
+			if (serverName == host)
+				return (*it);
+		}
+	}
+	return (*(_server->begin()));
+}
+
+response getRequest::createResponse() {
+	response response;
+
+	if (_message._header.find("Host") == _message._header.end())
+	{
+		response.setErrorMessage(400);
+		return (response);
+	}
+	const LocationRules * location = findServer()->getLocationFromUrl(_requestURI);
+	if (location && !(location->allowedMethod & LocationRules::GET))
+	{
+		response.setErrorMessage(405);
+		return (response);
+	}
+	try {
+		std::string filePath = createFilePath();
+		if (filePath.length())
+		{
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+			response.tryToOpenAndReadFile(filePath);
+		}
+	}
+	catch (std::exception &e){
+		//file not found
+		std::cout << e.what() << std::endl;
+		response.setErrorMessage(404);
+		return (response);
+	}
+	response.setStatusLine(200);	
 	return response;
 }
 
-std::string deleteRequest::createResponse() {
 
-	std::string response;
+response postRequest::createResponse() {
+
+	response response;
+	return response;
+}
+
+response deleteRequest::createResponse() {
+
+	response response;
 	return response;
 }
 
@@ -146,7 +233,7 @@ std::string date()
 	time_t now = time(0);
 	tm * gmt = gmtime(&now);	
 
-	std::string result("Date:");
+	std::string result;
 	std::stringstream tmp;
 	tmp << " " << days[gmt->tm_wday];
 	tmp << ", " << gmt->tm_mday;
@@ -157,7 +244,6 @@ std::string date()
 	tmp << ":" << gmt->tm_sec;
 
 	result += tmp.str();
-	result += " GMT\r\n";
+	result += " GMT";
 	return (result);
 }
-

@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/31 13:28:39 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 13:50:48 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int main( int argc, char **argv )
 		 serverIt != listeningPorts.end();
 		 serverIt++)
 	{
-		temp = createSocket(serverIt->first, serverIt->second[0]);
+		temp = createSocket(serverIt->first, serverIt->second);
 		if (temp)
 			socket.push_back(temp);
 	}

@@ -10,3 +10,4 @@ webserv
 *~
 *.o
 srcs/testing/gtests
+req

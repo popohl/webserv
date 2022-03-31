@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/29 09:41:08 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 11:07:15 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,19 +28,20 @@ class SocketClient : public ASocket
 		std::string	_response;
 	
 	public:
-	SocketClient(int port, int fd, ServerNode * ref);
-		SocketClient(SocketClient const & other );
-		virtual ~SocketClient();
-
-		SocketClient & operator=(SocketClient const & other);
-
-		void	addContent(char *content);
-		void	clearAll();
-		std::string	getResponse();
+	SocketClient(int port, int fd, const std::vector<ServerNode *> & ref);
+	SocketClient(SocketClient const & other );
+	virtual ~SocketClient();
+	
+	SocketClient & operator=(SocketClient const & other);
+	
+	void	addContent(char *content);
+	void	clearAll();
+	std::string	getResponse();
 	void	setResponse(std::string input);
 
 	//prepareResponse(iRequest *);
-	ServerNode *	_server;
+//	ServerNode *	_server;
+//	const std::vector<ServerNode *> & _servers;
 	iRequest *		_request; // allocation et suppression a chaque boucle de lecture/ecriture
 };
 
