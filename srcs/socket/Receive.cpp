@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/31 14:36:47 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/31 15:16:58 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void	deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & 
 static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
 	SocketClient	&client = dynamic_cast<SocketClient&>(tmp_socket);
-	ASocket 		*addr = NULL;
 	int				ret;
 	char			buff[90000];
 
@@ -64,8 +63,12 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		if(!client._request)
 			client.setResponse(tmp + " 405 Method Not Allowed\r\n\r\n");
 		if (client._request && client._request->receivingisDone())
+		{
+			//is cgi
+			//do paul code
+			//else
 			client.setResponse(client._request->createResponse());
-
+		}
 		//use this to switch from read to write
 		sets.readfds.remove(client.getSocketFd());
 		sets.writefds.add(client.getSocketFd());

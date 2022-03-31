@@ -1,14 +1,14 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   requests.cpp                                       :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/29 10:31:33 by pcharton         ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   requests.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
+/*   Updated: 2022/03/31 15:20:42 by fmonbeig         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "requests/requests.hpp"
 #include <cstddef>
@@ -86,7 +86,7 @@ const std::string & iRequest::getRequestURI()
 
 std::string getRequest::createResponse() {
 	std::string response;
-
+	
 	std::cout << _server << std::endl;
 	response += "HTTP/1.1 200 Ok\r\n";
 	if (_message._status != 500 && _message._status != 503)
@@ -123,7 +123,7 @@ std::string getRequest::createResponseBody()
 		}
 	}
 	return (body);
-	
+
 }
 
 std::string postRequest::createResponse() {
@@ -144,7 +144,7 @@ const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
 std::string date()
 {
 	time_t now = time(0);
-	tm * gmt = gmtime(&now);	
+	tm * gmt = gmtime(&now);
 
 	std::string result("Date:");
 	std::stringstream tmp;
