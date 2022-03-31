@@ -18,10 +18,9 @@ SRCS	= cgi/Cgi.cpp cgi/CgiUtils.cpp \
 		  configParsing/Rules.cpp configParsing/Token.cpp \
 		  configParsing/helperFunctions.cpp main.cpp
 
-# Compiler
 CC		= c++
 # Compiler flags
-CFLAGS	+= -Wall -Wextra -g -std=c++98
+CFLAGS	+= -Wall -Wextra -g3 -std=c++98
 # Linker flags
 LDFLAGS	=
 

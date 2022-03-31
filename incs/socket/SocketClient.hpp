@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/26 14:29:09 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 11:07:15 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #define CLIENT 2
 #include "ASocket.hpp"
 #include "requests/requests.hpp"
+#include "configParsing/Parser.hpp"
 
 class SocketClient : public ASocket
 {
@@ -25,20 +26,23 @@ class SocketClient : public ASocket
 		SocketClient();
 		std::string	_header;
 		std::string	_response;
-
+	
 	public:
-		SocketClient(int port, int fd);
-		SocketClient(SocketClient const & other );
-		virtual ~SocketClient();
-
-		SocketClient & operator=(SocketClient const & other);
-
-		void	addContent(char *content);
-		void	clearAll();
-		std::string	getResponse();
+	SocketClient(int port, int fd, const std::vector<ServerNode *> & ref);
+	SocketClient(SocketClient const & other );
+	virtual ~SocketClient();
+	
+	SocketClient & operator=(SocketClient const & other);
+	
+	void	addContent(char *content);
+	void	clearAll();
+	std::string	getResponse();
 	void	setResponse(std::string input);
-		//prepareResponse(iRequest *);
-		iRequest * _request; // allocation et suppression a chaque boucle de lecture/ecriture
+
+	//prepareResponse(iRequest *);
+//	ServerNode *	_server;
+//	const std::vector<ServerNode *> & _servers;
+	iRequest *		_request; // allocation et suppression a chaque boucle de lecture/ecriture
 };
 
 #endif

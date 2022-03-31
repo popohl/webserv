@@ -6,21 +6,26 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:55 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/30 18:20:56 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 21:01:52 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CGI_HPP
 # define CGI_HPP
 
+# include <cstdio>
 # include "configParsing/Rules.hpp"
+# include "requests/requests.hpp"
+
+# define PIPE_WRITE 1
+# define PIPE_READ 0
 
 class Cgi
 {
 
 public:
 
-	Cgi( Rules& rules );
+	Cgi( Rules& rules, const iRequest* request );
 	~Cgi( void );
 
 	std::string	executeCgi( void );
@@ -45,10 +50,11 @@ private:
 	void	freeEnvp( void );
 	void	freeArgv( void );
 
-	Rules&	_rules;
-	int		_pipeFd[2];
-	char**	_envp;
-	char**	_argv;
+	Rules&			_rules;
+	int				_pipeFd[2];
+	const iRequest*	_request;
+	char**			_envp;
+	char**			_argv;
 
 };
 

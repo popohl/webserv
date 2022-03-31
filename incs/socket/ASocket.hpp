@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/24 17:21:22 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/03/30 11:13:39 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 #include <netinet/in.h>
 #include <vector>
 #include <fcntl.h>
-
+#include "configParsing/Parser.hpp"
 
 class ASocket
 {
@@ -30,11 +30,11 @@ class ASocket
 		const int	_port;
 		const int	_socket_fd;
 		const int	_type;
-
 	public:
+		const std::vector<ServerNode *> & _servers;
 
 		ASocket();
-		ASocket(int port, int fd, int type);
+		ASocket(int port, int fd, int type, const std::vector<ServerNode *> & ref);
 		ASocket(ASocket const & other);
 		virtual ~ASocket();
 
@@ -48,6 +48,7 @@ class ASocket
 			public:
 				virtual const char* what() const throw();
 		};
+
 };
 
 #endif

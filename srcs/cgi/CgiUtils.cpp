@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/30 18:20:32 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 21:34:15 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,19 +49,21 @@ void	Cgi::createEnvp( void )
 	std::map<std::string, std::string>	envp;
 
 	/* document_root += get_current_dir_name(); */
-	envp["REQUEST_METHOD"] = "POST";
-	envp["SERVER_PROTOCOL"] = "HTTP/1.1";
-	envp["PATH_INFO"] = "a";
-	envp["PATH_TRANSLATED"] = "/mnt/nfs/homes/pohl/Documents/a";
-	envp["REDIRECT_STATUS"] = "1";
 	writeToEnvp(envp);
 }
 
 void	Cgi::writeBodyToStdIn( void )
 {
-	std::string body = "name=paul&last_name=ohl";
+	std::string body = "fname=Paul&lname=OHL";
+	int			pipeFd[2];
 
-	write(STDIN_FILENO, body.c_str(), body.size());
+	createPipe(pipeFd);
+	if (write(pipeFd[PIPE_WRITE], body.c_str(), body.size())
+			!= static_cast<ssize_t>(body.size()))
+		std::logic_error("Could not write to cgi tmp file");
+	close(pipeFd[PIPE_WRITE]);
+	dup2(pipeFd[PIPE_READ], STDIN_FILENO);
+	close(pipeFd[PIPE_READ]);
 }
 
 int	Cgi::createFork( void )
@@ -81,9 +83,9 @@ bool	Cgi::isChildProcess( int forkPid )
 	return (forkPid != 0);
 }
 
-void	Cgi::createPipe( void )
+void	Cgi::createPipe( int pipeFd[2] )
 {
-	int returnValue = pipe(_pipeFd);
+	int returnValue = pipe(pipeFd);
 
 	if (returnValue != 0)
 	{

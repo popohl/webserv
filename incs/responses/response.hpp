@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/26 12:09:27 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 19:11:00 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,7 +15,13 @@
 
 #include <utility>
 #include <string>
-#include "requests/requests.hpp"
+#include <cstring>
+#include <map>
+#include <iostream>
+#include <fstream>
+#include "configParsing/Parser.hpp"
+
+//#include "requests/requests.hpp"
 
 /*
 **	Response =  Status-Line
@@ -26,11 +32,52 @@
 **				[ message-body ]
 */
 
-//maybe change array for another container
+std::string to_string(int n);
+std::string formatErrorMessage(int errorStatus);
+//std::string to_string(std::streamsize n);
+
+class fileNotFound : public std::exception
+{
+public:
+	fileNotFound();
+	virtual const char * what() const throw();
+};
+
+class fileCouldNotBeOpen : public std::exception
+{
+public:
+	fileCouldNotBeOpen();
+	virtual const char * what() const throw();
+};
+
 struct response
 {
 //	void buildResponseMessage(iRequest *);
-	std::string _message;
+private:
+	std::map<std::string, std::string> _headerFields;
+	int			_status;
+	std::string _statusLine;
+	std::string	_header;
+	std::string	_body;
+
+//	ServerNode * _server;
+
+public:
+
+	response();
+	response(const response & src);
+	response & operator = (const response & src);
+	~response();
+
+	std::string	createFormattedResponse();
+	void		addFieldToHeaderMap(std::pair<std::string, std::string>input);
+	void		tryToOpenAndReadFile(std::string RequestUri);
+	void		setStatusLine(int status);	
+	void		setErrorMessage(int errorStatus);
+
+private:
+	void		createHeader();
+
 };
 
 #endif

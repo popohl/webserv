@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/28 15:51:23 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 14:22:02 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static int	contentSize(const char *content)
 */
 void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
-
+	(void)socket;
 	SocketClient	*client = dynamic_cast<SocketClient*>(tmp_socket);
 	std::string		response = client->getResponse();
 	int				ret;
@@ -44,7 +44,9 @@ void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD & se
 		std::cout << " Message bytes =" << response.size() << " Bytes Sent =" << ret << std::endl;
 		std::cout << "\n======== Message sent to client ========\n" << std::endl;
 	}
-
+	// Remove request to serve another one (need to handle multi write case)
+	delete client->_request;
+	client->_request = NULL;
 	client->clearAll();
 	sets.writefds.remove(client->getSocketFd());
 	sets.readfds.add(client->getSocketFd());
