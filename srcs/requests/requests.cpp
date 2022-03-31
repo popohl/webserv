@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/30 19:10:25 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/31 13:27:07 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -214,11 +214,80 @@ response getRequest::createResponse() {
 
 
 response postRequest::createResponse() {
+	response	response;
+	std::string	postedFile;
 
-	response response;
-	return response;
+	if (_message._header.find("Host") == _message._header.end())
+	{
+		response.setErrorMessage(400);
+		return (response);
+	}
+
+	ServerNode * server = findServer();
+	if (server)
+	{
+		const LocationRules * location = server->getLocationFromUrl(getRequestURI());
+		if (!location)
+		{
+			response.setErrorMessage(404);
+			return (response);
+		}
+		else if (location && !(location->allowedMethod & LocationRules::POST))
+		{
+			response.setErrorMessage(405);
+			return (response);
+		}
+		else
+		{
+			postedFile = location->root + getRequestURI();
+			std::ofstream file;
+			file.open(postedFile.c_str());
+			file << _message._body;
+			file.close();
+			response.setErrorMessage(200);
+			return (response);
+		}
+	}
+	response.setErrorMessage(400);
+	return (response);
+	
+
+	//check content Type to know file information
+	//Content Length or Transfer Encoding MUST be present in the header
+
+	//POST creates a ressource or append it ? in the host server at the requestURI address
+
+
+	/*
+	  The action performed by the POST method might not result in a
+	  resource that can be identified by a URI. In this case, either 200
+	  (OK) or 204 (No Content) is the appropriate response status,
+	  depending on whether or not the response includes an entity that
+	  describes the result.
+
+	  If a resource has been created on the origin server, the response
+	  SHOULD be 201 (Created) and contain an entity which describes the
+	  status of the request and refers to the new resource, and a Location
+	  header (see section 14.30).
+
+	  Responses to this method are not cacheable, unless the response
+	  includes appropriate Cache-Control or Expires header fields. However,
+	  the 303 (See Other) response can be used to direct the user agent to
+	  retrieve a cacheable resource.
+
+	  POST requests MUST obey the message transmission requirements set out
+	  in section 8.2.
+	*/
 }
 
+/*
+bool postRequest::requestURIisvalid()
+{
+	const ServerNode * server = findServer();
+
+	const LocationRules * location = findServer()->getLocationFromUrl(_requestURI);
+}
+*/
 response deleteRequest::createResponse() {
 
 	response response;

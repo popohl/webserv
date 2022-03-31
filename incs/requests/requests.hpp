@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/30 15:08:32 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/31 13:51:07 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,10 @@ class postRequest : public iRequest
 	~postRequest() {};
 
 
+private:
 //	void sendRequest(void) {};
 	response createResponse();
+//	bool requestURIisvalid();
 };
 
 class deleteRequest : public iRequest

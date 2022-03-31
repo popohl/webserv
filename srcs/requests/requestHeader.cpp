@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/30 18:35:51 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/31 14:56:38 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,29 +41,26 @@ void checkLineEnd(const std::string &input)
 		throw malformedHeader();
 }
 
-requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _header(), _bodySize(0), _body() {}
+requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _header(), _bodySize(0), _bodyExpectedSize(0), _body() {}
 
 void requestBase::parseRequest(const std::string &line)
 {
-	size_t headerSize = 0; //might not work for 
+	std::string copy(line);
+
 	if (!_headerFinished)
-		headerSize = parseHeader(line);
-	else
-		headerSize = findBodyLength();
-//	std::cout << line.length() << "|" << headerSize << std::endl;
-	if (!_bodyFinished && (headerSize < line.length()))
+		parseHeader(copy);
+	if (_headerFinished && !_bodyFinished)
 	{
-		std::string body(line, headerSize, line.length());
-		parseBody(body);
+		if (_bodyExpectedSize)
+			parseBody(copy);
+		else
+			_bodyFinished = true;
 	}
-	else
-		_bodyFinished = true; //are you sure ?
-//	std::cout << line.length() << "|" << headerSize  << "|" << _body.length()<< std::endl;
 }
 
-size_t requestBase::parseHeader(const std::string &line) {
-	size_t headerSize = 0;
-	std::list<std::string> lineNumber = split_header_to_lines(line, headerSize);
+void	requestBase::parseHeader(std::string &line) {
+
+	std::list<std::string> lineNumber = split_header_to_lines(line);
 
 	for (std::list<std::string>::iterator it = lineNumber.begin(); it != lineNumber.end(); it = lineNumber.begin())
 	{
@@ -74,10 +71,13 @@ size_t requestBase::parseHeader(const std::string &line) {
 			it->erase(it->find("\r"));
 			//get pair
 			std::pair<std::string, std::string>parsedPair = splitIntoPair(*it);
+			if (parsedPair.first == "Content-Length") //dirty update of body expected size
+				_bodyExpectedSize = atoi(parsedPair.second.c_str());
 			if (_header.find(parsedPair.first) == _header.end())
 				_header.insert(parsedPair);
 			else
 				throw fieldAlreadyExists();  //either throw an exception or concatenate the result to the pair value
+			line.erase(0, it->length() + 2);
 			lineNumber.erase(lineNumber.begin());
 		}
 		else
@@ -87,21 +87,18 @@ size_t requestBase::parseHeader(const std::string &line) {
 			if (*it == end && it->length() == end.length())
 			{
 				_headerFinished = true;
-				headerSize++;
+				line.erase(0, 2);
 				break ;
 			}
 			else
 				throw unfinishedHeader();
 		}
 	}
-	return (headerSize);
 }
 
 //it should only get the body string
 void requestBase::parseBody(const std::string &line)
 {
-	std::string copy(line);
-
 	std::map<std::string, std::string>::iterator notFound = _header.end();
 	if (_header.find("Transfert-Encoding") != notFound)
 	{
@@ -112,10 +109,10 @@ void requestBase::parseBody(const std::string &line)
 	}
 	else if	(_header.find("Content-Length") != notFound)
 	{
-		if (!_bodySize)
-			_bodySize = atoi(_header["Content-Length"].c_str());//, NULL, 10);
-		if (_body.length() < _bodySize)
-			_body += copy;
+		size_t sizeDifference(_bodyExpectedSize - _body.length());
+		_body.insert(_body.length(), line, 0, sizeDifference);
+		if (_body.length() >= _bodyExpectedSize)
+			_bodyFinished = true;
 	}
 }
 
@@ -132,7 +129,7 @@ std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
 	return (std::make_pair<std::string, std::string>(key, value));
 }
 
-std::list<std::string>split_header_to_lines(const std::string & input, size_t &headerSize)
+std::list<std::string>split_header_to_lines(const std::string & input)
 {
 	std::list<std::string> hold;
 	std::string copy(input);
@@ -147,8 +144,6 @@ std::list<std::string>split_header_to_lines(const std::string & input, size_t &h
 			end += 2;
 		hold.push_back(std::string(copy, start, end));
 		copy.erase(start, end);
-
-		headerSize += end;
 	}
 	return (hold);
 }
@@ -186,6 +181,11 @@ size_t requestBase::findBodyLength(void)
 		std::stringstream nb(_header["Content-Length"]);
 		nb >> result;
 	}
-	return (result);
+	if (!_bodySize)
+		return (result);
+	else if (result > _bodySize)
+		return (result - _bodySize);
+	else
+		return (0);
 }
 
