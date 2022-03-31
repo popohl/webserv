@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:55 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/31 12:42:36 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 14:23:23 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <cstdio>
 # include "configParsing/Rules.hpp"
+# include "requests/requests.hpp"
 
 # define PIPE_WRITE 1
 # define PIPE_READ 0
@@ -24,7 +25,7 @@ class Cgi
 
 public:
 
-	Cgi( Rules& rules );
+	Cgi( Rules& rules, const iRequest* request );
 	~Cgi( void );
 
 	std::string	executeCgi( void );
@@ -46,8 +47,9 @@ private:
 	bool	isChildProcess( int forkPid );
 	void	createPipe( int pipeFd[2] );
 
-	Rules&	_rules;
-	int		_pipeFd[2];
+	Rules&			_rules;
+	const iRequest*	_request;
+	int				_pipeFd[2];
 
 };
 

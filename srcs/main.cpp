@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/31 13:50:48 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 14:21:39 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@ int main( int argc, char **argv )
 	(void)argc;
 	(void)argc;(void)argv;
 	Parser			parser("./config_files/cgi_testing.conf");
-	ConfigFileNode	result = parser.getConfigFile();
+	ConfigFileNode	configFile = parser.getConfigFile();
 
 	Rules rules;
-	rules.setValues(result.latestServer(), "/bonjour.py");
-	Cgi cgi(rules);
-	std::cout << cgi.executeCgi() << std::endl;
+	rules.setValues(configFile.latestServer(), "/bonjour.py");
+	/* Cgi cgi(rules); */
+	/* std::cout << cgi.executeCgi() << std::endl; */
 	// Get all the port to listen from Paul's Parsing
 	/* std::vector<int>	allPort; */
 	/* allPort.push_back(8080); */
@@ -38,6 +38,7 @@ int main( int argc, char **argv )
 	//The Class Socket initialize the bind and the listening for every Socket
 	std::vector<ASocket*>	socket;
 	ASocket					*temp;
+	mapPortToServers listeningPorts = configFile.getListeningPorts();
 	for (mapPortToServers::iterator serverIt = listeningPorts.begin();
 		 serverIt != listeningPorts.end();
 		 serverIt++)

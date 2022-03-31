@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/31 12:47:57 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 14:22:33 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <errno.h>
 #include <exception>
 
-Cgi::Cgi( Rules& rules ): _rules(rules)
+Cgi::Cgi( Rules& rules, const iRequest* request ): _rules(rules), _request(request)
 {
 	return;
 }
