@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/31 14:35:15 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/31 18:00:43 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 // +------------------------------------------+ //
 //   CONSTRUCTOR OVERLOAD 					    //
 // +------------------------------------------+ //
-//FIXME bien gerer les constructeur par copy des variables
+
 SocketClient::SocketClient(int port, int fd, ServerNode * ref):
 	ASocket(port, fd, CLIENT), _response(),
 	_server(ref), _request (NULL)
@@ -23,7 +23,7 @@ SocketClient::SocketClient(int port, int fd, ServerNode * ref):
 	time(&_timer);
 	// _response = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 202\n\n"
 	// 	"<form method=\"post\" enctype=\"multipart/form-data\"><div><label for=\"file\">select file</label><input type=\"file\" id=\"file\" name=\"file\" multiple></div><div><button>Envoyer</button></div></form>";
-//	_response = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+	//	_response = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 }
 
 // +------------------------------------------+ //
@@ -33,7 +33,7 @@ SocketClient::SocketClient(int port, int fd, ServerNode * ref):
 SocketClient::SocketClient(void) : ASocket(), _response(), _server(NULL), _request(NULL) {}
 
 SocketClient::SocketClient (const SocketClient &other):
-	ASocket(other), _response(other._response), _server(other._server),_request(other._request) {} // copier le buffer caractere par caractere et rajouter request
+	ASocket(other), _response(other._response), _server(other._server),_request(other._request) {}
 
 SocketClient::~SocketClient(void)
 {
@@ -45,22 +45,12 @@ SocketClient &SocketClient::operator=(const SocketClient & rhs) // ici aussi
 {
 	ASocket::operator=(rhs);
 	_response = rhs._response;
-	_request = rhs._request;
 	return *this;
 }
 
 // +------------------------------------------+ //
 //   MEMBER FUNCTION					        //
 // +------------------------------------------+ //
-
-void	SocketClient::addContent(char *content) //Fonction peut etre pas nécessaire
-{
-	std::string	temp;
-
-	temp = content;
-	_header.append(temp, 0, temp.size());
-	std::cout << _header << std::endl;
-}
 
 std::string	SocketClient::getResponse() const
 { return (_response); }
@@ -70,7 +60,6 @@ void SocketClient::setResponse(std::string input)
 
 void	SocketClient::clearAll()
 {
-	_header.clear();
 	_response.clear();
 	delete _request;
 	_request = NULL;

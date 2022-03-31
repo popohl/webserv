@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/31 14:40:25 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/31 17:14:23 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,13 +97,11 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 		tmp_read = sets.readfds.getset();
 		tmp_write = sets.writefds.getset();
 		fillFdMax(sets, socket);
-		std::cout << "\n----------- Waiting for New connection -----------\n" << std::endl;
+		std::cout << "\n\e[0;35m----------- Waiting for New connection -----------\e[0m\n" << std::endl;
 		if ((ret = select(sets.fdmax + 1, &tmp_read, &tmp_write, NULL, &sets.tv)) < 0)
 			perror("Select:");
 		if (ret == 0)
 			std::cout << "Time Out" << std::endl;
-		// std::cout << "Return of select " << ret << std::endl;
-
 		for (int i = 0; i <= sets.fdmax && ret; i++)
 		{
 			if (FD_ISSET(i, &tmp_read))
@@ -114,13 +112,18 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 			else if (FD_ISSET(i, &tmp_write))
 			{
 				ret--;
-				sendToClient(findSocket(i, socket), socket, sets);
+				sendToClient(findSocket(i, socket), sets);
 			}
-			else if ((temp = findSocket(i, socket))) // NOTA BENE est ce que ca fonctionne
+			else
 			{
-				client = dynamic_cast<SocketClient*>(temp);
-				if (client->checkTimeout())
-					deleteClient(*client, socket, sets);
+				temp = findSocket(i, socket);
+				if (temp && temp->getType() == CLIENT)
+				{
+					std::cout << "\e[4;31mYou take too long..\e[0m" << std::endl;
+					client = dynamic_cast<SocketClient*>(temp);
+					if (client->checkTimeout())
+						deleteClient(*client, socket, sets);
+				}
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/31 12:16:37 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/31 18:02:01 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,15 @@ class SocketClient : public ASocket
 {
 	protected:
 		SocketClient();
-		std::string	_header; //NOTA BENE le header est il toujours nécessaire ?
+		SocketClient(SocketClient const & other ); //NOTA BENE Pas besoin des constructeurs par copy et de la surcharge d'operateur =
+		SocketClient & operator=(SocketClient const & other);
 		std::string	_response;
 		time_t		_timer;
 
 	public:
 		SocketClient(int port, int fd, ServerNode * ref);
-		SocketClient(SocketClient const & other );
 		virtual ~SocketClient();
 
-		SocketClient & operator=(SocketClient const & other);
-
-		void		addContent(char *content); //FIXME a virer
 		void		clearAll();
 		std::string	getResponse() const;
 		void		setResponse(std::string input);
