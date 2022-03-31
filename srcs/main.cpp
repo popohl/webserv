@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/29 14:14:35 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 11:06:30 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ int main( int argc, char **argv )
 		temp = createSocket(serverIt->first, serverIt->second[0]);
 		if (temp)
 			socket.push_back(temp);
+			// TODO If NULL est ce qu'on kill le server ?
 	}
 	//Create two sets of fd for select : readfds and writefds
 	t_FD	sets;

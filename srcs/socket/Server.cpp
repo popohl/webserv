@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/29 15:23:46 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/31 14:40:25 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,14 +82,16 @@ ASocket *findSocket(int fd, std::vector<ASocket*> & socket)
 
 void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 {
-	fd_set	tmp_read;
-	fd_set	tmp_write;
-	int		ret;
+	fd_set			tmp_read;
+	fd_set			tmp_write;
+	int				ret;
+	ASocket			*temp;
+	SocketClient	*client;
 
 	std::cout << "at the listening part, there is " << socket.size() << std::endl;
 	while (1)
 	{
-		// We have to make a copy a each loop because select mess up the fd_set
+		// We have to make a copy at each loop because select mess up the fd_set
 		// We have to reinitialize timeval if we want to have a good Timeout because select change timeval
 		fillTimeout(sets);
 		tmp_read = sets.readfds.getset();
@@ -102,7 +104,6 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 			std::cout << "Time Out" << std::endl;
 		// std::cout << "Return of select " << ret << std::endl;
 
-
 		for (int i = 0; i <= sets.fdmax && ret; i++)
 		{
 			if (FD_ISSET(i, &tmp_read))
@@ -114,6 +115,12 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 			{
 				ret--;
 				sendToClient(findSocket(i, socket), socket, sets);
+			}
+			else if ((temp = findSocket(i, socket))) // NOTA BENE est ce que ca fonctionne
+			{
+				client = dynamic_cast<SocketClient*>(temp);
+				if (client->checkTimeout())
+					deleteClient(*client, socket, sets);
 			}
 		}
 	}

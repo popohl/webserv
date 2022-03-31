@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/28 16:48:53 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/03/31 11:21:34 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,10 @@ SocketPort::SocketPort(void) : ASocket(), _addrlen(sizeof(_address)), _server() 
 SocketPort::SocketPort (const SocketPort &other):
 	ASocket(other), _address(other._address),
 	_addrlen(other._addrlen),
-	_server(other._server) {}
+	_server(other._server)
+	{
+		
+	}
 
 SocketPort::~SocketPort(void) {}
 
