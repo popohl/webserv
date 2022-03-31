@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/31 18:07:25 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/03/31 18:09:15 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 void	free_memory(std::vector<ASocket*> & socket)
 {
-	for(int i = 0; i < socket.size(); i++)
+	for(size_t i = 0; i < socket.size(); i++)
 		delete socket[i];
 	std::exit(1);
 }
