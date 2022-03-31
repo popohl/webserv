@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/28 12:16:27 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/31 14:24:23 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -18,6 +18,7 @@
 #include <map>
 #include <list>
 
+#include "responses/response.hpp"
 
 class malformedHeader : public std::exception
 {
@@ -60,7 +61,7 @@ struct requestBase {
 
 	requestBase();
 	void parseRequest(const std::string &line);
-	size_t parseHeader(const std::string &line);
+	size_t parseHeader(std::string &line);
 	void parseBody(const std::string &line);
 
 	bool _headerFinished;
@@ -69,6 +70,7 @@ struct requestBase {
 	
 	std::map<std::string, std::string> _header;
 	size_t		_bodySize;
+	size_t		_bodyExpectedSize;
 	std::string _body;
 
 private:
