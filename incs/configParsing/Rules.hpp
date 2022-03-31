@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:09:00 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/28 11:37:29 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/29 13:41:29 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,7 @@ struct Rules
 {
 
 	Rules( void );
-	Rules( const Rules &src );
 	~Rules( void );
-
-	Rules	&operator=( const Rules &src );
 
 	void	setValues( const ServerNode& server, const char* url );
 
@@ -56,6 +53,9 @@ struct Rules
 	std::vector<std::string> 	serverName;
 
 private:
+
+	Rules( const Rules &src );
+	Rules	&operator=( const Rules &src );
 
 	void	setValuesFromServerRules( const ServerRules& serverRules );
 	void	setValuesFromLocationRules( const LocationRules* locationRules );

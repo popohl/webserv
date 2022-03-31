@@ -6,18 +6,19 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/26 14:52:41 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/28 16:49:48 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/Server.hpp"
+#include "configParsing/Parser.hpp"
 
-ASocket*	createSocket(int port)
+ASocket*	createSocket(int port, ServerNode * server) // change const reference to serverNode if possible
 {
 	int flag = 1;
 	try
 	{
-		SocketPort *new_sock = new SocketPort(port);
+		SocketPort *new_sock = new SocketPort(port, server);
 		fcntl(new_sock->getSocketFd(), F_SETFL, O_NONBLOCK);
 		if (setsockopt(new_sock->getSocketFd(),SOL_SOCKET, SO_REUSEADDR, &flag, sizeof flag) == -1)
 			perror("setsockopt");

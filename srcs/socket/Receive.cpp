@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/28 14:10:41 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 10:25:31 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,18 +45,12 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		return ;
 	}
 	std::cout << "value of recv "<< ret << std::endl << std::endl;
-//	client.addContent(buff);
 	std::string tmp(buff);
-//	std::cout << "received :|" << buff << "|" << std::endl;
+	//hide the details later
 	if (!client._request)
-	{
-//		std::cout << "got here" << std::endl;
-		client._request = iRequest::createRequest(tmp);
-	}
+		client._request = iRequest::createRequest(tmp, client._server);
 	else
-	{
 		client._request->_message.parseRequest(buff);
-	}
 	
 	if (!client._request || client._request->receivingisDone())
 	{
@@ -82,7 +76,8 @@ void	createClient(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & s
 		return ;
 	}
 	fcntl(temp_fd, F_SETFL, O_NONBLOCK);
-	SocketClient *client = new SocketClient(socket_port.getPort(), temp_fd);
+																			// Pierre : I need this part !
+	SocketClient *client = new SocketClient(socket_port.getPort(), temp_fd, socket_port._server);
 	socket.push_back(client);
 	sets.readfds.add(temp_fd);
 	std::cout << "New client is created // FD = " << client->getSocketFd() << std::endl;

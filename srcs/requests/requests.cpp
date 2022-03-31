@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/28 12:17:10 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/29 10:31:33 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -23,7 +23,7 @@ getRequest::getRequest() {}
 postRequest::postRequest() {}
 deleteRequest::deleteRequest() {}
 
-iRequest * iRequest::createRequest(std::string &input) //be able to remove first line from buffer
+iRequest * iRequest::createRequest(std::string &input, ServerNode * server) //be able to remove first line from buffer
 {
 	iRequest * result = NULL;
 	std::string method, requestUri, httpVersion;
@@ -34,7 +34,7 @@ iRequest * iRequest::createRequest(std::string &input) //be able to remove first
 	{
 		std::string requestLine(input, 0, eraseLen);
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
-		
+		std::cout << requestLine << std::endl;
 		method = eatWord(requestLine);
 		requestUri = eatWord(requestLine);
 		httpVersion = eatWord(requestLine);
@@ -52,6 +52,7 @@ iRequest * iRequest::createRequest(std::string &input) //be able to remove first
 			result = new deleteRequest;
 		if (result)
 		{
+			result->_server = server;
 			result->_requestURI = requestUri;
 			result->_message.parseRequest(input);
 		}
@@ -86,23 +87,53 @@ const std::string & iRequest::getRequestURI()
 std::string getRequest::createResponse() {
 	std::string response;
 
+	std::cout << _server << std::endl;
 	response += "HTTP/1.1 200 Ok\r\n";
 	if (_message._status != 500 && _message._status != 503)
 		response += date();
-	response += "Accept: /text/plain\r\n";
-	response += "Content-length: 5\r\n"; //replace it with the length of the body to send
+	response += "Accept: /text/html\r\n";
+
+	response += "Content-length: 108\r\n"; //replace it with the length of the body to send
 	response += "\r\n";
 	//body
-	response += "Hello"; //body to send
+
+
+	response += createResponseBody();
+
 	return response;
 }
 
+std::string getRequest::createResponseBody()
+{
+	std::string body;
+
+	char buffer[1048];
+	memset(&buffer[0], 0, 1048);
+
+	const LocationRules * location = _server->getLocationFromUrl(getRequestURI());
+	if (location)
+	{
+		std::string filePath(location->root + getRequestURI());
+		std::ifstream file;
+		file.open(filePath.c_str());
+		if (file.good())
+		{
+			file.readsome(&buffer[0], 1048);
+			body += std::string(buffer);
+		}
+	}
+	return (body);
+	
+}
+
 std::string postRequest::createResponse() {
+
 	std::string response;
 	return response;
 }
 
 std::string deleteRequest::createResponse() {
+
 	std::string response;
 	return response;
 }
