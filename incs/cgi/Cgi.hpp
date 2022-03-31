@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:55 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/31 21:01:52 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 21:36:22 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ private:
 	void	writeBodyToStdIn( void );
 	int		createFork( void );
 	bool	isChildProcess( int forkPid );
-	void	createPipe( void );
+	void	createPipe( int pipeFd[2] );
 	void	freeStringPointer( char** stringPtr );
 	void	freeEnvp( void );
 	void	freeArgv( void );
