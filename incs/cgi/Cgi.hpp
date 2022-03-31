@@ -6,14 +6,18 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:55 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/29 18:39:17 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 12:42:36 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CGI_HPP
 # define CGI_HPP
 
+# include <cstdio>
 # include "configParsing/Rules.hpp"
+
+# define PIPE_WRITE 1
+# define PIPE_READ 0
 
 class Cgi
 {
@@ -40,7 +44,7 @@ private:
 	void	writeBodyToStdIn( void );
 	int		createFork( void );
 	bool	isChildProcess( int forkPid );
-	void	createPipe( void );
+	void	createPipe( int pipeFd[2] );
 
 	Rules&	_rules;
 	int		_pipeFd[2];

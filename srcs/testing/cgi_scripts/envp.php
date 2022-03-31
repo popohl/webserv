@@ -7,4 +7,5 @@ echo "$key=>$val
 
 </br>
 <p>And now, the POST data:</p>
-<?php print_r($_POST); ?>
+<?php var_dump($_POST); ?>
+<?php var_dump(file_get_contents('php://input')); ?>

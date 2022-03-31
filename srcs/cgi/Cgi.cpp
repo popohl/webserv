@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/30 15:39:21 by pohl             ###   ########.fr       */
+/*   Updated: 2022/03/31 12:47:57 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ std::string	Cgi::executeCgi( void )
 {
 	int			forkPid;
 
-	createPipe();
+	createPipe(_pipeFd);
 	forkPid = createFork();
 	if (isChildProcess(forkPid))
 	{
@@ -53,13 +53,13 @@ std::string	Cgi::readCgiOutput( void )
 	char		buffer[bufferSize];
 	std::string	cgiOutput;
 
-	close(_pipeFd[1]);
+	close(_pipeFd[PIPE_WRITE]);
 	do
 	{
-		ret = read(_pipeFd[0], buffer, bufferSize);
+		ret = read(_pipeFd[PIPE_READ], buffer, bufferSize);
 		cgiOutput.append(buffer, ret);
 	} while (ret > 0);
-	close(_pipeFd[0]);
+	close(_pipeFd[PIPE_READ]);
 	if (ret < 0)
 	{
 		// 500 Internal Server Error
@@ -70,21 +70,23 @@ std::string	Cgi::readCgiOutput( void )
 
 void	Cgi::executeChildProcess( void )
 {
-	char	requested_document[] = "/mnt/nfs/homes/pohl/Documents/42/webserv/srcs/testing/cgi_scripts/envp.php";
+	char	requested_document[] = "/mnt/nfs/homes/pohl/Documents/42/webserv/srcs/testing/cgi_scripts/envp.py";
 	char	request_type[] = "POST";
 
 	char**	execveEnvp;
 	char**	execveArgv;
 	int		err;
 
-	close(_pipeFd[0]);
-	dup2(_pipeFd[1], STDOUT_FILENO);
-	close(_pipeFd[1]);
+	close(_pipeFd[PIPE_READ]);
+	dup2(_pipeFd[PIPE_WRITE], STDOUT_FILENO);
+	close(_pipeFd[PIPE_WRITE]);
 	execveEnvp = createEnvp();
-	execveArgv = createArgv(_rules.cgiPath.c_str(), requested_document);
+	/* execveArgv = createArgv(_rules.cgiPath.c_str(), requested_document); */
+	execveArgv = createArgv("/bin/python3", requested_document);
 	if (strcmp(request_type, "POST") == 0)
 		writeBodyToStdIn();
-	err = execve(_rules.cgiPath.c_str(), execveArgv, execveEnvp);
+	/* err = execve(_rules.cgiPath.c_str(), execveArgv, execveEnvp); */
+	err = execve("/bin/python3", execveArgv, execveEnvp);
 	if (err == -1)
 		throw std::logic_error(strerror(errno)); // error 500
 }

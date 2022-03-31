@@ -11,7 +11,7 @@ D		= deps/
 NAME	= webserv
 
 # list of your source files
-SRCS	= cgi/cgi.cpp cgi/fork.cpp cgi/pipe.cpp cgi/childProcess.cpp \
+SRCS	= cgi/Cgi.cpp cgi/CgiUtils.cpp \
 		  configParsing/AST/ConfigFileNode.cpp configParsing/Lexer.cpp \
 		  configParsing/AST/LocationRules.cpp configParsing/Parser.cpp \
 		  configParsing/AST/ServerNode.cpp configParsing/AST/ServerRules.cpp \
