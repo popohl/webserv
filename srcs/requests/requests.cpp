@@ -1,14 +1,14 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   requests.cpp                                       :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/01 11:27:13 by pcharton         ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   requests.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
+/*   Updated: 2022/04/01 16:15:07 by fmonbeig         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "requests/requests.hpp"
 #include <cstddef>
@@ -123,7 +123,6 @@ std::string iRequest::createFilePath()
 	//check each location for the vector
 	std::string filePath;
 	const ServerNode * test = findServer();
-	std::cout << "findServer result : " << test << std::endl;
 	if (test)
 	{
 		const LocationRules * location = test->getLocationFromUrl(getRequestURI());
@@ -132,7 +131,6 @@ std::string iRequest::createFilePath()
 		{
 			if (getRequestURI() == "/")
 			{
-				std::cout << "got here" << std::endl;
 				if (test->getServerRules().autoindex == true)
 //display an autoindex;
 					std::cout << "autoindex is on" << std::endl;
@@ -209,7 +207,7 @@ response getRequest::createResponse() {
 		response.setErrorMessage(404);
 		return (response);
 	}
-	response.setStatusLine(200);	
+	response.setStatusLine(200);
 	return response;
 }
 
@@ -257,7 +255,7 @@ response postRequest::createResponse() {
 	}
 	response.setErrorMessage(400);
 	return (response);
-	
+
 
 	//check content Type to know file information
 	//Content Length or Transfer Encoding MUST be present in the header
@@ -307,7 +305,7 @@ const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
 std::string date()
 {
 	time_t now = time(0);
-	tm * gmt = gmtime(&now);	
+	tm * gmt = gmtime(&now);
 
 	std::string result;
 	std::stringstream tmp;

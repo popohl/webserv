@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/01 14:54:58 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/01 16:24:05 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,7 @@ void requestBase::parseHeader(std::string & input)
 			_unfinishedField.erase(_unfinishedField.begin(), _unfinishedField.end());
 		}
 		if (HeaderLineIsCorrectlyFormatted(line))
-		{
 			this->_header.insert(splitIntoPair(line));
-			std::cout << "map size " << _header.size() << std::endl;
-		}
 		else if (lineIsHeaderEnd(line))
 		{
 			_headerFinished = true;
@@ -89,7 +86,6 @@ void requestBase::parseHeader(std::string & input)
 		}
 		else
 			_unfinishedField = line; 				//it should break automagically
-//		std::cout << "unfinished field |" << _unfinishedField << "| of size " << _unfinishedField.length() << std::endl;
 	}
 }
 
@@ -159,7 +155,6 @@ std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
 	while (line[whitespace_index] == ' ')
 		whitespace_index++;
 	std::string value(line, whitespace_index, line.length() - 2);
-	std::cout << "in split pair : |" << key << "|" << value << "|" << std::endl;
 	return (std::make_pair<std::string, std::string>(std::string(key), std::string(value)));
 }
 

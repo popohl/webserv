@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-//   Updated: 2022/03/30 10:51:50 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/01 15:54:45 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,13 @@
 #include "configParsing/Parser.hpp"
 #include "socket/ASocket.hpp"
 #include "socket/Server.hpp"
+
+void	free_memory(std::vector<ASocket*> & socket)
+{
+	for(size_t i = 0; i < socket.size(); i++)
+		delete socket[i];
+	std::exit(1);
+}
 
 int main( int argc, char **argv )
 {
@@ -39,9 +46,15 @@ int main( int argc, char **argv )
 		temp = createSocket(serverIt->first, serverIt->second);
 		if (temp)
 			socket.push_back(temp);
+		else
+			free_memory(socket); //NOTA BENE fonction qui free tout si une socket ne se Fabrique/Bind/Listen pas bien
 	}
 	//Create two sets of fd for select : readfds and writefds
 	t_FD	sets;
 	fillFdSets(sets, socket);
 	portListening(sets, socket);
 }
+
+//TODO faire un logger propre avec les infos presente dans irequest
+//TODO faire un fichier qui va autoindex les informations d'une page
+//TODO Les liens vers les dossiers vont aussi autoindex des pages

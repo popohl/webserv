@@ -6,19 +6,36 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/30 14:42:53 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/01 15:55:27 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/Server.hpp"
 #include "requests/requests.hpp"
 
-#define GENERIC_MSG "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!"
+void	deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & sets)
+{
+	ASocket 		*addr = NULL;
+
+	for (size_t i = 0; i < socket.size(); i++)
+	{
+		if (client.getSocketFd() == socket[i]->getSocketFd())
+		{
+			addr = socket[i];
+			socket.erase(socket.begin() + i);
+			break;
+		}
+	}
+	sets.readfds.remove(client.getSocketFd());
+	sets.writefds.remove(client.getSocketFd());
+	close(client.getSocketFd());
+	std::cout << "suppression of client " << client.getSocketFd() << std::endl;
+	delete addr;
+}
 
 static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
 {
 	SocketClient	&client = dynamic_cast<SocketClient&>(tmp_socket);
-	ASocket 		*addr = NULL;
 	int				ret;
 	char			buff[90000];
 
@@ -31,19 +48,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	}
 	if (ret == 0) // if recv = 0 the connection is closed so we have to delete the client
 	{
-		for (size_t i = 0; i < socket.size(); i++)
-		{
-			if (client.getSocketFd() == socket[i]->getSocketFd())
-			{
-				addr = socket[i];
-				socket.erase(socket.begin() + i);
-				break;
-			}
-		}
-		sets.readfds.remove(client.getSocketFd());
-		close(client.getSocketFd());
-		std::cout << "suppression of client " << client.getSocketFd() << ret << " ."<< std::endl;
-		delete addr;
+		deleteClient(client, socket, sets);
 		return ;
 	}
 	std::cout << "value of recv "<< ret << std::endl << std::endl;
@@ -54,7 +59,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		client._request = iRequest::createRequest(tmp, client._servers);
 	else
 		client._request->_message.parseRequest(buff);
-	
+
 	if (!client._request || client._request->receivingisDone())
 	{
 		if(!client._request)
@@ -70,6 +75,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		//use this to switch from read to write
 		sets.readfds.remove(client.getSocketFd());
 		sets.writefds.add(client.getSocketFd());
+		client.resetTimer();
 	}
 }
 
