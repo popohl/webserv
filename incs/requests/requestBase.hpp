@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/31 14:56:22 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/01 13:58:28 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -61,13 +61,14 @@ struct requestBase {
 
 	requestBase();
 	void	parseRequest(const std::string &line);
-	void	parseHeader(std::string &line);
+	void	parseHeader(std::string & input);
 	void	parseBody(const std::string &line);
 
 	bool _headerFinished;
 	bool _bodyFinished;
 	int _status;
-	
+
+	std::string	_unfinishedField;
 	std::map<std::string, std::string> _header;
 	size_t		_bodySize;
 	size_t		_bodyExpectedSize;
@@ -78,6 +79,12 @@ private:
 	bool containsHostField(void);
 	void updateResponseStatus(void);
 	size_t	findBodyLength(void);
+
+
+	
+	std::string	removeOneHeaderLineFromInput(std::string & input);
+	bool	HeaderLineIsCorrectlyFormatted(const std::string & line);
+	bool	lineIsHeaderEnd(const std::string & line);
 };
 
 bool isHeaderEnd(const char *input);

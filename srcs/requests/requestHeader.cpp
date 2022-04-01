@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/31 14:56:38 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/01 13:58:17 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,14 @@ void checkLineEnd(const std::string &input)
 		throw malformedHeader();
 }
 
-requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _header(), _bodySize(0), _bodyExpectedSize(0), _body() {}
+requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _status(), _unfinishedField(),  _header(), _bodySize(0), _bodyExpectedSize(0), _body() {}
 
 void requestBase::parseRequest(const std::string &line)
 {
 	std::string copy(line);
 
 	if (!_headerFinished)
-		parseHeader(copy);
+		parseHeader2(copy);
 	if (_headerFinished && !_bodyFinished)
 	{
 		if (_bodyExpectedSize)
@@ -58,42 +58,73 @@ void requestBase::parseRequest(const std::string &line)
 	}
 }
 
-void	requestBase::parseHeader(std::string &line) {
-
-	std::list<std::string> lineNumber = split_header_to_lines(line);
-
-	for (std::list<std::string>::iterator it = lineNumber.begin(); it != lineNumber.end(); it = lineNumber.begin())
+void requestBase::parseHeader(std::string & input)
+{
+	std::string line;
+	if (_unfinishedField.length())
 	{
-		if (it->find(':') != std::string::npos)
+		input.insert(0, _unfinishedField);
+			_unfinishedField.erase(_unfinishedField.begin(), _unfinishedField.end());
+	}
+	while (input.length())
+	{
+		line = removeOneHeaderLineFromInput(input);
+		if (_unfinishedField.length())
 		{
-			//remove \r\n
-			checkLineEnd(*it);
-			it->erase(it->find("\r"));
-			//get pair
-			std::pair<std::string, std::string>parsedPair = splitIntoPair(*it);
-			if (parsedPair.first == "Content-Length") //dirty update of body expected size
-				_bodyExpectedSize = atoi(parsedPair.second.c_str());
-			if (_header.find(parsedPair.first) == _header.end())
-				_header.insert(parsedPair);
+			line.insert(0, _unfinishedField);
+			_unfinishedField.erase(_unfinishedField.begin(), _unfinishedField.end());
+		}
+		if (HeaderLineIsCorrectlyFormatted(line))
+		{
+			this->_header.insert(splitIntoPair(line));
+			std::cout << "map size " << _header.size() << std::endl;
+		}
+		else if (lineIsHeaderEnd(line))
+		{
+			_headerFinished = true;
+			if (_header.find("Content-Length") != _header.end())
+				_bodyExpectedSize = std::strtoul(_header["Content-Length"].c_str(), NULL, 10);
 			else
-				throw fieldAlreadyExists();  //either throw an exception or concatenate the result to the pair value
-			line.erase(0, it->length() + 2);
-			lineNumber.erase(lineNumber.begin());
+				_bodyFinished = true;
 		}
 		else
-		{
-			//check if header end has been reached
-			std::string end("\r\n");
-			if (*it == end && it->length() == end.length())
-			{
-				_headerFinished = true;
-				line.erase(0, 2);
-				break ;
-			}
-			else
-				throw unfinishedHeader();
-		}
+			_unfinishedField = line; 				//it should break automagically
+//		std::cout << "unfinished field |" << _unfinishedField << "| of size " << _unfinishedField.length() << std::endl;
 	}
+}
+
+std::string	requestBase::removeOneHeaderLineFromInput(std::string & input)
+{
+	std::string line;
+	size_t		position = input.find("\r\n");
+	if (position != std::string::npos)
+	{
+		line = input.substr(0, position + 2);
+		input.erase(0, position + 2);
+	}
+	else
+	{
+		line = std::string(input);
+		input.erase(0, input.length());
+	}
+	return (line);
+}
+
+bool	requestBase::HeaderLineIsCorrectlyFormatted(const std::string & line)
+{
+	if ((line.find(":") != std::string::npos)
+		&& (line.find("\r\n") != std::string::npos))
+		return (true);
+	else
+		return (false);
+}
+
+bool	requestBase::lineIsHeaderEnd(const std::string & line)
+{
+	if ((line == "\r\n") && (line.length() == 2))
+		return (true);
+	else
+		return (false);
 }
 
 //it should only get the body string
@@ -124,9 +155,12 @@ std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
 	if (sep_index != std::string::npos)
 		sep_index += 1;
 	line.erase(0, sep_index);
-	std::string value(line, 0, line.length());
-
-	return (std::make_pair<std::string, std::string>(key, value));
+	size_t whitespace_index = 0;
+	while (line[whitespace_index] == ' ')
+		whitespace_index++;
+	std::string value(line, whitespace_index, line.length() - 2);
+	std::cout << "in split pair : |" << key << "|" << value << "|" << std::endl;
+	return (std::make_pair<std::string, std::string>(std::string(key), std::string(value)));
 }
 
 std::list<std::string>split_header_to_lines(const std::string & input)

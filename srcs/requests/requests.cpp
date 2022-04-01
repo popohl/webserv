@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/01 10:48:54 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/01 11:27:13 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -244,9 +244,15 @@ response postRequest::createResponse() {
 													// Instead, one should use LocationRules::getPathFromLocation()
 		std::ofstream file;
 		file.open(postedFile.c_str());
-		file << _message._body;
-		file.close();
-		response.setErrorMessage(200);
+		if (file.good())
+		{
+			file << _message._body;
+			file.close();
+			//set post default response if everything works
+			response.setErrorMessage(201);
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
+		}
+		else
 		return (response);
 	}
 	response.setErrorMessage(400);
