@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:54:28 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/28 12:12:18 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/01 15:52:39 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,10 @@ TEST(Rules, RulesTests)
 	EXPECT_TRUE (generalRules.isCgi("/www/index.py"));
 	EXPECT_FALSE(generalRules.isCgi("/www/index.html"));
 	EXPECT_TRUE (generalRules.isCgi("/index.py"));
+	EXPECT_TRUE (generalRules.isCgi("/index.py/extra/path/info.txt"));
+	EXPECT_TRUE (generalRules.isCgi("/index.py/extra/path/info.txt?query=string"));
+	EXPECT_TRUE (generalRules.isCgi("/index.py?query=string"));
+	EXPECT_FALSE(generalRules.isCgi("/index.python?query=string"));
+	EXPECT_FALSE(generalRules.isCgi("/index.python"));
 	EXPECT_FALSE(generalRules.isCgi("/index.html"));
 }

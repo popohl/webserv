@@ -6,12 +6,11 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:10:41 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/01 08:26:13 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/01 16:14:05 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configParsing/Rules.hpp"
-#include "configParsing/helperFunctions.hpp"
 
 Rules::Rules( void ) { return; }
 
@@ -136,5 +135,14 @@ std::ostream &	operator<<( std::ostream & ostr, Rules const & instance)
 
 bool		Rules::isCgi( std::string uri ) const
 {
-	return hasCgiExtension(uri, this->cgiExtension);
+	char	afterExtension;
+	if (cgiExtension == "")
+		return false;
+	uri.erase(0, uri.find_first_of('.') + 1);
+	if (uri.rfind(cgiExtension, 0) != 0)
+		return false;
+	afterExtension = uri[cgiExtension.size()];
+	if (afterExtension == 0 || afterExtension == '?' || afterExtension == '/')
+		return true;
+	return false;
 }

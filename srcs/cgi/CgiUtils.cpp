@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/31 21:34:15 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/01 18:04:19 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,37 @@ void	Cgi::writeToEnvp( std::map<std::string, std::string> mapEnvp)
 	_envp[index++] = 0;
 }
 
-void	Cgi::createEnvp( void )
+void	Cgi::createEnvp( std::string requestedFilePath )
 {
-	std::map<std::string, std::string>	envp;
+	std::map<std::string, std::string>	envp = _request->_message._header;
 
-	/* document_root += get_current_dir_name(); */
+	(void)requestedFilePath;
+	// "CONTENT_LENGTH" -> convert from _request->_message._header
+	// "CONTENT_TYPE" -> convert from _request->_message._header
+	// "DOCUMENT_ROOT" -> document_root += get_current_dir_name();
+	// "GATEWAY_INTERFACE" -> "CGI/1.1"
+	// "HTTP_ACCEPT" -> convert from _request->_message._header
+	// "HTTP_REFERER" -> maybe, convert from _request->_message._header
+	// "HTTP_USER_AGENT" -> convert from _request->_message._header
+	// "PATH_INFO" -> extra path info, split requestedFilePath
+	// "PATH_TRANSLATED" -> DOCUMENT_ROOT + PATH_INFO
+	// "QUERY_STRING" -> query, split requestedFilePath
+	// "REMOTE_ADDR" -> client address
+	// "REMOTE_HOST" -> client name
+	// "REQUEST_METHOD" -> convert from _request->_message._header
+	// envp["REQUEST_URI"] = _request->getRequestURI();
+	// "SCRIPT_NAME" -> path, split from requestedFilePath
+	// "SERVER_NAME" -> server name
+	// "SERVER_PORT" -> server port
+	// "SERVER_PROTOCOL" -> "HTTP/1.0"
+	// "SERVER_SOFTWARE" -> "webserv/1.0"
+	
 	writeToEnvp(envp);
 }
 
 void	Cgi::writeBodyToStdIn( void )
 {
+	std::cout << "writeBodyToStdIn got called" << std::endl;
 	std::string body = "fname=Paul&lname=OHL";
 	int			pipeFd[2];
 
@@ -80,7 +101,7 @@ int	Cgi::createFork( void )
 
 bool	Cgi::isChildProcess( int forkPid )
 {
-	return (forkPid != 0);
+	return (forkPid == 0);
 }
 
 void	Cgi::createPipe( int pipeFd[2] )
@@ -113,4 +134,22 @@ void	Cgi::freeStringPointer( char** stringPtr )
 	for (size_t i = 0; stringPtr[i] != NULL; i++)
 		free(stringPtr[i]);
 	free(stringPtr);
+}
+
+bool	Cgi::isPostRequest( void )
+{
+	const postRequest* tmp;
+
+	tmp = dynamic_cast<const postRequest*>(_request);
+	if (tmp == NULL)
+		return false;
+	return true;
+}
+
+const char*	Cgi::stripExtraPathInfo( std::string &requestedFilePath )
+{
+	requestedFilePath.erase(requestedFilePath.begin()
+			+ requestedFilePath.find_first_of('.') + 1
+			+ _rules.cgiExtension.size(), requestedFilePath.end());
+	return requestedFilePath.c_str();
 }

@@ -6,12 +6,12 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/01 08:27:58 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/01 15:34:11 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
 #include "requests/requests.hpp"
-#include "configParsing/Rules.hpp"
+#include "cgi/Cgi.hpp"
 #include <cstddef>
 #include <cstring>
 #include <ctime>
@@ -89,7 +89,7 @@ std::string eatWord(std::string & line)
 	return (word);
 }
 
-const std::string & iRequest::getRequestURI()
+const std::string & iRequest::getRequestURI() const
 {
 	return (_requestURI);
 }
@@ -123,7 +123,7 @@ std::string iRequest::createFilePath()
 	//check each location for the vector
 	std::string filePath;
 	const ServerNode * test = findServer();
-	std::cout << "findServer result : " << test << std::endl;
+	/* std::cout << "findServer result : " << test << std::endl; */
 	if (test)
 	{
 		const LocationRules * location = test->getLocationFromUrl(getRequestURI());
@@ -140,12 +140,24 @@ std::string iRequest::createFilePath()
 					filePath = testIndexFile(location->root + "/", test->getServerRules().index);
 			}
 			else
-				filePath = (location->root + getRequestURI());
+				filePath = location->getPathFromLocation(getRequestURI());
 		}
 	}
 	if (!filePath.length())
 		throw fileNotFound();
 	return (filePath);
+}
+
+std::string iRequest::createFileFromCgi( Rules& rules,
+		std::string requestedFilePath )
+{
+	Cgi			cgi(rules, this);
+	std::string rawCgiOutput(cgi.executeCgi(requestedFilePath));
+
+	/* std::cout << "Cgi output: --->" << std::endl << rawCgiOutput << std::endl */
+	/* 	<< "<---" << std::endl; */
+	return "";
+	/* return rawCgiOutput; */
 }
 
 std::string iRequest::testIndexFile(std::string root, const std::vector<std::string> & indexList)
@@ -190,11 +202,8 @@ response getRequest::createResponse() {
 		response.setErrorMessage(400);
 		return (response);
 	}
-	const ServerNode* tmp = findServer();
-	rules.setValues(*tmp, _requestURI);
-	/* const LocationRules * location = findServer()->getLocationFromUrl(_requestURI); */
-	/* if (location && !(location->allowedMethod & LocationRules::GET)) */
-	if (rules.isMethodAllowed(Rules::GET))
+	rules.setValues(*findServer(), getRequestURI());
+	if (!rules.isMethodAllowed(Rules::GET))
 	{
 		response.setErrorMessage(405);
 		return (response);
@@ -203,8 +212,14 @@ response getRequest::createResponse() {
 		std::string filePath = createFilePath();
 		if (filePath.length())
 		{
-			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-			response.tryToOpenAndReadFile(filePath);
+			if (rules.isCgi(filePath))
+			/* if (false) */
+				response.tryToOpenAndReadFile(createFileFromCgi(rules, filePath));
+			else
+			{
+				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+				response.tryToOpenAndReadFile(filePath);
+			}
 		}
 	}
 	catch (std::exception &e){

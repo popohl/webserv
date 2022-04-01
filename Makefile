@@ -16,10 +16,10 @@ SRCS	= cgi/Cgi.cpp cgi/CgiUtils.cpp configParsing/AST/ConfigFileNode.cpp \
 		  configParsing/AST/ServerNode.cpp configParsing/AST/ServerRules.cpp \
 		  configParsing/Lexer.cpp configParsing/Parser.cpp \
 		  configParsing/Rules.cpp configParsing/Token.cpp \
-		  configParsing/helperFunctions.cpp main.cpp requests/requestHeader.cpp \
-		  requests/requests.cpp responses/response.cpp socket/ASocket.cpp \
-		  socket/FdSet.cpp socket/Receive.cpp socket/Send.cpp socket/Server.cpp \
-		  socket/SocketClient.cpp socket/SocketPort.cpp #socket/test.cpp
+		  main.cpp requests/requestHeader.cpp requests/requests.cpp \
+		  responses/response.cpp socket/ASocket.cpp socket/FdSet.cpp \
+		  socket/Receive.cpp socket/Send.cpp socket/Server.cpp \
+		  socket/SocketClient.cpp socket/SocketPort.cpp
 
 CC		= c++
 # Compiler flags

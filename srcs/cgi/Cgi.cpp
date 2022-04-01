@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/31 21:38:00 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/01 16:43:13 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@
 #include <errno.h>
 #include <exception>
 
-Cgi::Cgi( Rules& rules, const iRequest* request ): _rules(rules), _request(request)
+Cgi::Cgi( Rules& rules, const iRequest* request ):
+	_rules(rules), _request(request), _envp(NULL), _argv(NULL)
 {
 	return;
 }
@@ -32,18 +33,20 @@ Cgi::~Cgi( void )
 	return;
 }
 
-std::string	Cgi::executeCgi( void )
+std::string	Cgi::executeCgi( std::string requestedFilePath )
 {
 	int			forkPid;
+	int			returnValue;
 
 	createPipe(_pipeFd);
 	forkPid = createFork();
 	if (isChildProcess(forkPid))
 	{
-		executeChildProcess();
+		executeChildProcess(requestedFilePath);
 		exit(0);
 	}
-	waitpid(forkPid, NULL, WNOHANG);
+	waitpid(forkPid, &returnValue, 0);
+	std::cout << "WEXITSTATUS(returnValue): " << WEXITSTATUS(returnValue) << std::endl;
 	return readCgiOutput();
 }
 
@@ -70,22 +73,22 @@ std::string	Cgi::readCgiOutput( void )
 	return cgiOutput;
 }
 
-void	Cgi::executeChildProcess( void )
+void	Cgi::executeChildProcess( std::string requestedFilePath )
 {
-	char	requested_document[] = "/mnt/nfs/homes/pohl/Documents/42/webserv/srcs/testing/cgi_scripts/envp.py";
-	char	request_type[] = "POST";
-
 	const char*	cgiProgramPath = _rules.cgiPath.c_str();
 	int		err;
 
+	/* std::cout << "Cgi infos:" << std::endl << "cgiProgramPath: " << cgiProgramPath */
+	/* 	<< ", requestedFilePath: " << requestedFilePath << std::endl; */
 	close(_pipeFd[PIPE_READ]);
 	dup2(_pipeFd[PIPE_WRITE], STDOUT_FILENO);
 	close(_pipeFd[PIPE_WRITE]);
-	createEnvp();
-	createArgv(cgiProgramPath, requested_document);
-	if (strcmp(request_type, "POST") == 0)
+	createEnvp(requestedFilePath);
+	createArgv(cgiProgramPath, stripExtraPathInfo(requestedFilePath));
+	if (isPostRequest())
 		writeBodyToStdIn();
 	err = execve(cgiProgramPath, _argv, _envp);
+	perror("In execve:");
 	if (err == -1)
-		throw std::logic_error(strerror(errno)); // error 500
+		exit(1); // error
 }

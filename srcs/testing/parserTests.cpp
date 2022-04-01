@@ -46,9 +46,9 @@ TEST(ParserSuite, EveryRightPossibilityFile)
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].cgiPath, "/bin/php-cgi");
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].cgiPath, "");
 	EXPECT_EQ(result.getServerList()[3].getServerRules().cgiExtension, "py");
-	EXPECT_EQ(result.getServerList()[3].getServerRules().cgiPath, "/cgi-bin/python");
+	EXPECT_EQ(result.getServerList()[3].getServerRules().cgiPath, "/bin/python3");
 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].cgiExtension, "py");
-	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].cgiPath, "/cgi-bin/python");
+	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].cgiPath, "/bin/python3");
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].locationPath, "/");
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].locationPath, "/www/");
 

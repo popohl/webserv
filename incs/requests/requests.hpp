@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/31 13:51:07 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/01 12:51:25 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "requests/requestBase.hpp"
 #include "responses/response.hpp"
 #include "configParsing/Parser.hpp"
+#include "configParsing/Rules.hpp"
 
 std::string date();
 std::string eatWord(std::string & line);
@@ -32,18 +33,19 @@ class iRequest
 	requestBase	_message;
 //	response	_response;
 	
-	bool receivingisDone();
-	virtual response createResponse() = 0;
-	virtual ~iRequest() {};
+	bool receivingisDone( void );
+	virtual response createResponse( void ) = 0;
+	virtual ~iRequest( void ) {};
 
-	const std::string & getRequestURI();
+	const std::string & getRequestURI( void ) const;
 	
 protected:
 	const std::vector<ServerNode *> *_server;
 	std::string _requestURI;
 
-	std::string createFilePath();
-	ServerNode * findServer();
+	std::string createFilePath( void );
+	std::string createFileFromCgi( Rules& rules, std::string requestedFilePath );
+	ServerNode * findServer( void );
 private:
 	std::string testIndexFile(std::string root, const std::vector<std::string> & indexList);
 };

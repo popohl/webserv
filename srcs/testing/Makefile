@@ -16,7 +16,7 @@ FILES = lexerTests astTests parserTests rulesTests #requests_gtests
 
 WEBSERV_OBJS_PATH = ../../objs/
 
-WEBSERV_DIR = configParsing configParsing/AST requests
+WEBSERV_DIR = configParsing configParsing/AST requests cgi responses socket
 
 WEBSERV_PATH = $(addprefix $(WEBSERV_OBJS_PATH), $(WEBSERV_DIR))
 # WEBSERV_OBJS = $(wildcard $(foreach $(WEBSERV_PATH)/*.o) #taking all the objects without the main

@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/31 21:35:12 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/01 11:58:34 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int main( int argc, char **argv )
 {
 	(void)argc;
 	(void)argc;(void)argv;
-	Parser			parser("./config_files/cgi_testing.conf");
+	Parser			parser("./config_files/config.conf");
 	ConfigFileNode	configFile = parser.getConfigFile();
 
 	Rules rules;
