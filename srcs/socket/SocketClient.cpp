@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/31 18:00:43 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 11:29:40 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,3 +81,6 @@ bool	SocketClient::checkTimeout() const
 
 void	SocketClient::resetTimer()
 { time(&_timer); }
+
+void	SocketClient::erasePartResponse(int i)
+{ _response.erase(0,i); }

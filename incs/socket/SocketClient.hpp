@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/31 18:02:01 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 11:27:42 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class SocketClient : public ASocket
 		void		setResponse(std::string input);
 		void		resetTimer();
 		bool		checkTimeout()const;
+		void		erasePartResponse(int i);
 
 		//prepareResponse(iRequest *);
 		ServerNode *	_server;

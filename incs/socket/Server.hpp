@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/31 15:53:11 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 11:38:47 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #define PORT 1
 #define CLIENT 2
+#define SENDING 100
 
 #include <iostream>
 #include <cstring>

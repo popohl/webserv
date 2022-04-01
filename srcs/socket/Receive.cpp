@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/31 15:16:58 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 11:45:21 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ void	deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & 
 		}
 	}
 	sets.readfds.remove(client.getSocketFd());
+	sets.writefds.remove(client.getSocketFd());
 	close(client.getSocketFd());
 	std::cout << "suppression of client " << client.getSocketFd() << std::endl;
 	delete addr;
