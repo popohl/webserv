@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/30 19:11:00 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/01 17:50:55 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include "configParsing/Parser.hpp"
+#include "configParsing/Rules.hpp"
 
 //#include "requests/requests.hpp"
 
@@ -33,7 +34,7 @@
 */
 
 std::string to_string(int n);
-std::string formatErrorMessage(int errorStatus);
+std::string defaultErrorMessage(int errorStatus);
 //std::string to_string(std::streamsize n);
 
 class fileNotFound : public std::exception
@@ -60,11 +61,12 @@ private:
 	std::string	_header;
 	std::string	_body;
 
+	Rules		_rules;
 //	ServerNode * _server;
 
 public:
-
 	response();
+//	response(Rules rules);
 	response(const response & src);
 	response & operator = (const response & src);
 	~response();
@@ -73,7 +75,7 @@ public:
 	void		addFieldToHeaderMap(std::pair<std::string, std::string>input);
 	void		tryToOpenAndReadFile(std::string RequestUri);
 	void		setStatusLine(int status);	
-	void		setErrorMessage(int errorStatus);
+	void		setErrorMessage(int errorStatus, Rules & rules);
 
 private:
 	void		createHeader();

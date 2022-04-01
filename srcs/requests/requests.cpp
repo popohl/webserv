@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/01 16:15:07 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/04/01 17:49:34 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,21 +180,24 @@ ServerNode * iRequest::findServer()
 }
 
 response getRequest::createResponse() {
+	Rules rules;
 	response response;
 
+	rules.setValues(*findServer(), getRequestURI().c_str());
+	
 	if (_message._header.find("Host") == _message._header.end())
 	{
-		response.setErrorMessage(400);
+		response.setErrorMessage(400, rules);
 		return (response);
 	}
-	const LocationRules * location = findServer()->getLocationFromUrl(_requestURI);
-	if (location && !(location->allowedMethod & LocationRules::GET))
+	if (!rules.isMethodAllowed(Rules::GET))
 	{
-		response.setErrorMessage(405);
+		response.setErrorMessage(405, rules);
 		return (response);
 	}
 	try {
 		std::string filePath = createFilePath();
+		std::cout << "filePath is " << filePath << std::endl;
 		if (filePath.length())
 		{
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
@@ -204,7 +207,7 @@ response getRequest::createResponse() {
 	catch (std::exception &e){
 		//file not found
 		std::cout << e.what() << std::endl;
-		response.setErrorMessage(404);
+		response.setErrorMessage(404, rules);
 		return (response);
 	}
 	response.setStatusLine(200);
@@ -213,17 +216,17 @@ response getRequest::createResponse() {
 
 
 response postRequest::createResponse() {
+
+	Rules rules;
+	rules.setValues(*findServer(), getRequestURI().c_str());
 	response	response;
 	std::string	postedFile;
 
 	if (_message._header.find("Host") == _message._header.end())
 	{
-		response.setErrorMessage(400);
+		response.setErrorMessage(400, rules);
 		return (response);
 	}
-	ServerNode * server = findServer();
-	Rules rules;
-	rules.setValues(*server, getRequestURI().c_str());
 /*	Not needed anymore ?
 	if (!location)
 	{
@@ -233,7 +236,7 @@ response postRequest::createResponse() {
 */
 	if (!rules.isMethodAllowed(Rules::POST))
 	{
-		response.setErrorMessage(405);
+		response.setErrorMessage(405, rules);
 		return (response);
 	}
 	else
@@ -247,13 +250,13 @@ response postRequest::createResponse() {
 			file << _message._body;
 			file.close();
 			//set post default response if everything works
-			response.setErrorMessage(201);
+			response.setErrorMessage(201, rules);
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
 		}
 		else
 		return (response);
 	}
-	response.setErrorMessage(400);
+	response.setErrorMessage(400, rules);
 	return (response);
 
 

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/01 15:54:45 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/04/01 17:19:05 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int main( int argc, char **argv )
 	(void)argc;(void)argv;
 	//protect for one argument usecase
 //	Parser			parser(argv[1]);
-	Parser  parser("./srcs/testing/config_files/basic_file.conf");
+	Parser  parser("./config_files/basic_file.conf");
 	ConfigFileNode	config = parser.getConfigFile();
 
 	// Get all the port to listen from configuration file parsing
