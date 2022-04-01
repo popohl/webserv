@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/01 13:58:17 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/01 14:54:58 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void requestBase::parseRequest(const std::string &line)
 	std::string copy(line);
 
 	if (!_headerFinished)
-		parseHeader2(copy);
+		parseHeader(copy);
 	if (_headerFinished && !_bodyFinished)
 	{
 		if (_bodyExpectedSize)
