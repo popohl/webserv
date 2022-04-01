@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:10:41 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/28 11:43:45 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/01 08:26:13 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void	Rules::setValuesFromLocationRules( const LocationRules* locationRules )
 	}
 }
 
-void	Rules::setValues( const ServerNode& server, const char* url )
+void	Rules::setValues( const ServerNode& server, std::string url )
 {
 	setValuesFromServerRules(server.getServerRules());
 	setValuesFromLocationRules(server.getLocationFromUrl(url));

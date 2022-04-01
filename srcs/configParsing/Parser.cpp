@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/24 17:08:57 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/01 08:41:37 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,6 +267,7 @@ void	Parser::parseListenRule( ServerRules& serverRules )
 			break;
 		case Token::colon:
 			eat(Token::colon);
+			/* fall through */
 		case Token::number:
 			serverRules.listenPort = currentToken.sizeAtoi();
 			eat(Token::number);

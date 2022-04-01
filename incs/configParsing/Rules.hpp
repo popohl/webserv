@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:09:00 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/29 13:41:29 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/01 08:25:06 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ struct Rules
 	Rules( void );
 	~Rules( void );
 
-	void	setValues( const ServerNode& server, const char* url );
+	void	setValues( const ServerNode& server, std::string url );
 
 	static const char	GET			= 0b0001;
 	static const char	POST		= 0b0010;

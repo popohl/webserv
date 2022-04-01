@@ -1,16 +1,17 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   requests.cpp                                       :+:      :+:    :+:   //
+/*   requests.cpp                                       :+:      :+:    :+:   */
 //                                                    +:+ +:+         +:+     //
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/31 13:27:07 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/01 08:27:58 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
 #include "requests/requests.hpp"
+#include "configParsing/Rules.hpp"
 #include <cstddef>
 #include <cstring>
 #include <ctime>
@@ -181,15 +182,19 @@ ServerNode * iRequest::findServer()
 }
 
 response getRequest::createResponse() {
-	response response;
+	response	response;
+	Rules		rules;
 
 	if (_message._header.find("Host") == _message._header.end())
 	{
 		response.setErrorMessage(400);
 		return (response);
 	}
-	const LocationRules * location = findServer()->getLocationFromUrl(_requestURI);
-	if (location && !(location->allowedMethod & LocationRules::GET))
+	const ServerNode* tmp = findServer();
+	rules.setValues(*tmp, _requestURI);
+	/* const LocationRules * location = findServer()->getLocationFromUrl(_requestURI); */
+	/* if (location && !(location->allowedMethod & LocationRules::GET)) */
+	if (rules.isMethodAllowed(Rules::GET))
 	{
 		response.setErrorMessage(405);
 		return (response);
