@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/01 15:54:45 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 17:43:30 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,4 +57,4 @@ int main( int argc, char **argv )
 
 //TODO faire un logger propre avec les infos presente dans irequest
 //TODO faire un fichier qui va autoindex les informations d'une page
-//TODO Les liens vers les dossiers vont aussi autoindex des pages
+

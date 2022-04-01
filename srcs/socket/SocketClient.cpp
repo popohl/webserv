@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 15:56:22 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 17:37:31 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ bool	SocketClient::checkTimeout() const
 	double ret;
 
 	time(&now);
-	ret = difftime(_timer, now);
+	ret = difftime(now, _timer);
 	std::cout << "client " << _socket_fd << " is running for " << ret << " secondes" <<std::endl;
 	if (ret > CLIENT_TIMEOUT)
 		return(true);

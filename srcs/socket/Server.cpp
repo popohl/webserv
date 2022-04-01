@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 16:15:39 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 17:42:04 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,14 +116,16 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 			}
 			else
 			{
-				// temp = findSocket(i, socket);
-				// if (temp && temp->getType() == CLIENT)
-				// {
-				// 	std::cout << "\e[4;31mYou take too long..\e[0m" << std::endl;
-				// 	client = dynamic_cast<SocketClient*>(temp);
-				// 	if (client->checkTimeout())
-				// 		deleteClient(*client, socket, sets);
-				// }
+				temp = findSocket(i, socket);
+				if (temp && temp->getType() == CLIENT)
+				{
+					client = dynamic_cast<SocketClient*>(temp);
+					if (client->checkTimeout())
+					{
+						std::cout << "\e[4;31mYou take too long to responde :(\e[0m" << std::endl;
+						deleteClient(*client, socket, sets);
+					}
+				}
 			}
 		}
 	}
