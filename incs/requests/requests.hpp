@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/29 10:37:57 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/31 13:51:07 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,50 +18,47 @@
 #include "responses/response.hpp"
 #include "configParsing/Parser.hpp"
 
-const std::pair<std::string, std::string>responseStatus[] = {
-	std::make_pair("100", "Continue"),
-	std::make_pair("200", "OK"),
-	std::make_pair("400", "Bad Request"),
-	
-	std::make_pair("405", "Method Not Allowed"),
-};
-
-
 std::string date();
 std::string eatWord(std::string & line);
+bool fileExists(std::string file);
+bool containsPort(std::string hostname);
 
 class iRequest
 {
 	public:
 //	int _status;
-	static iRequest * createRequest(std::string &, ServerNode *);
+	static iRequest * createRequest(std::string &, const std::vector<ServerNode *> & ref);
 
 	requestBase	_message;
-	response	_response;
+//	response	_response;
 	
 	bool receivingisDone();
-	virtual std::string createResponse() = 0;
+	virtual response createResponse() = 0;
 	virtual ~iRequest() {};
 
 	const std::string & getRequestURI();
 	
 protected:
-	ServerNode	*_server;
+	const std::vector<ServerNode *> *_server;
 	std::string _requestURI;
+
+	std::string createFilePath();
+	ServerNode * findServer();
+private:
+	std::string testIndexFile(std::string root, const std::vector<std::string> & indexList);
 };
 
 class getRequest : public iRequest
 {
-	//get request has no body !
 public:
 	getRequest();
 	~getRequest() {};
 
 //	response createResponse();
-
-	void sendRequest(void) {};
-	std::string createResponse();
+//	void sendRequest(void) {};
+	response createResponse();
 	std::string	createResponseBody();
+//private:
 };
 
 class postRequest : public iRequest
@@ -71,8 +68,10 @@ class postRequest : public iRequest
 	~postRequest() {};
 
 
-	void sendRequest(void) {};
-	std::string createResponse();
+private:
+//	void sendRequest(void) {};
+	response createResponse();
+//	bool requestURIisvalid();
 };
 
 class deleteRequest : public iRequest
@@ -81,8 +80,8 @@ class deleteRequest : public iRequest
 	deleteRequest();
 	~deleteRequest() {};
 
-	void	sendRequest(void) {};
-	std::string createResponse();
+//	void	sendRequest(void) {};
+	response createResponse();
 };
 
 #endif

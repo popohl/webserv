@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/31 11:22:44 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 15:52:57 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <fcntl.h>
 #include <time.h>
 
+#include "configParsing/Parser.hpp"
 
 class ASocket
 {
@@ -31,11 +32,11 @@ class ASocket
 		const int	_port;
 		const int	_socket_fd;
 		const int	_type;
-
 	public:
+		const std::vector<ServerNode *> & _servers;
 
 		ASocket();
-		ASocket(int port, int fd, int type);
+		ASocket(int port, int fd, int type, const std::vector<ServerNode *> & ref);
 		ASocket(ASocket const & other);
 		virtual ~ASocket();
 
@@ -49,6 +50,7 @@ class ASocket
 			public:
 				virtual const char* what() const throw();
 		};
+
 };
 
 #endif

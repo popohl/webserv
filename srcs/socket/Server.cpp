@@ -6,14 +6,14 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 12:37:46 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 15:55:46 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/Server.hpp"
 #include "configParsing/Parser.hpp"
 
-ASocket*	createSocket(int port, ServerNode * server) // change const reference to serverNode if possible
+ASocket*	createSocket(int port, const std::vector<ServerNode *> & server) // change const reference to serverNode if possible
 {
 	int flag = 1;
 	try
@@ -128,32 +128,3 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 		}
 	}
 }
-/*
-int main() //Mettre dans un fichier main.cpp
-{
-	// Get all the port to listen from Paul's Parsing
-	std::vector<int>	allPort;
-	allPort.push_back(8080);
-	allPort.push_back(8003);
-	allPort.push_back(8004);
-
-	//Create a containers of Socket pointer. The Class Socket initialize the bind and the listening for every Socket
-	std::vector<ASocket*>	socket;
-	ASocket					*temp;
-	for(int i = 0; i < allPort.size(); i++) // check le NULL de l'erreur
-	{
-		temp = createSocket(allPort[i]);
-		if (temp)
-			socket.push_back(temp);
-	}
-	//Create two sets of fd for select : readfds and writefds
-	t_FD	sets;
-	fillFdSets(sets, socket);
-	portListening(sets, socket);
-}
-*/
- 
-
-// a faire :
-
-// rajouter une image dans un HTML :: <img src="dinosaur.jpg"> (pour le poids je ne sais pas comment faire)

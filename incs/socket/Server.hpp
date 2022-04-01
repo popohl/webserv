@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 11:38:47 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 15:53:07 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	receiveDataOrNewClient(int i, std::vector<ASocket*> & socket, t_FD & sets);
 void	sendToClient(ASocket *tmp_socket, t_FD & sets);
 void	deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & sets);
 
-ASocket*	createSocket(int port, ServerNode * server);
+ASocket*	createSocket(int port, const std::vector<ServerNode *> & server);
 ASocket *findSocket(int fd, std::vector<ASocket*> & socket);
 
 void	fillFdSets(t_FD & sets, std::vector<ASocket*> & socket);

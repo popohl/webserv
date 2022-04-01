@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/03/31 15:20:42 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 15:55:01 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@
 #include <string.h>
 #include <iostream>
 #include <time.h>
+#include <unistd.h>
+#include "configParsing/Rules.hpp"
 
 getRequest::getRequest() {}
 postRequest::postRequest() {}
 deleteRequest::deleteRequest() {}
 
-iRequest * iRequest::createRequest(std::string &input, ServerNode * server) //be able to remove first line from buffer
+iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerNode *> & server) //be able to remove first line from buffer
 {
 	iRequest * result = NULL;
 	std::string method, requestUri, httpVersion;
@@ -36,8 +38,16 @@ iRequest * iRequest::createRequest(std::string &input, ServerNode * server) //be
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
 		std::cout << requestLine << std::endl;
 		method = eatWord(requestLine);
+		// expect an URI or replace it with / if field is empty
 		requestUri = eatWord(requestLine);
-		httpVersion = eatWord(requestLine);
+		if (requestUri.find("HTTP") != std::string::npos)
+		{
+			httpVersion = requestUri;
+			requestUri = std::string("/");
+		}
+		else
+			httpVersion = eatWord(requestLine);
+		//check httpVersion
 	}
 
 	//allocate memory
@@ -52,7 +62,7 @@ iRequest * iRequest::createRequest(std::string &input, ServerNode * server) //be
 			result = new deleteRequest;
 		if (result)
 		{
-			result->_server = server;
+			result->_server = &server;
 			result->_requestURI = requestUri;
 			result->_message.parseRequest(input);
 		}
@@ -84,57 +94,210 @@ const std::string & iRequest::getRequestURI()
 	return (_requestURI);
 }
 
-std::string getRequest::createResponse() {
-	std::string response;
-	
-	std::cout << _server << std::endl;
-	response += "HTTP/1.1 200 Ok\r\n";
-	if (_message._status != 500 && _message._status != 503)
-		response += date();
-	response += "Accept: /text/html\r\n";
-
-	response += "Content-length: 108\r\n"; //replace it with the length of the body to send
-	response += "\r\n";
-	//body
-
-
-	response += createResponseBody();
-
-	return response;
+bool fileExists(std::string file)
+{
+	if (!access(file.c_str(), F_OK | R_OK))
+		return (true);
+	else
+		return (false);
 }
 
-std::string getRequest::createResponseBody()
+bool containsPort(std::string hostname)
 {
-	std::string body;
-
-	char buffer[1048];
-	memset(&buffer[0], 0, 1048);
-
-	const LocationRules * location = _server->getLocationFromUrl(getRequestURI());
-	if (location)
+	size_t portStart(hostname.rfind(":"));
+	if (portStart != std::string::npos)
 	{
-		std::string filePath(location->root + getRequestURI());
-		std::ifstream file;
-		file.open(filePath.c_str());
-		if (file.good())
+		for (size_t index = 1; (portStart + index < hostname.length()) && (index < 6); index++)
 		{
-			file.readsome(&buffer[0], 1048);
-			body += std::string(buffer);
+			if (!isdigit(hostname[portStart + index]))
+				return (false);
+		}
+		return (true);
+	}
+	else
+		return (false);
+}
+
+std::string iRequest::createFilePath()
+{
+	//check each location for the vector
+	std::string filePath;
+	const ServerNode * test = findServer();
+	std::cout << "findServer result : " << test << std::endl;
+	if (test)
+	{
+		const LocationRules * location = test->getLocationFromUrl(getRequestURI());
+
+		if (location)
+		{
+			if (getRequestURI() == "/")
+			{
+				std::cout << "got here" << std::endl;
+				if (test->getServerRules().autoindex == true)
+//display an autoindex;
+					std::cout << "autoindex is on" << std::endl;
+				else
+					filePath = testIndexFile(location->root + "/", test->getServerRules().index);
+			}
+			else
+				filePath = (location->root + getRequestURI());
 		}
 	}
-	return (body);
-
+	if (!filePath.length())
+		throw fileNotFound();
+	return (filePath);
 }
 
-std::string postRequest::createResponse() {
+std::string iRequest::testIndexFile(std::string root, const std::vector<std::string> & indexList)
+{
+	std::string file;
+	for (std::vector<std::string>::const_iterator it = indexList.begin(); it != indexList.end(); it++)
+	{
+		file = root + *it;
+		if (fileExists(file))
+			break ;
+	}
+	return (file);
+}
 
-	std::string response;
+ServerNode * iRequest::findServer()
+{
+	std::string host = _message._header["Host"];
+	std::string serverName ;
+
+	for (std::vector<ServerNode *>::const_iterator it = _server->begin(); it != _server->end(); it++)
+	{
+		ServerRules tmpServerRules = (*it)->getServerRules();
+		int port = tmpServerRules.listenPort;
+		for (std::vector<std::string>::iterator names = tmpServerRules.serverName.begin(); names != tmpServerRules.serverName.end(); names++)
+		{
+			serverName = *names;
+			if (containsPort(host))
+				serverName += (":" + to_string(port));
+			if (serverName == host)
+				return (*it);
+		}
+	}
+	return (*(_server->begin()));
+}
+
+response getRequest::createResponse() {
+	response response;
+
+	if (_message._header.find("Host") == _message._header.end())
+	{
+		response.setErrorMessage(400);
+		return (response);
+	}
+	const LocationRules * location = findServer()->getLocationFromUrl(_requestURI);
+	if (location && !(location->allowedMethod & LocationRules::GET))
+	{
+		response.setErrorMessage(405);
+		return (response);
+	}
+	try {
+		std::string filePath = createFilePath();
+		if (filePath.length())
+		{
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+			response.tryToOpenAndReadFile(filePath);
+		}
+	}
+	catch (std::exception &e){
+		//file not found
+		std::cout << e.what() << std::endl;
+		response.setErrorMessage(404);
+		return (response);
+	}
+	response.setStatusLine(200);
 	return response;
 }
 
-std::string deleteRequest::createResponse() {
 
-	std::string response;
+response postRequest::createResponse() {
+	response	response;
+	std::string	postedFile;
+
+	if (_message._header.find("Host") == _message._header.end())
+	{
+		response.setErrorMessage(400);
+		return (response);
+	}
+	ServerNode * server = findServer();
+	Rules rules;
+	rules.setValues(*server, getRequestURI().c_str());
+/*	Not needed anymore ?
+	if (!location)
+	{
+		response.setErrorMessage(404);
+		return (response);
+	}
+*/
+	if (!rules.isMethodAllowed(Rules::POST))
+	{
+		response.setErrorMessage(405);
+		return (response);
+	}
+	else
+	{
+		postedFile = rules.root + getRequestURI();  // this is not the right way to concatenate
+													// Instead, one should use LocationRules::getPathFromLocation()
+		std::ofstream file;
+		file.open(postedFile.c_str());
+		if (file.good())
+		{
+			file << _message._body;
+			file.close();
+			//set post default response if everything works
+			response.setErrorMessage(201);
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
+		}
+		else
+		return (response);
+	}
+	response.setErrorMessage(400);
+	return (response);
+
+
+	//check content Type to know file information
+	//Content Length or Transfer Encoding MUST be present in the header
+
+	//POST creates a ressource or append it ? in the host server at the requestURI address
+
+
+	/*
+	  The action performed by the POST method might not result in a
+	  resource that can be identified by a URI. In this case, either 200
+	  (OK) or 204 (No Content) is the appropriate response status,
+	  depending on whether or not the response includes an entity that
+	  describes the result.
+
+	  If a resource has been created on the origin server, the response
+	  SHOULD be 201 (Created) and contain an entity which describes the
+	  status of the request and refers to the new resource, and a Location
+	  header (see section 14.30).
+
+	  Responses to this method are not cacheable, unless the response
+	  includes appropriate Cache-Control or Expires header fields. However,
+	  the 303 (See Other) response can be used to direct the user agent to
+	  retrieve a cacheable resource.
+
+	  POST requests MUST obey the message transmission requirements set out
+	  in section 8.2.
+	*/
+}
+
+/*
+bool postRequest::requestURIisvalid()
+{
+	const ServerNode * server = findServer();
+
+	const LocationRules * location = findServer()->getLocationFromUrl(_requestURI);
+}
+*/
+response deleteRequest::createResponse() {
+
+	response response;
 	return response;
 }
 
@@ -146,7 +309,7 @@ std::string date()
 	time_t now = time(0);
 	tm * gmt = gmtime(&now);
 
-	std::string result("Date:");
+	std::string result;
 	std::stringstream tmp;
 	tmp << " " << days[gmt->tm_wday];
 	tmp << ", " << gmt->tm_mday;
@@ -157,7 +320,6 @@ std::string date()
 	tmp << ":" << gmt->tm_sec;
 
 	result += tmp.str();
-	result += " GMT\r\n";
+	result += " GMT";
 	return (result);
 }
-

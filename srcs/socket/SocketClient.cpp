@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 11:29:40 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 15:56:22 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,7 @@
 //   CONSTRUCTOR OVERLOAD 					    //
 // +------------------------------------------+ //
 
-SocketClient::SocketClient(int port, int fd, ServerNode * ref):
-	ASocket(port, fd, CLIENT), _response(),
-	_server(ref), _request (NULL)
+SocketClient::SocketClient(int port, int fd, const std::vector<ServerNode *> & ref): ASocket(port, fd, CLIENT, ref), _response(), _request (NULL)
 {
 	time(&_timer);
 	// _response = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 202\n\n"
@@ -30,22 +28,12 @@ SocketClient::SocketClient(int port, int fd, ServerNode * ref):
 //   CANONICAL FORM 					        //
 // +------------------------------------------+ //
 
-SocketClient::SocketClient(void) : ASocket(), _response(), _server(NULL), _request(NULL) {}
-
-SocketClient::SocketClient (const SocketClient &other):
-	ASocket(other), _response(other._response), _server(other._server),_request(other._request) {}
+SocketClient::SocketClient(void) : ASocket(), _response(), _request(NULL) {}
 
 SocketClient::~SocketClient(void)
 {
 	if (_request)
 		delete _request;
-}
-
-SocketClient &SocketClient::operator=(const SocketClient & rhs) // ici aussi
-{
-	ASocket::operator=(rhs);
-	_response = rhs._response;
-	return *this;
 }
 
 // +------------------------------------------+ //

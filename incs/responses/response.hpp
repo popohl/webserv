@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/29 10:35:49 by pcharton         ###   ########.fr       //
+//   Updated: 2022/03/30 19:11:00 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,7 +15,12 @@
 
 #include <utility>
 #include <string>
+#include <cstring>
 #include <map>
+#include <iostream>
+#include <fstream>
+#include "configParsing/Parser.hpp"
+
 //#include "requests/requests.hpp"
 
 /*
@@ -27,54 +32,52 @@
 **				[ message-body ]
 */
 
+std::string to_string(int n);
+std::string formatErrorMessage(int errorStatus);
+//std::string to_string(std::streamsize n);
+
+class fileNotFound : public std::exception
+{
+public:
+	fileNotFound();
+	virtual const char * what() const throw();
+};
+
+class fileCouldNotBeOpen : public std::exception
+{
+public:
+	fileCouldNotBeOpen();
+	virtual const char * what() const throw();
+};
+
 struct response
 {
 //	void buildResponseMessage(iRequest *);
-
 private:
 	std::map<std::string, std::string> _headerFields;
-//	int			_status;
+	int			_status;
 	std::string _statusLine;
 	std::string	_header;
 	std::string	_body;
 
+//	ServerNode * _server;
+
 public:
-	std::string createFormattedResponse()
-		{
-			std::string result;
 
-			result = _statusLine;
-			result += "\r\n";
-			if (!_header.length())
-				createHeader();
-			result += _header;
-			result += "\r\n";
-			result += _body;
+	response();
+	response(const response & src);
+	response & operator = (const response & src);
+	~response();
 
-			return (result);
-		}
-
-	void addFieldToHeaderMap(std::pair<std::string, std::string>input)
-		{
-			if (_headerFields.find(input.first) == _headerFields.end())
-				_headerFields.insert(input);
-			else
-				_headerFields[input.first] += input.second;
-		}
+	std::string	createFormattedResponse();
+	void		addFieldToHeaderMap(std::pair<std::string, std::string>input);
+	void		tryToOpenAndReadFile(std::string RequestUri);
+	void		setStatusLine(int status);	
+	void		setErrorMessage(int errorStatus);
 
 private:
-	void	createHeader()
-		{
-			for (std::map<std::string, std::string>::iterator it = _headerFields.begin();
-				 it != _headerFields.end();
-				 it++)
-			{
-				_header += it->first;
-				_header += ":";
-				_header += it->second;
-				_header += "\r\n";
-			}
-		}
+	void		createHeader();
+
 };
 
 #endif

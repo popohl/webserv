@@ -10,3 +10,6 @@ webserv
 *~
 *.o
 srcs/testing/gtests
+req
+go_tester
+ubuntu_tester
