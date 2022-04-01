@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-//   Updated: 2022/03/31 13:27:07 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/01 10:48:54 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -19,6 +19,7 @@
 #include <iostream>
 #include <time.h>
 #include <unistd.h>
+#include "configParsing/Rules.hpp"
 
 getRequest::getRequest() {}
 postRequest::postRequest() {}
@@ -222,31 +223,31 @@ response postRequest::createResponse() {
 		response.setErrorMessage(400);
 		return (response);
 	}
-
 	ServerNode * server = findServer();
-	if (server)
+	Rules rules;
+	rules.setValues(*server, getRequestURI().c_str());
+/*	Not needed anymore ?
+	if (!location)
 	{
-		const LocationRules * location = server->getLocationFromUrl(getRequestURI());
-		if (!location)
-		{
-			response.setErrorMessage(404);
-			return (response);
-		}
-		else if (location && !(location->allowedMethod & LocationRules::POST))
-		{
-			response.setErrorMessage(405);
-			return (response);
-		}
-		else
-		{
-			postedFile = location->root + getRequestURI();
-			std::ofstream file;
-			file.open(postedFile.c_str());
-			file << _message._body;
-			file.close();
-			response.setErrorMessage(200);
-			return (response);
-		}
+		response.setErrorMessage(404);
+		return (response);
+	}
+*/
+	if (!rules.isMethodAllowed(Rules::POST))
+	{
+		response.setErrorMessage(405);
+		return (response);
+	}
+	else
+	{
+		postedFile = rules.root + getRequestURI();  // this is not the right way to concatenate
+													// Instead, one should use LocationRules::getPathFromLocation()
+		std::ofstream file;
+		file.open(postedFile.c_str());
+		file << _message._body;
+		file.close();
+		response.setErrorMessage(200);
+		return (response);
 	}
 	response.setErrorMessage(400);
 	return (response);

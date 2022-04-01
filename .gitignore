@@ -11,3 +11,4 @@ webserv
 *.o
 srcs/testing/gtests
 req
+go_tester
