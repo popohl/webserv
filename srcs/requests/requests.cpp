@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/01 15:55:01 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/01 16:15:07 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ std::string iRequest::createFilePath()
 	//check each location for the vector
 	std::string filePath;
 	const ServerNode * test = findServer();
-	std::cout << "findServer result : " << test << std::endl;
 	if (test)
 	{
 		const LocationRules * location = test->getLocationFromUrl(getRequestURI());
@@ -132,7 +131,6 @@ std::string iRequest::createFilePath()
 		{
 			if (getRequestURI() == "/")
 			{
-				std::cout << "got here" << std::endl;
 				if (test->getServerRules().autoindex == true)
 //display an autoindex;
 					std::cout << "autoindex is on" << std::endl;
