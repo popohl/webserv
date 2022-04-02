@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/01 13:58:28 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/02 17:09:42 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -53,10 +53,6 @@ struct requestHeaderToken {
 requestHeaderToken parseHost(std::string);
 std::vector<requestHeaderToken> parseRequestHeader(const char *input);
 
-std::list<std::string>split_header_to_lines(const std::string &input);
-
-requestHeaderToken treatLine(std::string line);
-
 struct requestBase {
 
 	requestBase();
@@ -80,8 +76,7 @@ private:
 	void updateResponseStatus(void);
 	size_t	findBodyLength(void);
 
-
-	
+	//parsing header functions
 	std::string	removeOneHeaderLineFromInput(std::string & input);
 	bool	HeaderLineIsCorrectlyFormatted(const std::string & line);
 	bool	lineIsHeaderEnd(const std::string & line);

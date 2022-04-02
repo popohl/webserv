@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/02 15:53:12 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/02 17:10:51 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,31 +186,28 @@ response getRequest::createResponse() {
 	rules.setValues(*findServer(), getRequestURI().c_str());
 	
 	if (_message._header.find("Host") == _message._header.end())
-	{
 		response.setErrorMessage(400, rules);
-		return (response);
-	}
-	if (!rules.isMethodAllowed(Rules::GET))
-	{
+	else if (!rules.isMethodAllowed(Rules::GET))
 		response.setErrorMessage(405, rules);
-		return (response);
-	}
-	try {
-		std::string filePath = createFilePath();
-		std::cout << "filePath is " << filePath << std::endl;
-		if (filePath.length())
+	else
+	{
+		try
 		{
-			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-			response.tryToOpenAndReadFile(filePath);
+			std::string filePath = createFilePath();
+			std::cout << "filePath is " << filePath << std::endl;
+			if (filePath.length())
+			{
+				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+				response.tryToOpenAndReadFile(filePath);
+				response.setStatusLine(200);
+			}
+		}
+		catch (std::exception &e)
+		{
+			std::cout << e.what() << std::endl;
+			response.setErrorMessage(404, rules);
 		}
 	}
-	catch (std::exception &e){
-		//file not found
-		std::cout << e.what() << std::endl;
-		response.setErrorMessage(404, rules);
-		return (response);
-	}
-	response.setStatusLine(200);
 	return response;
 }
 
@@ -223,22 +220,9 @@ response postRequest::createResponse() {
 	std::string	postedFile;
 
 	if (_message._header.find("Host") == _message._header.end())
-	{
 		response.setErrorMessage(400, rules);
-		return (response);
-	}
-/*	Not needed anymore ?
-	if (!location)
-	{
-		response.setErrorMessage(404);
-		return (response);
-	}
-*/
-	if (!rules.isMethodAllowed(Rules::POST))
-	{
+	else if (!rules.isMethodAllowed(Rules::POST))
 		response.setErrorMessage(405, rules);
-		return (response);
-	}
 	else
 	{
 		postedFile = rules.root + getRequestURI();  // this is not the right way to concatenate
@@ -254,48 +238,16 @@ response postRequest::createResponse() {
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
 		}
 		else
-		return (response);
+			response.setErrorMessage(400, rules);
 	}
-	response.setErrorMessage(400, rules);
 	return (response);
 
 
 	//check content Type to know file information
 	//Content Length or Transfer Encoding MUST be present in the header
-
 	//POST creates a ressource or append it ? in the host server at the requestURI address
-
-
-	/*
-	  The action performed by the POST method might not result in a
-	  resource that can be identified by a URI. In this case, either 200
-	  (OK) or 204 (No Content) is the appropriate response status,
-	  depending on whether or not the response includes an entity that
-	  describes the result.
-
-	  If a resource has been created on the origin server, the response
-	  SHOULD be 201 (Created) and contain an entity which describes the
-	  status of the request and refers to the new resource, and a Location
-	  header (see section 14.30).
-
-	  Responses to this method are not cacheable, unless the response
-	  includes appropriate Cache-Control or Expires header fields. However,
-	  the 303 (See Other) response can be used to direct the user agent to
-	  retrieve a cacheable resource.
-
-	  POST requests MUST obey the message transmission requirements set out
-	  in section 8.2.
-	*/
 }
 
-/*
-bool postRequest::requestURIisvalid()
-{
-	const ServerNode * server = findServer();
-
-	const LocationRules * location = findServer()->getLocationFromUrl(_requestURI);
-}
-*/
 response deleteRequest::createResponse() {
 
 	response response;
@@ -303,34 +255,23 @@ response deleteRequest::createResponse() {
 	rules.setValues(*findServer(), getRequestURI().c_str());
 
 	if (_message._header.find("Host") == _message._header.end())
-	{
 		response.setErrorMessage(400, rules);
-		return (response);
-	}
-	if (!rules.isMethodAllowed(Rules::DELETE))
-	{
+	else if (!rules.isMethodAllowed(Rules::DELETE))
 		response.setErrorMessage(405, rules);
-		return (response);
-	}
-
 	else
 	{
 		std::string filePath(rules.root + getRequestURI());
-		std::cout << "delete filePath is : " << filePath << std::endl;
 		if (!remove(filePath.c_str()))
 			response.setStatusLine(204);
 		else
-		{
 			response.setStatusLine(404);;
-			return (response);
-		}
 	}
 	response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 	return response;
 }
 
-const char *days[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", NULL };
-const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
+const char *days[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 std::string date()
 {
