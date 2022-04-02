@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/02 17:09:42 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/02 17:17:16 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -60,6 +60,8 @@ struct requestBase {
 	void	parseHeader(std::string & input);
 	void	parseBody(const std::string &line);
 
+	bool containsHostField(void);
+	
 	bool _headerFinished;
 	bool _bodyFinished;
 	int _status;
@@ -72,7 +74,7 @@ struct requestBase {
 
 private:
 	std::pair<std::string, std::string>splitIntoPair(std::string line);
-	bool containsHostField(void);
+
 	void updateResponseStatus(void);
 	size_t	findBodyLength(void);
 

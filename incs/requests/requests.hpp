@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/31 13:51:07 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/02 17:23:34 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ class postRequest : public iRequest
 private:
 //	void sendRequest(void) {};
 	response createResponse();
+	std::string createPostedFilePath(const std::string & root, const std::string & requestURI);
 //	bool requestURIisvalid();
 };
 

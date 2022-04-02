@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/02 17:10:51 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/02 17:26:46 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,7 @@ response getRequest::createResponse() {
 
 	rules.setValues(*findServer(), getRequestURI().c_str());
 	
-	if (_message._header.find("Host") == _message._header.end())
+	if (!_message.containsHostField())
 		response.setErrorMessage(400, rules);
 	else if (!rules.isMethodAllowed(Rules::GET))
 		response.setErrorMessage(405, rules);
@@ -219,14 +219,13 @@ response postRequest::createResponse() {
 	response	response;
 	std::string	postedFile;
 
-	if (_message._header.find("Host") == _message._header.end())
+	if (!_message.containsHostField())
 		response.setErrorMessage(400, rules);
 	else if (!rules.isMethodAllowed(Rules::POST))
 		response.setErrorMessage(405, rules);
 	else
 	{
-		postedFile = rules.root + getRequestURI();  // this is not the right way to concatenate
-													// Instead, one should use LocationRules::getPathFromLocation()
+		postedFile = createPostedFilePath(rules.root, getRequestURI());
 		std::ofstream file;
 		file.open(postedFile.c_str());
 		if (file.good())
@@ -248,13 +247,22 @@ response postRequest::createResponse() {
 	//POST creates a ressource or append it ? in the host server at the requestURI address
 }
 
+std::string postRequest::createPostedFilePath(const std::string & root, const std::string & requestURI)
+{
+	std::string::const_reverse_iterator it = root.rbegin();
+	if (*it != '/')
+		return (std::string(root + "/" + requestURI));
+	else
+		return (std::string(root + requestURI));
+}
+
 response deleteRequest::createResponse() {
 
 	response response;
 	Rules rules;
 	rules.setValues(*findServer(), getRequestURI().c_str());
 
-	if (_message._header.find("Host") == _message._header.end())
+	if (!_message.containsHostField())
 		response.setErrorMessage(400, rules);
 	else if (!rules.isMethodAllowed(Rules::DELETE))
 		response.setErrorMessage(405, rules);
