@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/01 19:00:38 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/02 18:24:57 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -313,7 +313,7 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 
 	if (rules.errorPage.find(errorStatus) != rules.errorPage.end())
 	{
-		std::cout << "errorPage name " << rules.root + rules.errorPage[errorStatus] << std::endl;
+		std::cout << "errorPage name " << rules.root +"/"+ rules.errorPage[errorStatus] << std::endl;
 		tryToOpenAndReadFile(rules.root + "/" + rules.errorPage[errorStatus]);
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "image/webp"));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Location", rules.errorPage[errorStatus]));

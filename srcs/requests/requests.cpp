@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/02 17:26:46 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/02 18:30:53 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,7 @@
 #include <unistd.h>
 #include "configParsing/Rules.hpp"
 
-getRequest::getRequest() {}
-postRequest::postRequest() {}
-deleteRequest::deleteRequest() {}
-
-iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerNode *> & server) //be able to remove first line from buffer
+iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerNode *> & server)
 {
 	iRequest * result = NULL;
 	std::string method, requestUri, httpVersion;
@@ -36,7 +32,6 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 	{
 		std::string requestLine(input, 0, eraseLen);
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
-		std::cout << requestLine << std::endl;
 		method = eatWord(requestLine);
 		// expect an URI or replace it with / if field is empty
 		requestUri = eatWord(requestLine);
@@ -70,6 +65,9 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 	return result;
 }
 
+iRequest::~iRequest()
+{}
+
 bool iRequest::receivingisDone()
 {
 	if (_message._headerFinished && _message._bodyFinished)
@@ -78,7 +76,7 @@ bool iRequest::receivingisDone()
 		return (false);
 }
 
-std::string eatWord(std::string & line)
+std::string iRequest::eatWord(std::string & line)
 {
 	size_t endOfWord = line.find(" ");
 	std::string word(line, 0, endOfWord);
@@ -102,7 +100,7 @@ bool fileExists(std::string file)
 		return (false);
 }
 
-bool containsPort(std::string hostname)
+bool iRequest::containsPort(std::string hostname)
 {
 	size_t portStart(hostname.rfind(":"));
 	if (portStart != std::string::npos)
@@ -138,7 +136,13 @@ std::string iRequest::createFilePath()
 					filePath = testIndexFile(location->root + "/", test->getServerRules().index);
 			}
 			else
-				filePath = (location->root + getRequestURI());
+			{
+				if (*(location->root.rbegin()) != '/' && (*(getRequestURI().begin()) != '/'))
+					filePath = (location->root + "/" + getRequestURI());
+				else
+					filePath = (location->root + getRequestURI());
+				std::cout << *(location->root.rbegin()) << "|||NTIGAGUEABVUEAVBAE" << filePath << std::endl;
+			}
 		}
 	}
 	if (!filePath.length())
@@ -179,6 +183,12 @@ ServerNode * iRequest::findServer()
 	return (*(_server->begin()));
 }
 
+getRequest::getRequest()
+{}
+
+getRequest::~getRequest()
+{}
+
 response getRequest::createResponse() {
 	Rules rules;
 	response response;
@@ -211,6 +221,11 @@ response getRequest::createResponse() {
 	return response;
 }
 
+postRequest::postRequest()
+{}
+
+postRequest::~postRequest()
+{}
 
 response postRequest::createResponse() {
 
@@ -255,6 +270,12 @@ std::string postRequest::createPostedFilePath(const std::string & root, const st
 	else
 		return (std::string(root + requestURI));
 }
+
+deleteRequest::deleteRequest()
+{}
+
+deleteRequest::~deleteRequest()
+{}
 
 response deleteRequest::createResponse() {
 

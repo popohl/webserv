@@ -90,5 +90,3 @@ valgrind: $(NAME)
 test: all
 	 make -C srcs/testing fclean
 	-@make -C srcs/testing all #- before a command allows make to ignore error code
-
-
