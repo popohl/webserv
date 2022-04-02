@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/01 17:49:34 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/02 15:53:12 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -299,6 +299,33 @@ bool postRequest::requestURIisvalid()
 response deleteRequest::createResponse() {
 
 	response response;
+	Rules rules;
+	rules.setValues(*findServer(), getRequestURI().c_str());
+
+	if (_message._header.find("Host") == _message._header.end())
+	{
+		response.setErrorMessage(400, rules);
+		return (response);
+	}
+	if (!rules.isMethodAllowed(Rules::DELETE))
+	{
+		response.setErrorMessage(405, rules);
+		return (response);
+	}
+
+	else
+	{
+		std::string filePath(rules.root + getRequestURI());
+		std::cout << "delete filePath is : " << filePath << std::endl;
+		if (!remove(filePath.c_str()))
+			response.setStatusLine(204);
+		else
+		{
+			response.setStatusLine(404);;
+			return (response);
+		}
+	}
+	response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 	return response;
 }
 
