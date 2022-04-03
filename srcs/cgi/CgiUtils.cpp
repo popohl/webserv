@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/02 12:48:51 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/03 12:17:20 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	Cgi::setFromHeader( const char* envpKey, string_map& envp,
 
 	if (headerValue == header.end())
 		return;
-	envp[envpKey] = headerValue->first;
+	envp[envpKey] = headerValue->second;
 }
 
 void	Cgi::setPathInfo( std::string& requestedFilePath, string_map& envp )
@@ -59,22 +59,23 @@ void	Cgi::setPathInfo( std::string& requestedFilePath, string_map& envp )
 	char *documentRoot = get_current_dir_name();
 	size_t	endOfScriptName = requestedFilePath.find("." + _rules.cgiExtension)
 		+ _rules.cgiExtension.size() + 1;
-	size_t	tmp;
+	size_t	queryPosition = requestedFilePath.find('?');
 
 	envp["DOCUMENT_ROOT"] = documentRoot;
 	free(documentRoot);
-	tmp = requestedFilePath.find('?');
-	if (tmp == std::string::npos)
-		envp["QUERY_STRING"] = "";
-	else
+	if (queryPosition != std::string::npos)
 	{
-		envp["QUERY_STRING"] = requestedFilePath.substr(tmp, std::string::npos);
-		requestedFilePath.erase(tmp, std::string::npos);
+		envp["QUERY_STRING"] =
+			requestedFilePath.substr(queryPosition + 1, std::string::npos);
+		requestedFilePath.erase(queryPosition, std::string::npos);
 	}
 	envp["SCRIPT_NAME"] = requestedFilePath.substr(0, endOfScriptName);
-	envp["PATH_INFO"] = requestedFilePath
-		.substr(endOfScriptName, std::string::npos);
-	envp["PATH_TRANSLATED"] = envp["DOCUMENT_ROOT"] + envp["PATH_INFO"];
+	if (requestedFilePath[endOfScriptName] == '/')
+	{
+		envp["PATH_INFO"] =
+			requestedFilePath.substr(endOfScriptName, std::string::npos);
+		envp["PATH_TRANSLATED"] = envp["DOCUMENT_ROOT"] + envp["PATH_INFO"];
+	}
 }
 
 void	Cgi::createEnvp( std::string requestedFilePath )
@@ -176,7 +177,11 @@ bool	Cgi::isPostRequest( void )
 
 const char*	Cgi::stripExtraPathInfo( std::string &requestedFilePath )
 {
-	requestedFilePath.erase(requestedFilePath.find_first_of('.') + 1
-			+ _rules.cgiExtension.size(), std::string::npos);
+	size_t	extensionPosition = requestedFilePath
+		.find("." + _rules.cgiExtension);
+	size_t	exceptionSize = _rules.cgiExtension.size() + 1;
+
+	requestedFilePath.erase(extensionPosition + exceptionSize,
+		std::string::npos);
 	return requestedFilePath.c_str();
 }
