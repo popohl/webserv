@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:55 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/02 12:14:00 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/03 15:23:01 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,9 @@ public:
 	Cgi( Rules& rules, const iRequest* request );
 	~Cgi( void );
 
-	std::string	executeCgi( std::string requestedFilePath );
+	void		executeCgi( std::string requestedFilePath );
+	void		parseAndRemoveHeaders( response& response );
+	std::string writeBodyToTmpFile( void );
 
 private:
 
@@ -40,7 +42,7 @@ private:
 	Cgi( const Cgi &src );
 	Cgi	&operator=( const Cgi &src );
 
-	std::string	readCgiOutput( void );
+	void	readCgiOutput( void );
 	void	executeChildProcess( std::string requestedFilePath );
 
 	void	createArgv( const char* binPath, const char* filePath );
@@ -54,16 +56,20 @@ private:
 	void	freeEnvp( void );
 	void	freeArgv( void );
 	bool	isPostRequest( void );
-	const char*	stripExtraPathInfo( std::string& requestedFilePath );
 	void	setFromHeader( const char* envpKey, string_map& envp,
 		const char* headerKey, const string_map& header );
 	void	setPathInfo( std::string& requestedFilePath, string_map& envp );
+	void	writeHeadersToResponse( std::string& rawHdrs, response& rspnse);
+
+	const char*	stripExtraPathInfo( std::string& requestedFilePath );
+	std::string popHeadersFromCgiOutput( void );
 
 	Rules&			_rules;
 	int				_pipeFd[2];
 	const iRequest*	_request;
 	char**			_envp;
 	char**			_argv;
+	std::string		_rawCgiOutput;
 
 };
 

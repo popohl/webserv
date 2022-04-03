@@ -6,15 +6,14 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/03 12:17:20 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/03 16:34:53 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cgi/Cgi.hpp"
 #include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
+#include <cstdlib>
+#include <cstring>
 
 #include <errno.h>
 #include <exception>
@@ -184,4 +183,85 @@ const char*	Cgi::stripExtraPathInfo( std::string &requestedFilePath )
 	requestedFilePath.erase(extensionPosition + exceptionSize,
 		std::string::npos);
 	return requestedFilePath.c_str();
+}
+
+std::string Cgi::popHeadersFromCgiOutput( void )
+{
+	const char*	possibleEndOfHeader[] = {
+		"\b\n\b\n",
+		"\r\n\r\n",
+		"\n\n"
+	};
+
+	int			selectedEoh = 0;
+	size_t		endOfHeaders;
+	std::string rawHeaders;
+
+	do
+	{
+		endOfHeaders = _rawCgiOutput.find(possibleEndOfHeader[selectedEoh]);
+	} while (endOfHeaders == std::string::npos && ++selectedEoh < 3);
+	if (endOfHeaders == std::string::npos)
+		throw std::logic_error("No headers found in cgi output");
+	rawHeaders = _rawCgiOutput.substr(0, endOfHeaders);
+	_rawCgiOutput.erase(0, endOfHeaders
+			+ sizeof(possibleEndOfHeader[selectedEoh]));
+	return rawHeaders;
+}
+
+static std::pair<std::string, std::string>	makeHeaderPair(
+		std::string& rawHeaders, size_t &nextHeaderPosition )
+{
+	std::pair<std::string, std::string>	headerPair;
+	size_t	colonPosition = rawHeaders.find(':', nextHeaderPosition);
+	size_t	endOfHeader = rawHeaders.find('\n', nextHeaderPosition);
+
+	headerPair.first = rawHeaders.substr(nextHeaderPosition, colonPosition);
+	headerPair.second = rawHeaders.substr(colonPosition + 1, endOfHeader);
+	nextHeaderPosition = endOfHeader;
+	if (endOfHeader != std::string::npos)
+		nextHeaderPosition++;
+	return headerPair;
+}
+
+static size_t	setHeader( response& response, std::string& rawHeaders,
+		size_t nextHeaderPosition )
+{
+	if (rawHeaders.compare(nextHeaderPosition, sizeof("Content-length"), "Content-length"))
+		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
+	else if (rawHeaders.compare(nextHeaderPosition, sizeof("Content-type"), "Content-type"))
+		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
+	else if (rawHeaders.compare(nextHeaderPosition, sizeof("Expires"), "Expires"))
+		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
+	else if (rawHeaders.compare(nextHeaderPosition, sizeof("Pragma"), "Pragma"))
+		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
+	else
+		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
+	return nextHeaderPosition;
+}
+
+void	Cgi::writeHeadersToResponse( std::string& rawHeaders,
+		response& response)
+{
+	size_t	nextHeaderPosition = 0;
+
+	while (nextHeaderPosition != std::string::npos)
+	{
+		if (rawHeaders.compare(nextHeaderPosition, sizeof("Location"), "Location"))
+		{
+			_rules.redirectCode = 302;
+			_rules.redirectUri = rawHeaders.substr(
+					rawHeaders.find(':', nextHeaderPosition) + 1,
+					rawHeaders.find('\n', nextHeaderPosition));
+			nextHeaderPosition = rawHeaders.find('\n', nextHeaderPosition) + 1;
+		}
+		else if (rawHeaders.compare(nextHeaderPosition, sizeof("Status"), "Status"))
+		{
+			response.setStatusLine(atoi(rawHeaders.substr(
+					rawHeaders.find(':', nextHeaderPosition) + 1,
+					rawHeaders.find('\n', nextHeaderPosition)).c_str()));
+			nextHeaderPosition = rawHeaders.find('\n', nextHeaderPosition) + 1;
+		}
+		nextHeaderPosition = setHeader(response, rawHeaders, nextHeaderPosition);
+	}
 }

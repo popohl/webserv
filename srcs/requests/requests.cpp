@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/03 10:42:44 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/03 17:19:24 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
@@ -149,15 +149,13 @@ std::string iRequest::createFilePath()
 }
 
 std::string iRequest::createFileFromCgi( Rules& rules,
-		std::string requestedFilePath )
+		std::string requestedFilePath, response& response )
 {
 	Cgi			cgi(rules, this);
-	std::string rawCgiOutput(cgi.executeCgi(requestedFilePath));
 
-	std::cout << "Cgi output: --->" << std::endl << rawCgiOutput << std::endl
-		<< "<---" << std::endl;
-	return "";
-	/* return rawCgiOutput; */
+	cgi.executeCgi(requestedFilePath);
+	cgi.parseAndRemoveHeaders(response);
+	return cgi.writeBodyToTmpFile();
 }
 
 std::string iRequest::testIndexFile(std::string root, const std::vector<std::string> & indexList)
@@ -213,7 +211,7 @@ response getRequest::createResponse() {
 		if (filePath.length())
 		{
 			if (rules.isCgi(filePath))
-				response.tryToOpenAndReadFile(createFileFromCgi(rules, filePath));
+				response.tryToOpenAndReadFile(createFileFromCgi(rules, filePath, response));
 			else
 				response.tryToOpenAndReadFile(filePath);
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
