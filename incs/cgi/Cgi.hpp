@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:55 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/01 16:43:07 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/02 12:14:00 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,10 @@
 
 class Cgi
 {
+
+private:
+
+	typedef std::map<std::string, std::string> string_map;
 
 public:
 
@@ -40,7 +44,7 @@ private:
 	void	executeChildProcess( std::string requestedFilePath );
 
 	void	createArgv( const char* binPath, const char* filePath );
-	void	writeToEnvp( std::map<std::string, std::string> envp);
+	void	writeToEnvp( const std::map<std::string, std::string>& envp);
 	void	createEnvp( std::string requestedFilePath );
 	void	writeBodyToStdIn( void );
 	int		createFork( void );
@@ -51,6 +55,9 @@ private:
 	void	freeArgv( void );
 	bool	isPostRequest( void );
 	const char*	stripExtraPathInfo( std::string& requestedFilePath );
+	void	setFromHeader( const char* envpKey, string_map& envp,
+		const char* headerKey, const string_map& header );
+	void	setPathInfo( std::string& requestedFilePath, string_map& envp );
 
 	Rules&			_rules;
 	int				_pipeFd[2];

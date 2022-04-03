@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/01 18:04:19 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/02 12:48:51 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,13 @@ void	Cgi::createArgv( const char* binPath, const char* filePath )
 	_argv[2] = 0;
 }
 
-void	Cgi::writeToEnvp( std::map<std::string, std::string> mapEnvp)
+void	Cgi::writeToEnvp( const std::map<std::string, std::string>& mapEnvp)
 {
 	std::string	tmp;
 	size_t		index = 0;
 
 	_envp = (char**)malloc(sizeof(*_envp) * (mapEnvp.size() + 1));
-	for (std::map<std::string, std::string>::iterator it = mapEnvp.begin();
+	for (std::map<std::string, std::string>::const_iterator it = mapEnvp.begin();
 			it != mapEnvp.end(); it++)
 	{
 		tmp = it->first;
@@ -41,34 +41,62 @@ void	Cgi::writeToEnvp( std::map<std::string, std::string> mapEnvp)
 		tmp += it->second;
 		_envp[index++] = strdup(tmp.c_str());
 	}
-	_envp[index++] = 0;
+	_envp[index] = 0;
+}
+
+void	Cgi::setFromHeader( const char* envpKey, string_map& envp,
+		const char* headerKey, const string_map& header )
+{
+	string_map::const_iterator headerValue = header.find(headerKey);
+
+	if (headerValue == header.end())
+		return;
+	envp[envpKey] = headerValue->first;
+}
+
+void	Cgi::setPathInfo( std::string& requestedFilePath, string_map& envp )
+{
+	char *documentRoot = get_current_dir_name();
+	size_t	endOfScriptName = requestedFilePath.find("." + _rules.cgiExtension)
+		+ _rules.cgiExtension.size() + 1;
+	size_t	tmp;
+
+	envp["DOCUMENT_ROOT"] = documentRoot;
+	free(documentRoot);
+	tmp = requestedFilePath.find('?');
+	if (tmp == std::string::npos)
+		envp["QUERY_STRING"] = "";
+	else
+	{
+		envp["QUERY_STRING"] = requestedFilePath.substr(tmp, std::string::npos);
+		requestedFilePath.erase(tmp, std::string::npos);
+	}
+	envp["SCRIPT_NAME"] = requestedFilePath.substr(0, endOfScriptName);
+	envp["PATH_INFO"] = requestedFilePath
+		.substr(endOfScriptName, std::string::npos);
+	envp["PATH_TRANSLATED"] = envp["DOCUMENT_ROOT"] + envp["PATH_INFO"];
 }
 
 void	Cgi::createEnvp( std::string requestedFilePath )
 {
-	std::map<std::string, std::string>	envp = _request->_message._header;
+	string_map			envp;
+	const string_map&	header = _request->_message._header;
 
-	(void)requestedFilePath;
-	// "CONTENT_LENGTH" -> convert from _request->_message._header
-	// "CONTENT_TYPE" -> convert from _request->_message._header
-	// "DOCUMENT_ROOT" -> document_root += get_current_dir_name();
-	// "GATEWAY_INTERFACE" -> "CGI/1.1"
-	// "HTTP_ACCEPT" -> convert from _request->_message._header
-	// "HTTP_REFERER" -> maybe, convert from _request->_message._header
-	// "HTTP_USER_AGENT" -> convert from _request->_message._header
-	// "PATH_INFO" -> extra path info, split requestedFilePath
-	// "PATH_TRANSLATED" -> DOCUMENT_ROOT + PATH_INFO
-	// "QUERY_STRING" -> query, split requestedFilePath
+	envp["REQUEST_METHOD"] = isPostRequest() ? "POST" : "GET";
+	envp["GATEWAY_INTERFACE"] = "CGI/1.1";
+	envp["SERVER_PROTOCOL"] = "HTTP/1.0";
+	envp["SERVER_SOFTWARE"] = "webserv/0.42.118";
+	setFromHeader("CONTENT_LENGTH", envp, "Content-Length", header);
+	setFromHeader("CONTENT_TYPE", envp, "Content-Type", header);
+	setFromHeader("HTTP_ACCEPT", envp, "Accept", header);
+	setFromHeader("HTTP_REFERER", envp, "Referer", header);
+	setFromHeader("HTTP_USER_AGENT", envp, "User-Agent", header);
+	setFromHeader("SERVER_NAME", envp, "Host", header);
+	envp["REQUEST_URI"] = _request->getRequestURI();
+	envp["SERVER_PORT"] = _rules.listenPort;
 	// "REMOTE_ADDR" -> client address
 	// "REMOTE_HOST" -> client name
-	// "REQUEST_METHOD" -> convert from _request->_message._header
-	// envp["REQUEST_URI"] = _request->getRequestURI();
-	// "SCRIPT_NAME" -> path, split from requestedFilePath
-	// "SERVER_NAME" -> server name
-	// "SERVER_PORT" -> server port
-	// "SERVER_PROTOCOL" -> "HTTP/1.0"
-	// "SERVER_SOFTWARE" -> "webserv/1.0"
-	
+	setPathInfo(requestedFilePath, envp);
 	writeToEnvp(envp);
 }
 
@@ -148,8 +176,7 @@ bool	Cgi::isPostRequest( void )
 
 const char*	Cgi::stripExtraPathInfo( std::string &requestedFilePath )
 {
-	requestedFilePath.erase(requestedFilePath.begin()
-			+ requestedFilePath.find_first_of('.') + 1
-			+ _rules.cgiExtension.size(), requestedFilePath.end());
+	requestedFilePath.erase(requestedFilePath.find_first_of('.') + 1
+			+ _rules.cgiExtension.size(), std::string::npos);
 	return requestedFilePath.c_str();
 }

@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/01 16:43:13 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/02 12:55:31 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ std::string	Cgi::executeCgi( std::string requestedFilePath )
 	forkPid = createFork();
 	if (isChildProcess(forkPid))
 	{
+		std::cout << "forkPid: " << forkPid << std::endl;
 		executeChildProcess(requestedFilePath);
 		exit(0);
 	}

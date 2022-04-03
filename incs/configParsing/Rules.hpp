@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:09:00 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/01 08:25:06 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/03 10:39:24 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ struct Rules
 	bool 	isMethodAllowed( char selectedMethod ) const;
 	bool 	isMethodAllowed( std::string selectedMethod ) const;
 
-	bool	isCgi( std::string uri ) const;
+	bool	isCgi( const std::string& uri ) const;
 
 	std::string					locationPath;
 	std::string					root;

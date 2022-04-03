@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:10:41 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/01 16:14:05 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/03 10:37:38 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,19 +129,20 @@ std::ostream &	operator<<( std::ostream & ostr, Rules const & instance)
 	ostr << "redirectCode: " << instance.redirectCode << std::endl;
 	ostr << "redirectUri: " << instance.redirectUri << std::endl;
 	ostr << "uploadPath: " << instance.uploadPath << std::endl;
-	std::vector<std::string> 	serverName;
 	return ostr;
 }
 
-bool		Rules::isCgi( std::string uri ) const
+bool		Rules::isCgi( const std::string& uri ) const
 {
 	char	afterExtension;
+	size_t	extensionPosition;
+
 	if (cgiExtension == "")
 		return false;
-	uri.erase(0, uri.find_first_of('.') + 1);
-	if (uri.rfind(cgiExtension, 0) != 0)
+	extensionPosition = uri.find("." + cgiExtension);
+	if (extensionPosition == std::string::npos)
 		return false;
-	afterExtension = uri[cgiExtension.size()];
+	afterExtension = uri[extensionPosition + cgiExtension.size() + 1];
 	if (afterExtension == 0 || afterExtension == '?' || afterExtension == '/')
 		return true;
 	return false;
