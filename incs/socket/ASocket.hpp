@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/30 11:13:39 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/01 15:52:57 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 #include <netinet/in.h>
 #include <vector>
 #include <fcntl.h>
+#include <time.h>
+
 #include "configParsing/Parser.hpp"
 
 class ASocket

@@ -1,0 +1,114 @@
+# Source files directory
+S		= srcs/
+# Object files directory
+O		= objs/
+# Include files directory
+I		= incs/
+# Dependency files directory
+D		= deps/
+
+# Name of your program
+NAME	= webserv
+
+# list of your source files
+
+VPATH = srcs:srcs/configParsing/AST
+
+FILES	= ConfigFileNode \
+		  configParsing/Rules configParsing/Token \
+		  configParsing/AST/LocationRules \
+		  configParsing/AST/ServerNode configParsing/AST/ServerRules \
+		  configParsing/Lexer configParsing/Parser \
+		  requests/requests requests/requestBase \
+		  responses/response \
+		  socket/ASocket socket/FdSet socket/Receive socket/Send \
+		  socket/Server socket/SocketClient socket/SocketPort \
+		  configParsing/helperFunctions main
+
+
+SRCS	= $(addsuffix .cpp, $(FILES))
+OBJS	:= $(addsuffix .o, $(addprefix objs/, $(FILES)))
+
+# Compiler
+CXX		= c++
+# Compiler flags
+CXXFLAGS	+= -Wall -Wextra -g3 -std=c++98
+# Linker flags
+LDFLAGS	=
+
+# Run command
+RUN_COMMAND	= # For the moment, make run is alias to make test
+
+# The rest is automatic
+
+CFLAGS	+= $(addprefix -I,$I)
+
+#SRCS	:= $(addprefix $S,$(SRCS))
+#OBJS	:= $(SRCS:$S%=$O%.o)
+#DEPS	:= $(SRCS:$S%=$0D%.d)
+#DFLAGS	= -MT $(@:$O%.o=$S%) -MMD -MP -MF $(@:$O%.o=$D%.d)
+
+RM		= /bin/rm -rf
+
+.PHONY: all
+all: $(NAME)
+
+$(NAME): $(O) $(OBJS)
+	@echo "Linking $(NAME)"
+	@$(CC) $^ -o $@
+
+# Object directory generation
+$O:
+	@mkdir -p $O
+	@mkdir -p objs/configParsing/AST
+
+# Dependency directory generation
+$D:
+	@mkdir $D
+
+# Object files generation
+#$(OBJS): $O%.o:$S% | $O $D
+#	@mkdir -p $(@D)
+#	@mkdir -p $(@D:$O%=$D%)
+#	@echo "Compiling $@"
+#	@$(CC) $(CFLAGS) $(DFLAGS) -c $(@:$O%.o=$S%) -o $@
+
+.PHONY: clean
+clean:
+	@echo "Cleaning up..."
+	@$(RM) $D $O
+
+.PHONY: fclean
+fclean: clean
+	@echo "Everything!"
+	@$(RM) $(NAME)
+	@make -C srcs/testing fclean
+
+.PHONY: re
+re: fclean all
+
+.PHONY: run
+run: test
+	$(RUN_COMMAND)
+
+valgrind: $(NAME)
+	valgrind --leak-check=full $(RUN_COMMAND)
+
+test: all
+	 make -C srcs/testing fclean
+	-@make -C srcs/testing all #- before a command allows make to ignore error code
+
+DEPFLAGS = -MT $@ -MMD -MP -MF $(D)/$*.d
+COMPILE.c = $(CXX) $(DEPFLAGS) $(CXXFLAGS) -I ./incs -c
+
+
+$(O)/%.o : %.cpp
+
+$(O)/%.o : %.cpp $(D)/%.d | $(D)
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+
+DEPFILES := $(SRCS:%.cpp=$(DEPDIR)/%.d)
+
+$(DEPFILES):
+
+include $(wildcard $(DEPFILES))

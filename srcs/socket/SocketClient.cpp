@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/03/30 11:08:45 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/04 16:49:20 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,10 @@
 
 SocketClient::SocketClient(int port, int fd, const std::vector<ServerNode *> & ref): ASocket(port, fd, CLIENT, ref), _response(), _request (NULL)
 {
+	time(&_timer);
 	// _response = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 202\n\n"
 	// 	"<form method=\"post\" enctype=\"multipart/form-data\"><div><label for=\"file\">select file</label><input type=\"file\" id=\"file\" name=\"file\" multiple></div><div><button>Envoyer</button></div></form>";
-//	_response = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+	//	_response = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 }
 
 // +------------------------------------------+ //
@@ -29,43 +30,45 @@ SocketClient::SocketClient(int port, int fd, const std::vector<ServerNode *> & r
 
 SocketClient::SocketClient(void) : ASocket(), _response(), _request(NULL) {}
 
-SocketClient::SocketClient (const SocketClient &other):
-	ASocket(other), _response(other._response),_request(other._request) {} // copier le buffer caractere par caractere et rajouter request
-
-SocketClient::~SocketClient(void) {}
-
-SocketClient &SocketClient::operator=(const SocketClient & rhs) // ici aussi
+SocketClient::~SocketClient(void)
 {
-	ASocket::operator=(rhs);
-	_request = rhs._request;
-	return *this;
+	if (_request)
+		delete _request;
 }
 
 // +------------------------------------------+ //
 //   MEMBER FUNCTION					        //
 // +------------------------------------------+ //
 
-void	SocketClient::addContent(char *content)
-{
-	std::string	temp;
-
-	temp = content;
-	_header.append(temp, 0, temp.size());
-	std::cout << _header << std::endl;
-}
-
-std::string	SocketClient::getResponse()
+std::vector<unsigned char>	SocketClient::getResponse() const
 { return (_response); }
 
-void SocketClient::setResponse(std::string input)
-{ _response += input; }
+void SocketClient::setResponse(std::vector<unsigned char> input)
+{ _response = input; }
 
 void	SocketClient::clearAll()
 {
-	_header.clear();
 	_response.clear();
-	/****
-	 * delete _request;
-	 *	_request = NULL;
-	 * */
+	delete _request;
+	_request = NULL;
 }
+
+bool	SocketClient::checkTimeout() const
+{
+	time_t now;
+	double ret;
+
+	time(&now);
+	ret = difftime(_timer, now);
+	std::cout << "client " << _socket_fd << " is running for " << ret << " secondes" <<std::endl;
+	if (ret > CLIENT_TIMEOUT)
+		return(true);
+	else
+		return (false);
+}
+
+void	SocketClient::resetTimer()
+{ time(&_timer); }
+
+void	SocketClient::erasePartResponse(int i)
+{ _response.erase(_response.begin(), _response.begin() + i); }

@@ -6,48 +6,44 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/03/31 14:22:02 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/04 19:42:06 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/Server.hpp"
-/*
-static int	contentSize(const char *content)
-{
-	int i = 0;
 
-	while (content[i])
-		i++;
-	return (i);
-}
-*/
-void	sendToClient(ASocket *tmp_socket, std::vector<ASocket*> & socket, t_FD & sets)
+void	sendToClient(ASocket *tmp_socket, t_FD & sets)
 {
-	(void)socket;
 	SocketClient	*client = dynamic_cast<SocketClient*>(tmp_socket);
-	std::string		response = client->getResponse();
+	std::vector<unsigned char>		response = client->getResponse();
 	int				ret;
-	size_t			total;
+	char			buffer[SENDING];
 
-	total = 0;
-	/*******
-	 * _response = prepare_response()
-	 * */
-	while (total < response.size())
+	if (response.size() > SENDING)
 	{
-		if ((ret = send(client->getSocketFd(), response.c_str() + total, response.size(), 0)) < 0)
+		std::copy(response.begin(), response.begin() + SENDING, buffer);
+		if ((ret = send(client->getSocketFd(), buffer, SENDING, 0)) < 0)
 		{
 			perror("Send failed:");
 			return ;
 		}
-		total += ret;
-		std::cout << " Message bytes =" << response.size() << " Bytes Sent =" << ret << std::endl;
-		std::cout << "\n======== Message sent to client ========\n" << std::endl;
+		client->erasePartResponse(SENDING);
 	}
+	else
+	{
+		std::copy(response.begin(), response.end(), buffer);
+		if ((ret = send(client->getSocketFd(), buffer, response.size(), 0)) < 0)
+		{
+			perror("Send failed:");
+			return ;
+		}
+		delete client->_request;
+		client->_request = NULL;
+		client->clearAll();
+		sets.writefds.remove(client->getSocketFd());
+		sets.readfds.add(client->getSocketFd());
+	}
+//	std::cout << " Message bytes =" << response.size() << " Bytes Sent =" << ret << std::endl;
+//	std::cout << "\n\e[0;32m======== Message sent to client ========\e[0m\n" << std::endl;
 	// Remove request to serve another one (need to handle multi write case)
-	delete client->_request;
-	client->_request = NULL;
-	client->clearAll();
-	sets.writefds.remove(client->getSocketFd());
-	sets.readfds.add(client->getSocketFd());
 }

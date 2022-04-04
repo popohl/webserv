@@ -11,16 +11,19 @@ D		= deps/
 NAME	= webserv
 
 # list of your source files
-SRCS	= cgi/Cgi.cpp cgi/CgiUtils.cpp configParsing/AST/ConfigFileNode.cpp \
+
+SRCS	= configParsing/AST/ConfigFileNode.cpp \
+		  configParsing/Rules.cpp configParsing/Token.cpp \
 		  configParsing/AST/LocationRules.cpp \
 		  configParsing/AST/ServerNode.cpp configParsing/AST/ServerRules.cpp \
 		  configParsing/Lexer.cpp configParsing/Parser.cpp \
-		  configParsing/Rules.cpp configParsing/Token.cpp \
-		  main.cpp requests/requestHeader.cpp requests/requests.cpp \
-		  responses/response.cpp socket/ASocket.cpp socket/FdSet.cpp \
-		  socket/Receive.cpp socket/Send.cpp socket/Server.cpp \
-		  socket/SocketClient.cpp socket/SocketPort.cpp
+		  requests/requests.cpp requests/requestBase.cpp \
+		  responses/response.cpp \
+		  socket/ASocket.cpp socket/FdSet.cpp socket/Receive.cpp socket/Send.cpp \
+		  socket/Server.cpp socket/SocketClient.cpp socket/SocketPort.cpp \
+		  configParsing/helperFunctions.cpp main.cpp
 
+# Compiler
 CC		= c++
 # Compiler flags
 CFLAGS	+= -Wall -Wextra -g3 -std=c++98
@@ -87,5 +90,3 @@ valgrind: $(NAME)
 test: all
 	 make -C srcs/testing fclean
 	-@make -C srcs/testing all #- before a command allows make to ignore error code
-
-
