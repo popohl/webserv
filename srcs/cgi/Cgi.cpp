@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/03 17:26:00 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/04 13:10:40 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,9 @@ void	Cgi::executeCgi( std::string requestedFilePath )
 		exit(0);
 	}
 	waitpid(forkPid, &returnValue, 0);
-	std::cout << "WEXITSTATUS(returnValue): "
-		<< WEXITSTATUS(returnValue) << std::endl;
+	_status = WEXITSTATUS(returnValue);
+	if (_status != 0)
+		throw std::logic_error("Cgi program execution failed");
 	readCgiOutput();
 }
 
@@ -61,12 +62,14 @@ void	Cgi::parseAndRemoveHeaders( response& response )
 
 std::string Cgi::writeBodyToTmpFile( void )
 {
-	std::string	fileName("/tmp/webserv-tmp-cgi");
-	int			fileFd = open(fileName.c_str(), O_WRONLY | O_CREAT,
-			S_IRUSR | S_IRGRP | S_IROTH);
+	const char*	fileName = "/tmp/webserv-tmp-cgi";
+	int			fileFd;
 
+	remove(fileName);
+	fileFd = open(fileName, O_WRONLY | O_CREAT,
+			S_IRUSR | S_IRGRP | S_IROTH);
 	if (fileFd == -1)
-		throw std::logic_error("Could not open file for writing");
+		throw std::logic_error("Could not open file for writing"); // error 500
 	if (write(fileFd, _rawCgiOutput.c_str(), _rawCgiOutput.size())
 			!= static_cast<ssize_t>(_rawCgiOutput.size()))
 		throw std::logic_error("Problem writing to file");
@@ -85,7 +88,8 @@ void	Cgi::readCgiOutput( void )
 	do
 	{
 		ret = read(_pipeFd[PIPE_READ], buffer, bufferSize);
-		_rawCgiOutput.append(buffer, ret);
+		if (ret > 0)
+			_rawCgiOutput.append(buffer, ret);
 	} while (ret > 0);
 	close(_pipeFd[PIPE_READ]);
 	if (ret < 0)
@@ -104,14 +108,17 @@ void	Cgi::executeChildProcess( std::string requestedFilePath )
 	/* 	<< cgiProgramPath << ", requestedFilePath: " << requestedFilePath */
 	/* 	<< std::endl; */
 	close(_pipeFd[PIPE_READ]);
-	dup2(_pipeFd[PIPE_WRITE], STDOUT_FILENO);
+	if (dup2(_pipeFd[PIPE_WRITE], STDOUT_FILENO) == -1)
+		exit(500);
 	close(_pipeFd[PIPE_WRITE]);
 	createEnvp(requestedFilePath);
 	createArgv(cgiProgramPath, stripExtraPathInfo(requestedFilePath));
 	if (isPostRequest())
 		writeBodyToStdIn();
 	err = execve(cgiProgramPath, _argv, _envp);
-	perror("In execve:");
-	if (err == -1)
-		exit(1); // error
+	if (err != -1)
+		exit(200);
+	if (errno == ENOENT || errno == EACCES)
+		exit(404);
+	exit(500);
 }

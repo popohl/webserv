@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/03 16:34:53 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/04 16:39:29 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,14 @@
 void	Cgi::createArgv( const char* binPath, const char* filePath )
 {
 	_argv = (char**)malloc(sizeof(*_argv) * (3 + 1));
+	if (_argv == NULL)
+		exit(500);
 	_argv[0] = strdup(binPath);
+	if (_argv[0] == NULL)
+		exit(500);
 	_argv[1] = strdup(filePath);
+	if (_argv[1] == NULL)
+		exit(500);
 	_argv[2] = 0;
 }
 
@@ -32,13 +38,18 @@ void	Cgi::writeToEnvp( const std::map<std::string, std::string>& mapEnvp)
 	size_t		index = 0;
 
 	_envp = (char**)malloc(sizeof(*_envp) * (mapEnvp.size() + 1));
+	if (_envp == NULL)
+		exit(500);
 	for (std::map<std::string, std::string>::const_iterator it = mapEnvp.begin();
 			it != mapEnvp.end(); it++)
 	{
 		tmp = it->first;
 		tmp += "=";
 		tmp += it->second;
-		_envp[index++] = strdup(tmp.c_str());
+		_envp[index] = strdup(tmp.c_str());
+		if (_envp[index] == NULL)
+			exit(500);
+		index++;
 	}
 	_envp[index] = 0;
 }
@@ -60,6 +71,8 @@ void	Cgi::setPathInfo( std::string& requestedFilePath, string_map& envp )
 		+ _rules.cgiExtension.size() + 1;
 	size_t	queryPosition = requestedFilePath.find('?');
 
+	if (documentRoot == NULL)
+		exit(500);
 	envp["DOCUMENT_ROOT"] = documentRoot;
 	free(documentRoot);
 	if (queryPosition != std::string::npos)
@@ -109,9 +122,10 @@ void	Cgi::writeBodyToStdIn( void )
 	createPipe(pipeFd);
 	if (write(pipeFd[PIPE_WRITE], body.c_str(), body.size())
 			!= static_cast<ssize_t>(body.size()))
-		std::logic_error("Could not write to cgi tmp file");
+		exit(500);
 	close(pipeFd[PIPE_WRITE]);
-	dup2(pipeFd[PIPE_READ], STDIN_FILENO);
+	if (dup2(pipeFd[PIPE_READ], STDIN_FILENO) == -1)
+		exit(500);
 	close(pipeFd[PIPE_READ]);
 }
 
@@ -121,8 +135,7 @@ int	Cgi::createFork( void )
 
 	if (forkPid == -1)
 	{
-		// 500 Internal Server Error
-		throw std::exception();
+		throw std::exception(); // 500 Internal Server Error
 	}
 	return forkPid;
 }
@@ -138,8 +151,7 @@ void	Cgi::createPipe( int pipeFd[2] )
 
 	if (returnValue != 0)
 	{
-		// 500 Internal Server Error
-		throw std::exception();
+		throw std::exception(); // 500 Internal Server Error
 	}
 }
 
@@ -202,10 +214,10 @@ std::string Cgi::popHeadersFromCgiOutput( void )
 		endOfHeaders = _rawCgiOutput.find(possibleEndOfHeader[selectedEoh]);
 	} while (endOfHeaders == std::string::npos && ++selectedEoh < 3);
 	if (endOfHeaders == std::string::npos)
-		throw std::logic_error("No headers found in cgi output");
+		throw std::logic_error("No headers found in cgi output"); // error 500
 	rawHeaders = _rawCgiOutput.substr(0, endOfHeaders);
 	_rawCgiOutput.erase(0, endOfHeaders
-			+ sizeof(possibleEndOfHeader[selectedEoh]));
+			+ strlen(possibleEndOfHeader[selectedEoh]));
 	return rawHeaders;
 }
 
@@ -216,24 +228,31 @@ static std::pair<std::string, std::string>	makeHeaderPair(
 	size_t	colonPosition = rawHeaders.find(':', nextHeaderPosition);
 	size_t	endOfHeader = rawHeaders.find('\n', nextHeaderPosition);
 
-	headerPair.first = rawHeaders.substr(nextHeaderPosition, colonPosition);
-	headerPair.second = rawHeaders.substr(colonPosition + 1, endOfHeader);
+	headerPair.first = rawHeaders.substr(nextHeaderPosition,
+			colonPosition - nextHeaderPosition);
+	colonPosition++;
+	headerPair.second = rawHeaders.substr(colonPosition, endOfHeader - colonPosition);
 	nextHeaderPosition = endOfHeader;
 	if (endOfHeader != std::string::npos)
 		nextHeaderPosition++;
 	return headerPair;
 }
 
-static size_t	setHeader( response& response, std::string& rawHeaders,
-		size_t nextHeaderPosition )
+bool	stringComparison( std::string str1, const char* str2, size_t index )
 {
-	if (rawHeaders.compare(nextHeaderPosition, sizeof("Content-length"), "Content-length"))
+	return str1.compare(index, strlen(str2), str2) == 0;
+}
+
+static size_t	setHeader( response& response, std::string& rawHeaders,
+		size_t& nextHeaderPosition )
+{
+	if (stringComparison(rawHeaders, "Content-length", nextHeaderPosition))
 		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
-	else if (rawHeaders.compare(nextHeaderPosition, sizeof("Content-type"), "Content-type"))
+	else if (stringComparison(rawHeaders, "Content-type", nextHeaderPosition))
 		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
-	else if (rawHeaders.compare(nextHeaderPosition, sizeof("Expires"), "Expires"))
+	else if (stringComparison(rawHeaders,  "Expires", nextHeaderPosition))
 		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
-	else if (rawHeaders.compare(nextHeaderPosition, sizeof("Pragma"), "Pragma"))
+	else if (stringComparison(rawHeaders,  "Pragma", nextHeaderPosition))
 		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
 	else
 		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
@@ -241,27 +260,24 @@ static size_t	setHeader( response& response, std::string& rawHeaders,
 }
 
 void	Cgi::writeHeadersToResponse( std::string& rawHeaders,
-		response& response)
+		response& response )
 {
 	size_t	nextHeaderPosition = 0;
 
 	while (nextHeaderPosition != std::string::npos)
 	{
-		if (rawHeaders.compare(nextHeaderPosition, sizeof("Location"), "Location"))
+		if (stringComparison(rawHeaders, "Location", nextHeaderPosition))
 		{
 			_rules.redirectCode = 302;
-			_rules.redirectUri = rawHeaders.substr(
-					rawHeaders.find(':', nextHeaderPosition) + 1,
-					rawHeaders.find('\n', nextHeaderPosition));
-			nextHeaderPosition = rawHeaders.find('\n', nextHeaderPosition) + 1;
+			_rules.redirectUri
+				= makeHeaderPair(rawHeaders, nextHeaderPosition).second;
 		}
-		else if (rawHeaders.compare(nextHeaderPosition, sizeof("Status"), "Status"))
+		else if (stringComparison(rawHeaders, "Status", nextHeaderPosition))
 		{
-			response.setStatusLine(atoi(rawHeaders.substr(
-					rawHeaders.find(':', nextHeaderPosition) + 1,
-					rawHeaders.find('\n', nextHeaderPosition)).c_str()));
-			nextHeaderPosition = rawHeaders.find('\n', nextHeaderPosition) + 1;
+			response.setStatusLine(atoi(makeHeaderPair(rawHeaders,
+							nextHeaderPosition).second.c_str()));
 		}
-		nextHeaderPosition = setHeader(response, rawHeaders, nextHeaderPosition);
+		else
+			setHeader(response, rawHeaders, nextHeaderPosition);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:55 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/03 15:23:01 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/04 11:58:38 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ private:
 	char**			_envp;
 	char**			_argv;
 	std::string		_rawCgiOutput;
+	int				_status;
 
 };
 
