@@ -212,9 +212,9 @@ response getRequest::createResponse() {
 			if (filePath.length())
 			{
 				if (rules.isCgi(filePath))
-					response.tryToOpenAndReadFile(createFileFromCgi(rules, filePath, response));
+					response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
 				else
-					response.tryToOpenAndReadFile(filePath);
+					response.tryToOpenFile(filePath);
 				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
 			}
 		}
