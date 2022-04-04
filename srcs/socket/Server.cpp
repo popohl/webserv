@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 16:15:39 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/04/04 11:42:40 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ ASocket*	createSocket(int port, const std::vector<ServerNode *> & server) // cha
 			delete new_sock;
 			return (NULL);
 		}
-		std::cout << "Connection to port: " << port << std::endl;
 		return (new_sock);
 	}
 		catch(const std::exception& e)
@@ -88,7 +87,6 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 	ASocket			*temp;
 	SocketClient	*client;
 
-	std::cout << "at the listening part, there is " << socket.size() << std::endl;
 	while (1)
 	{
 		// We have to make a copy at each loop because select mess up the fd_set
@@ -97,11 +95,11 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 		tmp_read = sets.readfds.getset();
 		tmp_write = sets.writefds.getset();
 		fillFdMax(sets, socket);
-		std::cout << "\n\e[0;35m----------- Waiting for New connection -----------\e[0m\n" << std::endl;
+//		std::cout << "\n\e[0;35m----------- Waiting for New connection -----------\e[0m\n" << std::endl;
 		if ((ret = select(sets.fdmax + 1, &tmp_read, &tmp_write, NULL, &sets.tv)) < 0)
 			perror("Select:");
-		if (ret == 0)
-			std::cout << "Time Out" << std::endl;
+//		if (ret == 0)
+//			std::cout << "Time Out" << std::endl;
 		for (int i = 0; i <= sets.fdmax && ret; i++)
 		{
 			if (FD_ISSET(i, &tmp_read))

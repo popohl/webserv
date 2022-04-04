@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/02 18:24:57 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/04 16:52:14 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -176,7 +176,7 @@ const char * fileCouldNotBeOpen::what() const throw() {
 	return ("File could not be open");
 }
 
-response::response() : _headerFields(), _status(), _statusLine(), _header(), _body()
+response::response() : _headerFields(), _status(), _statusLine(), _header(), _body(), _file()
 {}
 
 /*
@@ -202,20 +202,22 @@ response & response::operator = (const response & src) {
 	return (*this);
 }
 
-response::~response() {}
-
-std::string response::createFormattedResponse()
+response::~response()
 {
-	std::string result;
+	if (_file)
+		_file.close();
+}
 
-	result = _statusLine;
-	if (!_header.length())
-		createHeader();
-	result += _header;
-	result += "\r\n";
-	result += _body;
-
-	return (result);
+std::vector<unsigned char> response::createFormattedResponse()
+{
+	std::vector<unsigned char>raw;
+	createHeader();
+	size_t size = _header.length() + getResponseFileSize();
+	raw.reserve(size);
+	raw.insert(raw.begin(), _header.begin(), _header.end());
+	readWholeFile(raw);
+	std::cout << " raw data size is " << raw.size() << std::endl;
+	return (raw);
 }
 
 void response::addFieldToHeaderMap(std::pair<std::string, std::string>input)
@@ -226,8 +228,18 @@ void response::addFieldToHeaderMap(std::pair<std::string, std::string>input)
 		_headerFields[input.first] += (", " + input.second);
 }
 
+void response::replaceFieldToHeaderMap(std::pair<std::string, std::string>input)
+{
+	if (_headerFields.find(input.first) == _headerFields.end())
+		_headerFields.insert(input);
+	else
+		_headerFields[input.first] = (input.second);
+
+}
+
 void	response::createHeader()
 {
+	_header = _statusLine;
 	for (std::map<std::string, std::string>::iterator it = _headerFields.begin();
 		 it != _headerFields.end();
 		 it++)
@@ -237,6 +249,7 @@ void	response::createHeader()
 		_header += it->second;
 		_header += "\r\n";
 	}
+	_header += "\r\n";
 }
 
 std::string findContentType(std::string content)
@@ -248,6 +261,7 @@ std::string findContentType(std::string content)
 	return (std::string());
 }
 
+
 void response::tryToOpenAndReadFile(std::string filePath)
 {
 	std::string body;
@@ -256,14 +270,16 @@ void response::tryToOpenAndReadFile(std::string filePath)
 
 	//improve open and read
 	std::ifstream file;
-	file.open(filePath.c_str());
+	file.open(filePath.c_str(), std::ios::in | std::ios::binary);
 	if (file.good())
 	{
 		std::streamsize bufferSize = 1048;
+		size_t fileSize = 0;
 		try {
 			do {
 				bufferSize = file.readsome(&buffer[0], bufferSize);
 				body += std::string(buffer);
+				fileSize += bufferSize;
 				memset(&buffer[0], 0, 1048);
 			} while (bufferSize == 1048);
 		}
@@ -272,19 +288,87 @@ void response::tryToOpenAndReadFile(std::string filePath)
 			file.close();
 			return;
 		}
+		std::cout << "FILE SIZE IS " << fileSize << std::endl;
 		file.close();
 	}
 	else
 		throw fileCouldNotBeOpen();
 	_body = body;
-	if (_body.length())
+	if (file.good())
 	{
-		
 		//	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/html, image/*, image/webp"));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
 		setStatusLine(200);
 	}
+}
+
+void response::tryToOpenFile(std::string filePath)
+{
+	_file.open(filePath.c_str(), std::ios::in | std::ios::binary);
+	if (_file.good())
+	{
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
+		setStatusLine(200);
+	}
+	else
+		throw fileCouldNotBeOpen();
+}
+
+
+size_t response::getResponseFileSize()
+{
+	if (_file.good())
+	{
+		size_t currentPos = _file.tellg();
+		size_t fileSize = 0;
+
+		_file.seekg(0, _file.end);
+		fileSize = _file.tellg();
+		_file.seekg(currentPos);
+		return (fileSize);
+	}
+	else
+		return (0);
+}
+
+void	response::readWholeFile(std::vector<unsigned char> & store)
+{
+	size_t	fileSize = getResponseFileSize();
+	char * buffer = new char[fileSize];
+	_file.read(buffer, fileSize);
+	store.insert(store.end(), buffer, buffer + fileSize);
+	delete [] buffer;
+}
+
+
+size_t response::continueReadingFile()
+{
+	size_t	fileSize = getResponseFileSize();
+	size_t	currentPos = _file.tellg();
+	size_t	numberOfBytesToRead = fileSize - currentPos;
+
+	if (numberOfBytesToRead > 512)
+		numberOfBytesToRead = 512;
+	_file.read(_buffer, numberOfBytesToRead);
+	if (_file.tellg() == static_cast<int>(fileSize))
+		_hasBeenFullySent = true;
+	return (numberOfBytesToRead);
+}
+
+size_t response::fillSendBuffer()
+{
+	size_t bufferSize = 0;
+	if (_header.length())
+	{
+		bufferSize = _header.copy(_buffer, RESPONSE_BUFFER_SIZE, 0);
+		_header.erase(0, bufferSize);
+	}
+	else
+		bufferSize = continueReadingFile();
+	return (bufferSize);
+
 }
 
 std::string findStatus(int status)
@@ -314,9 +398,10 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 	if (rules.errorPage.find(errorStatus) != rules.errorPage.end())
 	{
 		std::cout << "errorPage name " << rules.root +"/"+ rules.errorPage[errorStatus] << std::endl;
-		tryToOpenAndReadFile(rules.root + "/" + rules.errorPage[errorStatus]);
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "image/webp"));
+		tryToOpenFile(rules.root + "/" + rules.errorPage[errorStatus]);
+//		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "image/webp"));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Location", rules.errorPage[errorStatus]));
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Location", rules.errorPage[errorStatus]));
 //		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/html, image/*"));
 	}
 	else
