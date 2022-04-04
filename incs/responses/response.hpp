@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/04 16:32:41 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/04 18:38:37 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -77,7 +77,7 @@ public:
 	response(const response & src);
 	response & operator = (const response & src);
 	~response();
-
+	
 	std::vector<unsigned char>	createFormattedResponse();
 	void		addFieldToHeaderMap(std::pair<std::string, std::string>input);
 	void		replaceFieldToHeaderMap(std::pair<std::string, std::string>input);
@@ -94,6 +94,7 @@ public:
 	void		prepareBodyForSend();
 	*/
 
+	void printHeader() { std::cout << _header << std::endl;}
 
 	
 private:

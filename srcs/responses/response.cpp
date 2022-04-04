@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/04 16:52:14 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/04 18:50:19 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -305,6 +305,7 @@ void response::tryToOpenAndReadFile(std::string filePath)
 
 void response::tryToOpenFile(std::string filePath)
 {
+	std::cout << "try to open this file "<< filePath << std::endl;
 	_file.open(filePath.c_str(), std::ios::in | std::ios::binary);
 	if (_file.good())
 	{
@@ -399,17 +400,14 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 	{
 		std::cout << "errorPage name " << rules.root +"/"+ rules.errorPage[errorStatus] << std::endl;
 		tryToOpenFile(rules.root + "/" + rules.errorPage[errorStatus]);
-//		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "image/webp"));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Location", rules.errorPage[errorStatus]));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Location", rules.errorPage[errorStatus]));
-//		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/html, image/*"));
 	}
 	else
 	{
 		_body = defaultErrorMessage(errorStatus);
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
 	}
-	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
 }
 
 std::string to_string(int n)
