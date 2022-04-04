@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/04 18:50:19 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/04 19:41:43 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -406,7 +406,7 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 	else
 	{
 		_body = defaultErrorMessage(errorStatus);
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
+//		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
 	}
 }
 
