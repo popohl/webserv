@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/04 16:28:44 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/04 19:08:43 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,6 @@ std::string iRequest::createFilePath()
 					filePath = (location->root + "/" + getRequestURI());
 				else
 					filePath = (location->root + getRequestURI());
-				std::cout << *(location->root.rbegin()) << "|||NTIGAGUEABVUEAVBAE" << filePath << std::endl;
 			}
 		}
 	}
