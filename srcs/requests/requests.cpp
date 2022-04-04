@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/04 19:41:06 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/04 19:48:04 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ std::string iRequest::eatWord(std::string & line)
 	return (word);
 }
 
-const std::string & iRequest::getRequestURI()
+const std::string & iRequest::getRequestURI() const
 {
 	return (_requestURI);
 }

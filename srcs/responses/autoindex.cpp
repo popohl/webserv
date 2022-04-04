@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 11:57:16 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 14:42:16 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/04 19:48:49 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ std::string autoIndex(std::string	root)
 	DIR*			dirp;
 	struct dirent*	direntp;
 	std::string		index;
-	std::string		root = "/mnt/nfs/homes/fmonbeig/Project/webserv"; // Enlever quand on aura le lien vers le dossier
+	root = "/mnt/nfs/homes/fmonbeig/Project/webserv"; // Enlever quand on aura le lien vers le dossier
 
 	dirp = opendir(root.c_str());
 	index += "<!DOCTYPE html>\n<html>\n\n<title>INDEX</title>\n\n<h1>INDEX</h1>";

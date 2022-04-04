@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/04 19:35:24 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/04 19:48:17 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int main( int argc, char **argv )
 	ConfigFileNode	configFile = parser.getConfigFile();
 
 	// Get all the port to listen from configuration file parsing
-	mapPortToServers listeningPorts = config.getListeningPorts();
+	mapPortToServers listeningPorts = configFile.getListeningPorts();
 
 	//Create a containers of Socket pointer.
 	//The Class Socket initialize the bind and the listening for every Socket
