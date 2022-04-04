@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 17:37:31 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/04 13:59:03 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ SocketClient::SocketClient(int port, int fd, const std::vector<ServerNode *> & r
 //   CANONICAL FORM 					        //
 // +------------------------------------------+ //
 
-SocketClient::SocketClient(void) : ASocket(), _response(), _request(NULL) {}
+SocketClient::SocketClient(void) : ASocket(), _response(), _request(NULL), _totalSend(0) {}
 
 SocketClient::~SocketClient(void)
 {

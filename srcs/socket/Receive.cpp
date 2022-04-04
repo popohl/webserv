@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 15:55:27 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/04 11:01:38 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 			client.setResponse(test.createFormattedResponse());
 //			client.setResponse(GENERIC_MSG);
 		}
-
 		//use this to switch from read to write
 		sets.readfds.remove(client.getSocketFd());
 		sets.writefds.add(client.getSocketFd());

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 11:57:16 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 14:42:16 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/04 11:01:00 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ static void	createLink(std::string & index, std::string & root, struct dirent *d
 
 // The autoindex function return a string with an automatic index create in HTML
 // Root is the directory where the autoindex have to function
-
 std::string autoIndex(std::string	root)
 {
 	DIR*			dirp;
@@ -39,7 +38,7 @@ std::string autoIndex(std::string	root)
 	std::string		index;
 	std::string		root = "/mnt/nfs/homes/fmonbeig/Project/webserv"; // Enlever quand on aura le lien vers le dossier
 
-	dirp = opendir(root.c_str());
+	dirp = opendir(root.c_str()); // Je peux faire un getcwd si on a pas le root
 	index += "<!DOCTYPE html>\n<html>\n\n<title>INDEX</title>\n\n<h1>INDEX</h1>";
 	if( dirp != NULL )
 	{

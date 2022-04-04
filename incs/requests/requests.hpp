@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   requests.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/03/31 13:51:07 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/04 17:45:34 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,20 @@ class iRequest
 
 	requestBase	_message;
 //	response	_response;
-	
+
 	bool receivingisDone();
 	virtual response createResponse() = 0;
+	virtual std::string printType() = 0;
 	virtual ~iRequest() {};
 
 	const std::string & getRequestURI();
-	
+	ServerNode * findServer(); // DEPLACE EN PUBLIC
+
 protected:
 	const std::vector<ServerNode *> *_server;
 	std::string _requestURI;
 
 	std::string createFilePath();
-	ServerNode * findServer();
 private:
 	std::string testIndexFile(std::string root, const std::vector<std::string> & indexList);
 };
@@ -58,6 +59,8 @@ public:
 //	void sendRequest(void) {};
 	response createResponse();
 	std::string	createResponseBody();
+	std::string printType() {return ("GET");};
+
 //private:
 };
 
@@ -67,6 +70,7 @@ class postRequest : public iRequest
 	postRequest();
 	~postRequest() {};
 
+	std::string printType() {return ("POST");};
 
 private:
 //	void sendRequest(void) {};
@@ -79,6 +83,8 @@ class deleteRequest : public iRequest
 	public:
 	deleteRequest();
 	~deleteRequest() {};
+
+	std::string printType() {return ("DELETE");};
 
 //	void	sendRequest(void) {};
 	response createResponse();

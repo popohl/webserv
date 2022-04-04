@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 15:54:40 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/04 17:48:34 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class SocketClient : public ASocket
 		void		erasePartResponse(int i);
 
 		iRequest *		_request; // allocation et suppression a chaque boucle de lecture/ecriture
+		int				_totalSend;
 };
 
 #endif
