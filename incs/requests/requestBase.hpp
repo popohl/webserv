@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/05 09:53:08 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/05 11:44:54 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -17,6 +17,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <deque>
 
 #include "responses/response.hpp"
 
@@ -79,7 +80,9 @@ private:
 	size_t	findBodyLength(void);
 
 	//chunked transfer utils
+	std::deque<size_t> _chunksList;
 	size_t	eatChunkSize(std::string & line);
+	void	processChunk(std::string & line);
 	
 	//parsing header functions
 	std::string	removeOneHeaderLineFromInput(std::string & input);

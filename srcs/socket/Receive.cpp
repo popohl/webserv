@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/04/05 09:09:25 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/05 13:21:01 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & 
 std::vector<unsigned char> buildSendReponse(iRequest * request)
 {
 	std::vector<unsigned char> responseRawData;
-	if(request)
+	if (!request)
 	{
 		std::string error("INVALID 405 Method Not Allowed\r\n\r\n");
 		responseRawData.assign(error.begin(), error.end());

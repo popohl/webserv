@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/04 19:41:43 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/05 15:21:21 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -216,7 +216,6 @@ std::vector<unsigned char> response::createFormattedResponse()
 	raw.reserve(size);
 	raw.insert(raw.begin(), _header.begin(), _header.end());
 	readWholeFile(raw);
-	std::cout << " raw data size is " << raw.size() << std::endl;
 	return (raw);
 }
 
@@ -405,7 +404,7 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 	}
 	else
 	{
-		_body = defaultErrorMessage(errorStatus);
+//		_body = defaultErrorMessage(errorStatus);
 //		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
 	}
 }
