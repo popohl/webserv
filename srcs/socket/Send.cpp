@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/04 17:47:03 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/05 16:41:16 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	serverLog(SocketClient & client)
 		rules = server->getServerRules();
 	std::cout << "\e[1;33m###########  LOG  ############\e[0m" << std::endl;
 	std::cout << "\e[1;37mClient FD: \e[0m" << client.getSocketFd() << "\e[1;37m    Port: \e[0m" << client.getPort() << std::endl;
-	std::cout << "\e[1;37mRequest  : \e[0m" << "\e[1;34m"<< client.getType() << "\e[0m"<< std::endl;
+	std::cout << "\e[1;37mRequest  : \e[0m" << "\e[1;34m"<< client._request->printType() << "\e[0m"<< std::endl;
 	std::cout << "\e[1;37mByte send: \e[0m" << client._totalSend << std::endl;
 	std::cout << "\e[1;37mStatus   :\e[0m \e[1;32mOK\e[0m" << std::endl;
 

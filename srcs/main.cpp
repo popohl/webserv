@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/01 17:43:30 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/05 16:13:13 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,35 +26,39 @@ void	free_memory(std::vector<ASocket*> & socket)
 int main( int argc, char **argv )
 {
 	(void)argc;
-	(void)argc;(void)argv;
+	(void)argc;
 	//protect for one argument usecase
-//	Parser			parser(argv[1]);
-	Parser  parser("./srcs/testing/config_files/basic_file.conf");
-	ConfigFileNode	config = parser.getConfigFile();
-
-	// Get all the port to listen from configuration file parsing
-	mapPortToServers listeningPorts = config.getListeningPorts();
-
-	//Create a containers of Socket pointer.
-	//The Class Socket initialize the bind and the listening for every Socket
-	std::vector<ASocket*>	socket;
-	ASocket					*temp;
-	for (mapPortToServers::iterator serverIt = listeningPorts.begin();
-		 serverIt != listeningPorts.end();
-		 serverIt++)
+	//Parser			parser(argv[1]);
+	try
 	{
-		temp = createSocket(serverIt->first, serverIt->second);
-		if (temp)
-			socket.push_back(temp);
-		else
-			free_memory(socket); //NOTA BENE fonction qui free tout si une socket ne se Fabrique/Bind/Listen pas bien
+		// Parser  parser("./srcs/testing/config_files/basic_file.conf");
+		Parser			parser(argv[1]);
+		ConfigFileNode	config = parser.getConfigFile();
+
+		// Get all the port to listen from configuration file parsing
+		mapPortToServers listeningPorts = config.getListeningPorts();
+
+		//Create a containers of Socket pointer.
+		//The Class Socket initialize the bind and the listening for every Socket
+		std::vector<ASocket*>	socket;
+		ASocket					*temp;
+		for (mapPortToServers::iterator serverIt = listeningPorts.begin();
+			serverIt != listeningPorts.end();
+			serverIt++)
+		{
+			temp = createSocket(serverIt->first, serverIt->second);
+			if (temp)
+				socket.push_back(temp);
+			else
+				free_memory(socket); //NOTA BENE fonction qui free tout si une socket ne se Fabrique/Bind/Listen pas bien
+		}
+		//Create two sets of fd for select : readfds and writefds
+		t_FD	sets;
+		fillFdSets(sets, socket);
+		portListening(sets, socket);
 	}
-	//Create two sets of fd for select : readfds and writefds
-	t_FD	sets;
-	fillFdSets(sets, socket);
-	portListening(sets, socket);
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
 }
-
-//TODO faire un logger propre avec les infos presente dans irequest
-//TODO faire un fichier qui va autoindex les informations d'une page
-
