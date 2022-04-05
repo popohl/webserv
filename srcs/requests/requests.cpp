@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/05 10:12:26 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/05 20:24:42 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 			result->_server = &server;
 			result->_requestURI = requestUri;
 			result->_message.parseRequest(input);
-			result->printRequest();
+//			result->printRequest();
 		}
 	}
 	return result;
@@ -129,37 +129,32 @@ bool iRequest::containsPort(std::string hostname)
 
 std::string iRequest::createFilePath()
 {
-	//check each location for the vector
+	Rules rules;
+	response response;
 	std::string filePath;
-	const ServerNode * test = findServer();
-	if (test)
+	
+	rules.setValues(*findServer(), getRequestURI().c_str());
+	if (getRequestURI() == "/")
 	{
-		const LocationRules * location = test->getLocationFromUrl(getRequestURI());
-
-		if (location)
-		{
-			if (getRequestURI() == "/")
-			{
-				if (test->getServerRules().autoindex == true)
+		if (rules.autoindex == true)
 //display an autoindex;
-					std::cout << "autoindex is on" << std::endl;
-				else
-					filePath = testIndexFile(location->root + "/", test->getServerRules().index);
-			}
-			else
-			{
-				if (*(location->root.rbegin()) != '/' && (*(getRequestURI().begin()) != '/'))
-					filePath = (location->root + "/" + getRequestURI());
-				else
-					filePath = (location->root + getRequestURI());
-			}
-		}
+			std::cout << "autoindex is on" << std::endl;
+		else
+			filePath = testIndexFile(rules.root + "/", rules.index); //this function should be in rules
+	}
+	else
+	{
+		if (*(rules.root.rbegin()) != '/' && (*(getRequestURI().begin()) != '/'))
+			filePath = (rules.root + "/" + getRequestURI());
+		else
+			filePath = (rules.root + getRequestURI());
 	}
 	if (!filePath.length())
 		throw fileNotFound();
 	return (filePath);
 }
 
+//this function should be in rules
 std::string iRequest::testIndexFile(std::string root, const std::vector<std::string> & indexList)
 {
 	std::string file;
@@ -214,19 +209,29 @@ response getRequest::createResponse() {
 		try
 		{
 			std::string filePath = createFilePath();
-			std::cout << "filePath is " << filePath << std::endl;
-			if (filePath.length())
+			std::cout << "this is the path " << filePath << std::endl;
+			if (filePath.length() && fileExists(filePath))
 			{
+				std::cout << "opening filePath" << std::endl;
 				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
 				response.tryToOpenFile(filePath);
+				response.setStatusLine(200);
+			}
+			else
+			{
+				std::cout << "file not found " << std::endl;
+				response.setStatusLine(404);
+				response.setErrorMessage(404, rules);
 			}
 		}
 		catch (std::exception &e)
 		{
 			std::cout << e.what() << std::endl;
-			response.setErrorMessage(404, rules);
+			response.setStatusLine(403);
+			response.setErrorMessage(403, rules);
 		}
 	}
+
 	return response;
 }
 

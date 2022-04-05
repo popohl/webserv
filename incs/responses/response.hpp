@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/04 19:41:26 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/05 19:45:57 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -95,7 +95,7 @@ public:
 	*/
 
 	void printHeader() { std::cout << _header << std::endl;}
-
+	void printStatus() { std::cout << _statusLine << std::endl; }
 	
 private:
 	void		createHeader();
