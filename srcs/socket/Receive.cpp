@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/04/04 19:32:04 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/05 09:09:25 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ std::vector<unsigned char> buildSendReponse(iRequest * request)
 	}
 	if (request && request->receivingisDone())
 	{
-		std::cout << request << std::endl;
+		request->printRequest();
 		response response = request->createResponse();
 		responseRawData = response.createFormattedResponse();
 		response.printHeader();

@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/02 17:17:16 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/05 09:53:08 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -58,7 +58,7 @@ struct requestBase {
 	requestBase();
 	void	parseRequest(const std::string &line);
 	void	parseHeader(std::string & input);
-	void	parseBody(const std::string &line);
+	void	parseBody(std::string &line);
 
 	bool containsHostField(void);
 	
@@ -78,6 +78,9 @@ private:
 	void updateResponseStatus(void);
 	size_t	findBodyLength(void);
 
+	//chunked transfer utils
+	size_t	eatChunkSize(std::string & line);
+	
 	//parsing header functions
 	std::string	removeOneHeaderLineFromInput(std::string & input);
 	bool	HeaderLineIsCorrectlyFormatted(const std::string & line);

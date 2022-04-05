@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/02 18:18:36 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/05 09:08:52 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,28 +25,28 @@ class iRequest
 {
 	public:
 
-	virtual ~iRequest();
-	static iRequest * createRequest(std::string &, const std::vector<ServerNode *> & ref);
-	virtual response createResponse() = 0;
+	virtual		~iRequest();
+	static		iRequest * createRequest(std::string &, const std::vector<ServerNode *> & ref);
+	virtual		response createResponse() = 0;
 	
 	requestBase	_message;
 	
-	bool receivingisDone();
+	bool		receivingisDone();
 
-
-	const std::string & getRequestURI();
+	void		printRequest();
+	const		std::string & getRequestURI();
 	
 protected:
-	const std::vector<ServerNode *> *_server;
+	const		std::vector<ServerNode *> *_server;
 	std::string _requestURI;
 
 	std::string createFilePath();
 	ServerNode * findServer();
 
 private:
-	std::string testIndexFile(std::string root, const std::vector<std::string> & indexList);
+	std::string	testIndexFile(std::string root, const std::vector<std::string> & indexList);
 	static std::string eatWord(std::string & line);
-	bool containsPort(std::string hostname);
+	bool		containsPort(std::string hostname);
 };
 
 class getRequest : public iRequest
@@ -55,7 +55,7 @@ public:
 	getRequest();
 	~getRequest();
 
-	response createResponse();
+	response	createResponse();
 	std::string	createResponseBody();
 };
 

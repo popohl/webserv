@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/04 19:08:43 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/05 10:12:26 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,15 @@
 #include <unistd.h>
 #include "configParsing/Rules.hpp"
 
+void		iRequest::printRequest()
+{
+	std::cout << getRequestURI() << std::endl;
+	for (std::map<std::string, std::string>::iterator it = _message._header.begin();
+		 it != _message._header.end();
+		 it++)
+		std::cout << "[" << it->first << "] " << it->second << std::endl;
+}
+
 iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerNode *> & server)
 {
 	iRequest * result = NULL;
@@ -31,6 +40,7 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 	if (eraseLen != std::string::npos)
 	{
 		std::string requestLine(input, 0, eraseLen);
+		std::cout << "request Line Parsed is " << requestLine << std::endl;
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
 		method = eatWord(requestLine);
 		// expect an URI or replace it with / if field is empty
@@ -60,6 +70,7 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 			result->_server = &server;
 			result->_requestURI = requestUri;
 			result->_message.parseRequest(input);
+			result->printRequest();
 		}
 	}
 	return result;
