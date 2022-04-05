@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/04/01 12:08:15 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/05 10:21:23 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,15 +113,4 @@ void	LocationRules::forbidMethod( std::string method )
 void	LocationRules::addErrorPage( int errorCode, std::string errorPagePath )
 {
 	this->errorPage[errorCode] = errorPagePath;
-}
-
-std::string	LocationRules::getPathFromLocation( std::string pathFromUrl ) const
-{
-	if (root.empty())
-		return pathFromUrl;
-
-	std::string result = pathFromUrl;
-
-	result.replace(0, locationPath.size(), root);
-	return result;
 }

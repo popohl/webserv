@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/04 19:48:02 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/05 10:18:31 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ protected:
 	const std::vector<ServerNode *> *_server;
 	std::string _requestURI;
 
-	std::string createFilePath( void );
+	std::string createFilePath( Rules& rules );
 	std::string createFileFromCgi( Rules& rules, std::string requestedFilePath, response& response );
 	ServerNode * findServer( void );
 private:

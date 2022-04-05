@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:10:41 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/03 10:37:38 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/05 10:21:54 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,4 +146,15 @@ bool		Rules::isCgi( const std::string& uri ) const
 	if (afterExtension == 0 || afterExtension == '?' || afterExtension == '/')
 		return true;
 	return false;
+}
+
+std::string	Rules::getPathFromLocation( std::string pathFromUrl ) const
+{
+	if (root.empty())
+		return pathFromUrl;
+
+	std::string result = pathFromUrl;
+
+	result.replace(0, locationPath.size(), root);
+	return result;
 }

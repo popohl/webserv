@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/04 19:48:04 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/05 10:23:35 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,29 +117,20 @@ bool iRequest::containsPort(std::string hostname)
 		return (false);
 }
 
-std::string iRequest::createFilePath()
+std::string iRequest::createFilePath( Rules& rules )
 {
 	//check each location for the vector
 	std::string filePath;
-	const ServerNode * test = findServer();
-	if (test)
+	if (getRequestURI() == "/")
 	{
-		const LocationRules * location = test->getLocationFromUrl(getRequestURI());
-
-		if (location)
-		{
-			if (getRequestURI() == "/")
-			{
-				if (test->getServerRules().autoindex == true)
-//display an autoindex;
-					std::cout << "autoindex is on" << std::endl;
-				else
-					filePath = testIndexFile(location->root + "/", test->getServerRules().index);
-			}
-			else
-				filePath = location->getPathFromLocation(getRequestURI());
-		}
+		if (rules.autoindex == true)
+			//display an autoindex;
+			std::cout << "autoindex is on" << std::endl;
+		else
+			filePath = testIndexFile(rules.root + "/", rules.index);
 	}
+	else
+		filePath = rules.getPathFromLocation(getRequestURI());
 	if (!filePath.length())
 		throw fileNotFound();
 	return (filePath);
@@ -208,7 +199,7 @@ response getRequest::createResponse() {
 	{
 		try
 		{
-			std::string filePath = createFilePath();
+			std::string filePath = createFilePath(rules);
 			if (filePath.length())
 			{
 				if (rules.isCgi(filePath))
@@ -236,7 +227,7 @@ postRequest::~postRequest()
 response postRequest::createResponse() {
 
 	Rules rules;
-	rules.setValues(*findServer(), getRequestURI().c_str());
+	rules.setValues(*findServer(), getRequestURI());
 	response	response;
 	std::string	postedFile;
 
