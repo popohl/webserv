@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/05 10:18:31 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/05 10:53:09 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ class postRequest : public iRequest
 	response createResponse();
 private:
 	std::string createPostedFilePath(const std::string & root, const std::string & requestURI);
+	response	createPostCgiResponse( Rules& rules, response& response, std::string& filePath );
 };
 
 class deleteRequest : public iRequest

@@ -274,12 +274,10 @@ void response::tryToOpenAndReadFile(std::string filePath)
 	if (file.good())
 	{
 		std::streamsize bufferSize = 1048;
-		size_t fileSize = 0;
 		try {
 			do {
 				bufferSize = file.readsome(&buffer[0], bufferSize);
 				body += std::string(buffer);
-				fileSize += bufferSize;
 				memset(&buffer[0], 0, 1048);
 			} while (bufferSize == 1048);
 		}
@@ -288,7 +286,6 @@ void response::tryToOpenAndReadFile(std::string filePath)
 			file.close();
 			return;
 		}
-		std::cout << "FILE SIZE IS " << fileSize << std::endl;
 		file.close();
 	}
 	else
@@ -309,8 +306,10 @@ void response::tryToOpenFile(std::string filePath)
 	_file.open(filePath.c_str(), std::ios::in | std::ios::binary);
 	if (_file.good())
 	{
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
+		if (_headerFields.count("Content-Type") == 0)
+			addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
+		if (_headerFields.count("Content-Length") == 0)
+			addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
 		setStatusLine(200);
 	}
 	else

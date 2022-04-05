@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/04 16:39:29 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/05 14:01:55 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,6 @@ void	Cgi::createEnvp( std::string requestedFilePath )
 
 void	Cgi::writeBodyToStdIn( void )
 {
-	std::cout << "writeBodyToStdIn got called" << std::endl;
 	std::string body = "fname=Paul&lname=OHL";
 	int			pipeFd[2];
 
@@ -246,9 +245,9 @@ bool	stringComparison( std::string str1, const char* str2, size_t index )
 static size_t	setHeader( response& response, std::string& rawHeaders,
 		size_t& nextHeaderPosition )
 {
-	if (stringComparison(rawHeaders, "Content-length", nextHeaderPosition))
+	if (stringComparison(rawHeaders, "Content-Length", nextHeaderPosition))
 		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
-	else if (stringComparison(rawHeaders, "Content-type", nextHeaderPosition))
+	else if (stringComparison(rawHeaders, "Content-Type", nextHeaderPosition))
 		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
 	else if (stringComparison(rawHeaders,  "Expires", nextHeaderPosition))
 		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));

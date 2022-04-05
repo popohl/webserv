@@ -268,6 +268,21 @@ std::string postRequest::createPostedFilePath(const std::string & root, const st
 		return (std::string(root + requestURI));
 }
 
+response	postRequest::createPostCgiResponse( Rules& rules, response& response, std::string& filePath )
+{
+	try
+	{
+		response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
+	}
+	catch (std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+		response.setErrorMessage(404, rules);
+	}
+	response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+	return response;
+}
+
 deleteRequest::deleteRequest()
 {}
 
