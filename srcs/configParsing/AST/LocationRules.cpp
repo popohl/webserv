@@ -6,11 +6,11 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/04/06 12:04:16 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 15:48:14 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "responses/httpExceptions.hpp"
+#include "configParsing/Exception.hpp"
 #include "configParsing/AST/LocationRules.hpp"
 
 LocationRules::LocationRules( void )
@@ -90,9 +90,12 @@ void	LocationRules::allowMethod( std::string method )
 		allowMethod(LocationRules::POST);
 	else if (method == "DELETE")
 		allowMethod(LocationRules::DELETE);
-	std::string errorMessage = "Method not implemented: ";
-	errorMessage += method;
-	throw serverError(501, errorMessage.c_str());
+	else
+	{
+		std::string errorMessage = "Method not implemented: ";
+		errorMessage += method;
+		throw ParsingException(errorMessage.c_str());
+	}
 }
 
 void	LocationRules::forbidMethod( char method )
@@ -108,9 +111,12 @@ void	LocationRules::forbidMethod( std::string method )
 		forbidMethod(LocationRules::POST);
 	else if (method == "DELETE")
 		forbidMethod(LocationRules::DELETE);
-	std::string errorMessage = "Method not implemented: ";
-	errorMessage += method;
-	throw serverError(501, errorMessage.c_str());
+	else
+	{
+		std::string errorMessage = "Method not implemented: ";
+		errorMessage += method;
+		throw ParsingException(errorMessage.c_str());
+	}
 }
 
 void	LocationRules::addErrorPage( int errorCode, std::string errorPagePath )

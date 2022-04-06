@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 15:36:33 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 15:49:56 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,13 +246,13 @@ static size_t	setHeaderField( response& response, std::string& rawHeaders,
 		size_t& nextHeaderPosition )
 {
 	if (stringComparison(rawHeaders, "Content-Length", nextHeaderPosition))
-		response.addFieldToHeaderMap(std::make_pair("Content-Length", getHeaderValue(rawHeaders, nextHeaderPosition)));
+		response.replaceFieldToHeaderMap(std::make_pair("Content-Length", getHeaderValue(rawHeaders, nextHeaderPosition)));
 	else if (stringComparison(rawHeaders, "Content-Type", nextHeaderPosition))
-		response.addFieldToHeaderMap(std::make_pair("Content-Type", getHeaderValue(rawHeaders, nextHeaderPosition)));
+		response.replaceFieldToHeaderMap(std::make_pair("Content-Type", getHeaderValue(rawHeaders, nextHeaderPosition)));
 	else if (stringComparison(rawHeaders, "Expires", nextHeaderPosition))
-		response.addFieldToHeaderMap(std::make_pair("Expires", getHeaderValue(rawHeaders, nextHeaderPosition)));
+		response.replaceFieldToHeaderMap(std::make_pair("Expires", getHeaderValue(rawHeaders, nextHeaderPosition)));
 	else if (stringComparison(rawHeaders, "Pragma", nextHeaderPosition))
-		response.addFieldToHeaderMap(std::make_pair("Pragma", getHeaderValue(rawHeaders, nextHeaderPosition)));
+		response.replaceFieldToHeaderMap(std::make_pair("Pragma", getHeaderValue(rawHeaders, nextHeaderPosition)));
 	else
 		throw serverError(503, "Unexpected field found in cgi header");
 	return nextHeaderPosition;
