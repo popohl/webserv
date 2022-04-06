@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/05 09:08:52 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 14:12:03 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ protected:
 
 	std::string createFilePath();
 	ServerNode * findServer();
-
-private:
 	std::string	testIndexFile(std::string root, const std::vector<std::string> & indexList);
+	
+private:
 	static std::string eatWord(std::string & line);
 	bool		containsPort(std::string hostname);
 };
@@ -57,6 +57,8 @@ public:
 
 	response	createResponse();
 	std::string	createResponseBody();
+private:
+	bool	isAutoindex(const Rules &);
 };
 
 class postRequest : public iRequest

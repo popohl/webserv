@@ -18,7 +18,7 @@ SRCS	= configParsing/AST/ConfigFileNode.cpp \
 		  configParsing/AST/ServerNode.cpp configParsing/AST/ServerRules.cpp \
 		  configParsing/Lexer.cpp configParsing/Parser.cpp \
 		  requests/requests.cpp requests/requestBase.cpp \
-		  responses/response.cpp \
+		  responses/response.cpp responses/autoindex.cpp \
 		  socket/ASocket.cpp socket/FdSet.cpp socket/Receive.cpp socket/Send.cpp \
 		  socket/Server.cpp socket/SocketClient.cpp socket/SocketPort.cpp \
 		  configParsing/helperFunctions.cpp main.cpp

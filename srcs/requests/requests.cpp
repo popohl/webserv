@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/06 12:05:36 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 14:07:18 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,11 +136,7 @@ std::string iRequest::createFilePath()
 	rules.setValues(*findServer(), getRequestURI().c_str());
 	if (getRequestURI() == "/")
 	{
-		if (rules.autoindex == true)
-//display an autoindex;
-			std::cout << "autoindex is on" << std::endl;
-		else
-			filePath = testIndexFile(rules.root + "/", rules.index); //this function should be in rules
+		filePath = testIndexFile(rules.root + "/", rules.index);
 	}
 	else
 	{
@@ -206,26 +202,39 @@ response getRequest::createResponse() {
 		response.setErrorMessage(405, rules);
 	else
 	{
-		try
+		if (!isAutoindex(rules))
 		{
-			std::string filePath = createFilePath();
-			std::cout << "this is the path " << filePath << std::endl;
-			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-			response.tryToOpenFile(filePath);
-			response.setStatusLine(200);
+			try
+			{
+				std::string filePath = createFilePath();
+				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+				response.tryToOpenFile(filePath);
+				response.setStatusLine(200);
+			}
+			catch (fileNotFound) {
+				response.setErrorMessage(404, rules);
+			}
+			catch (fileCouldNotBeOpen) {
+				response.setErrorMessage(403, rules);
+			}
+			catch (std::exception) {
+				response.setErrorMessage(500, rules);
+			}
 		}
-		catch (fileNotFound) {
-			response.setErrorMessage(404, rules);
-		}
-		catch (fileCouldNotBeOpen) {
-			response.setErrorMessage(403, rules);
-		}
-		catch (std::exception) {
-			response.setErrorMessage(500, rules);
-		}
+		else
+			response.createAutoindexResponse();
 	}
-
 	return response;
+}
+
+bool	getRequest::isAutoindex(const Rules & rules)
+{
+	if (getRequestURI() == "/"
+		&& !(testIndexFile(rules.root + "/", rules.index).length())
+		&& rules.autoindex)
+		return true;
+	else
+		return false;
 }
 
 postRequest::postRequest()

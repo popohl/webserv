@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/06 13:26:24 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 14:13:54 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -365,6 +365,15 @@ std::string defaultErrorMessage(int errorStatus)
 	result = "Very bad Error, you should never see this message\nIt means that no responseStatus were found.";
 	return (result);
 }
+
+void response::createAutoindexResponse()
+{
+	_body = autoIndex(_rules.root);
+	setStatusLine(200);
+	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/html"));
+	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
+}
+
 
 std::string to_string(int n)
 {

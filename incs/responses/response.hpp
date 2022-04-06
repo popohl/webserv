@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/06 13:26:05 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 14:15:51 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -37,9 +37,7 @@
 
 std::string to_string(int n);
 std::string defaultErrorMessage(int errorStatus);
-//std::string to_string(std::streamsize n);
-
-#define RESPONSE_BUFFER_SIZE 512
+std::string autoIndex(std::string	root);
 
 class fileNotFound : public std::exception
 {
@@ -86,6 +84,7 @@ public:
 	void		setErrorMessage(int errorStatus, Rules & rules);
 	void		readWholeFile(std::vector<unsigned char> & store);
 
+	void		createAutoindexResponse();
 /*
 	size_t		continueReadingFile();
 	size_t		fillSendBuffer();
@@ -99,6 +98,7 @@ public:
 private:
 	void		createHeader();
 	size_t		getResponseFileSize();
+
 };
 
 #endif
