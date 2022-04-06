@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/06 10:47:27 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 13:26:24 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -216,10 +216,17 @@ std::vector<unsigned char> response::createFormattedResponse()
 {
 	std::vector<unsigned char>raw;
 	createHeader();
-	size_t size = _header.length() + getResponseFileSize();
+	size_t size = _header.length();
+	if (_body.length())
+		size += _body.length();
+	else
+		size += getResponseFileSize();
 	raw.reserve(size);
 	raw.insert(raw.begin(), _header.begin(), _header.end());
-	readWholeFile(raw);
+	if (_body.length())
+		raw.insert(raw.end(), _body.begin(), _body.end());
+	else
+		readWholeFile(raw);
 	return (raw);
 }
 
@@ -272,7 +279,6 @@ void response::tryToOpenFile(std::string filePath)
 	{
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
-//		setStatusLine(200);
 	}
 	else
 		throw fileCouldNotBeOpen();
@@ -332,6 +338,13 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Location", rules.errorPage[errorStatus]));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Location", rules.errorPage[errorStatus]));
 	}
+	else
+	{
+		_body += defaultErrorMessage(errorStatus);
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/plain"));
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
+		
+	}
 }
 
 std::string defaultErrorMessage(int errorStatus)
@@ -386,11 +399,9 @@ void response::tryToOpenAndReadFile(std::string filePath)
 			} while (bufferSize == 1048);
 		}
 		catch (std::exception &e) {
-			std::cout << "in tryToOpenAndReadFile : " << e.what() << std::endl;
 			file.close();
 			return;
 		}
-		std::cout << "FILE SIZE IS " << fileSize << std::endl;
 		file.close();
 	}
 	else
