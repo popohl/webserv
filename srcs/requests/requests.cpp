@@ -6,10 +6,11 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/06 16:32:36 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 18:09:51 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "responses/httpExceptions.hpp"
 #include "requests/requests.hpp"
 #include "cgi/Cgi.hpp"
 #include <cstddef>
@@ -143,7 +144,7 @@ std::string iRequest::createFilePath( Rules& rules )
 	else
 		filePath = rules.getPathFromLocation(getRequestURI());
 	if (!filePath.length())
-		throw fileNotFound();
+		throw httpError(404, "Requested file not found");
 	return (filePath);
 }
 
@@ -222,11 +223,8 @@ response getRequest::createResponse() {
 				response.tryToOpenFile(filePath);
 				response.setStatusLine(200);
 			}
-			catch (fileNotFound) {
-				response.setErrorMessage(404, rules);
-			}
-			catch (fileCouldNotBeOpen) {
-				response.setErrorMessage(403, rules);
+			catch (httpError& e) {
+				response.setErrorMessage(e.statusCode(), rules);
 			}
 			catch (std::exception) {
 				response.setErrorMessage(500, rules);

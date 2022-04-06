@@ -6,10 +6,11 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/06 16:17:49 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 18:11:36 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
+#include "responses/httpExceptions.hpp"
 #include "responses/response.hpp"
 #include <sstream>
 
@@ -164,18 +165,6 @@ const std::pair<std::string, std::string>documentType[] = {
 	std::pair<std::string, std::string>("END", ""),
 };
 
-fileNotFound::fileNotFound() {}
-
-const char * fileNotFound::what() const throw() {
-	return ("File could not be found");
-}
-
-fileCouldNotBeOpen::fileCouldNotBeOpen() {}
-
-const char * fileCouldNotBeOpen::what() const throw() {
-	return ("File could not be open");
-}
-
 response::response() : _headerFields(), _status(), _statusLine(), _header(), _body(), _file()
 {}
 
@@ -283,7 +272,7 @@ void response::tryToOpenFile(std::string filePath)
 			addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
 	}
 	else
-		throw fileCouldNotBeOpen();
+		throw httpError(403, "Requested file could not be opened");
 }
 
 size_t response::getResponseFileSize()
@@ -400,12 +389,10 @@ void response::tryToOpenAndReadFile(std::string filePath)
 	if (file.good())
 	{
 		std::streamsize bufferSize = 1048;
-		size_t fileSize = 0;
 		try {
 			do {
 				bufferSize = file.readsome(&buffer[0], bufferSize);
 				body += std::string(buffer);
-				fileSize += bufferSize;
 				memset(&buffer[0], 0, 1048);
 			} while (bufferSize == 1048);
 		}
@@ -416,7 +403,7 @@ void response::tryToOpenAndReadFile(std::string filePath)
 		file.close();
 	}
 	else
-		throw fileCouldNotBeOpen();
+		throw httpError(403);
 	_body = body;
 	if (file.good())
 	{

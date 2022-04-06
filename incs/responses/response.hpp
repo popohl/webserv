@@ -1,12 +1,12 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   response.hpp                                       :+:      :+:    :+:   //
+/*   response.hpp                                       :+:      :+:    :+:   */
 //                                                    +:+ +:+         +:+     //
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/06 14:15:51 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/06 18:07:46 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
@@ -38,20 +38,6 @@
 std::string to_string(int n);
 std::string defaultErrorMessage(int errorStatus);
 std::string autoIndex(std::string	root);
-
-class fileNotFound : public std::exception
-{
-public:
-	fileNotFound();
-	virtual const char * what() const throw();
-};
-
-class fileCouldNotBeOpen : public std::exception
-{
-public:
-	fileCouldNotBeOpen();
-	virtual const char * what() const throw();
-};
 
 struct response
 {
