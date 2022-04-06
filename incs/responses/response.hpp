@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/06 14:15:51 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 17:57:07 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -35,9 +35,54 @@
 **				[ message-body ]
 */
 
+struct response
+{
+public:
+	response();
+	response(const response & src);
+	response & operator = (const response & src);
+	~response();
+	
+	std::vector<unsigned char>	createFormattedResponse();
+	void		addFieldToHeaderMap(std::pair<std::string, std::string>input);
+	void		replaceFieldToHeaderMap(std::pair<std::string, std::string>input);
+
+	void		tryToOpenFile(std::string filePath);
+	void		tryToOpenAndReadFile(std::string RequestUri);
+
+	void		setErrorMessage(int errorStatus, Rules & rules);
+	void		readWholeFile(std::vector<unsigned char> & store);
+
+	void		createAutoindexResponse();
+	int			getStatus();
+	void		setStatusLine(int status);
+	void		printStatus();
+
+	void		printHeader();
+
+private:
+	void		createHeader();
+	size_t		getResponseFileSize();
+	std::map<std::string, std::string> _headerFields;
+	int			_status;
+	std::string _statusLine;
+	std::string	_header;
+	std::string	_body;
+	std::ifstream	_file;
+	Rules		_rules;
+
+
+};
+
+// Utils
+
 std::string to_string(int n);
 std::string defaultErrorMessage(int errorStatus);
 std::string autoIndex(std::string	root);
+std::string findContentType(std::string content);
+std::string findStatus(int status);
+
+//Custom exceptions
 
 class fileNotFound : public std::exception
 {
@@ -53,52 +98,5 @@ public:
 	virtual const char * what() const throw();
 };
 
-struct response
-{
-//	void buildResponseMessage(iRequest *);
-private:
-	std::map<std::string, std::string> _headerFields;
-	int			_status;
-	std::string _statusLine;
-	std::string	_header;
-	std::string	_body;
-	std::ifstream	_file;
-	Rules		_rules;
-	
-//	ServerNode * _server;
-
-public:
-	response();
-//	response(Rules rules);
-	response(const response & src);
-	response & operator = (const response & src);
-	~response();
-	
-	std::vector<unsigned char>	createFormattedResponse();
-	void		addFieldToHeaderMap(std::pair<std::string, std::string>input);
-	void		replaceFieldToHeaderMap(std::pair<std::string, std::string>input);
-
-	void		tryToOpenFile(std::string filePath);
-	void		tryToOpenAndReadFile(std::string RequestUri);
-	void		setStatusLine(int status);	
-	void		setErrorMessage(int errorStatus, Rules & rules);
-	void		readWholeFile(std::vector<unsigned char> & store);
-
-	void		createAutoindexResponse();
-/*
-	size_t		continueReadingFile();
-	size_t		fillSendBuffer();
-	void		prepareHeaderForSend();
-	void		prepareBodyForSend();
-*/
-
-	void printHeader();
-	void printStatus();
-	
-private:
-	void		createHeader();
-	size_t		getResponseFileSize();
-
-};
 
 #endif
