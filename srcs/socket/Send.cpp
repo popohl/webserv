@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/06 14:30:31 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/06 14:57:12 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	serverLog(SocketClient & client)
 	if (server)
 	{
 		std::cout << "\e[1;33m######  SERVER RULES  ########\e[0m" << std::endl;
-		std::cout << "\e[1;37mServer Name: \e[0m" << rules.serverName[0] <<std::endl; //NOTA BENE pourquoi on a un vector de server name
+		std::cout << "\e[1;37mServer Name: \e[0m" << rules.serverName[0] <<std::endl;
 		std::cout << "\e[1;37mAutodindex: \e[0m";
 		if (rules.autoindex)
 			std::cout << "\e[1;32mON\e[0m" << std::endl;
@@ -43,12 +43,14 @@ void	serverLog(SocketClient & client)
 void	sendToClient(ASocket *tmp_socket, t_FD & sets)
 {
 	SocketClient	*client = dynamic_cast<SocketClient*>(tmp_socket);
-	std::string		response = client->getResponse();
+	std::vector<unsigned char>		response = client->getResponse();
 	int				ret;
+	char			buffer[SENDING];
 
 	if (response.size() > SENDING)
 	{
-		if ((ret = send(client->getSocketFd(), response.c_str(), SENDING, 0)) < 0)
+		std::copy(response.begin(), response.begin() + SENDING, buffer);
+		if ((ret = send(client->getSocketFd(), buffer, SENDING, 0)) < 0)
 		{
 			perror("Send failed:");
 			return ;
@@ -59,8 +61,8 @@ void	sendToClient(ASocket *tmp_socket, t_FD & sets)
 	}
 	else
 	{
-		// std::cout << "***********" << std::endl << response << std::endl << "***********" << std::endl;
-		if ((ret = send(client->getSocketFd(), response.c_str(), response.size(), 0)) < 0)
+		std::copy(response.begin(), response.end(), buffer);
+		if ((ret = send(client->getSocketFd(), buffer, response.size(), 0)) < 0)
 		{
 			perror("Send failed:");
 			return ;

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/01 16:15:07 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/04/06 14:07:18 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,17 @@
 #include <unistd.h>
 #include "configParsing/Rules.hpp"
 
-getRequest::getRequest() {}
-postRequest::postRequest() {}
-deleteRequest::deleteRequest() {}
+void		iRequest::printRequest()
+{
+	std::cout << "requestURI is " + getRequestURI() << std::endl;
+	for (std::map<std::string, std::string>::iterator it = _message._header.begin();
+		 it != _message._header.end();
+		 it++)
+		std::cout << "[" << it->first << "] " << it->second << std::endl;
+	std::cout << _message._body << std::endl;
+}
 
-iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerNode *> & server) //be able to remove first line from buffer
+iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerNode *> & server)
 {
 	iRequest * result = NULL;
 	std::string method, requestUri, httpVersion;
@@ -35,8 +41,8 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 	if (eraseLen != std::string::npos)
 	{
 		std::string requestLine(input, 0, eraseLen);
+		std::cout << "request Line Parsed is " << requestLine << std::endl;
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
-		std::cout << requestLine << std::endl;
 		method = eatWord(requestLine);
 		// expect an URI or replace it with / if field is empty
 		requestUri = eatWord(requestLine);
@@ -49,7 +55,7 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 			httpVersion = eatWord(requestLine);
 		//check httpVersion
 	}
-
+	
 	//allocate memory
 	if (method.length() && requestUri.length() && httpVersion.length())
 	{
@@ -70,6 +76,9 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 	return result;
 }
 
+iRequest::~iRequest()
+{}
+
 bool iRequest::receivingisDone()
 {
 	if (_message._headerFinished && _message._bodyFinished)
@@ -78,7 +87,7 @@ bool iRequest::receivingisDone()
 		return (false);
 }
 
-std::string eatWord(std::string & line)
+std::string iRequest::eatWord(std::string & line)
 {
 	size_t endOfWord = line.find(" ");
 	std::string word(line, 0, endOfWord);
@@ -96,13 +105,13 @@ const std::string & iRequest::getRequestURI()
 
 bool fileExists(std::string file)
 {
-	if (!access(file.c_str(), F_OK | R_OK))
+	if (!access(file.c_str(), F_OK))
 		return (true);
 	else
 		return (false);
 }
 
-bool containsPort(std::string hostname)
+bool iRequest::containsPort(std::string hostname)
 {
 	size_t portStart(hostname.rfind(":"));
 	if (portStart != std::string::npos)
@@ -120,32 +129,28 @@ bool containsPort(std::string hostname)
 
 std::string iRequest::createFilePath()
 {
-	//check each location for the vector
+	Rules rules;
+	response response;
 	std::string filePath;
-	const ServerNode * test = findServer();
-	if (test)
+	
+	rules.setValues(*findServer(), getRequestURI().c_str());
+	if (getRequestURI() == "/")
 	{
-		const LocationRules * location = test->getLocationFromUrl(getRequestURI());
-
-		if (location)
-		{
-			if (getRequestURI() == "/")
-			{
-				if (test->getServerRules().autoindex == true)
-//display an autoindex;
-					std::cout << "autoindex is on" << std::endl;
-				else
-					filePath = testIndexFile(location->root + "/", test->getServerRules().index);
-			}
-			else
-				filePath = (location->root + getRequestURI());
-		}
+		filePath = testIndexFile(rules.root + "/", rules.index);
 	}
-	if (!filePath.length())
+	else
+	{
+		if (*(rules.root.rbegin()) != '/' && (*(getRequestURI().begin()) != '/'))
+			filePath = (rules.root + "/" + getRequestURI());
+		else
+			filePath = (rules.root + getRequestURI());
+	}
+	if (!filePath.length() || !fileExists(filePath))
 		throw fileNotFound();
 	return (filePath);
 }
 
+//this function should be in rules
 std::string iRequest::testIndexFile(std::string root, const std::vector<std::string> & indexList)
 {
 	std::string file;
@@ -179,128 +184,140 @@ ServerNode * iRequest::findServer()
 	return (*(_server->begin()));
 }
 
+getRequest::getRequest()
+{}
+
+getRequest::~getRequest()
+{}
+
 response getRequest::createResponse() {
+	Rules rules;
 	response response;
 
-	if (_message._header.find("Host") == _message._header.end())
+	rules.setValues(*findServer(), getRequestURI().c_str());
+	
+	if (!_message.containsHostField())
+		response.setErrorMessage(400, rules);
+	else if (!rules.isMethodAllowed(Rules::GET))
+		response.setErrorMessage(405, rules);
+	else
 	{
-		response.setErrorMessage(400);
-		return (response);
-	}
-	const LocationRules * location = findServer()->getLocationFromUrl(_requestURI);
-	if (location && !(location->allowedMethod & LocationRules::GET))
-	{
-		response.setErrorMessage(405);
-		return (response);
-	}
-	try {
-		std::string filePath = createFilePath();
-		if (filePath.length())
+		if (!isAutoindex(rules))
 		{
-			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-			response.tryToOpenAndReadFile(filePath);
+			try
+			{
+				std::string filePath = createFilePath();
+				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+				response.tryToOpenFile(filePath);
+				response.setStatusLine(200);
+			}
+			catch (fileNotFound) {
+				response.setErrorMessage(404, rules);
+			}
+			catch (fileCouldNotBeOpen) {
+				response.setErrorMessage(403, rules);
+			}
+			catch (std::exception) {
+				response.setErrorMessage(500, rules);
+			}
 		}
+		else
+			response.createAutoindexResponse();
 	}
-	catch (std::exception &e){
-		//file not found
-		std::cout << e.what() << std::endl;
-		response.setErrorMessage(404);
-		return (response);
-	}
-	response.setStatusLine(200);
 	return response;
 }
 
+bool	getRequest::isAutoindex(const Rules & rules)
+{
+	if (getRequestURI() == "/"
+		&& !(testIndexFile(rules.root + "/", rules.index).length())
+		&& rules.autoindex)
+		return true;
+	else
+		return false;
+}
+
+postRequest::postRequest()
+{}
+
+postRequest::~postRequest()
+{}
 
 response postRequest::createResponse() {
+
+	Rules rules;
+	rules.setValues(*findServer(), getRequestURI().c_str());
 	response	response;
 	std::string	postedFile;
 
-	if (_message._header.find("Host") == _message._header.end())
-	{
-		response.setErrorMessage(400);
-		return (response);
-	}
-	ServerNode * server = findServer();
-	Rules rules;
-	rules.setValues(*server, getRequestURI().c_str());
-/*	Not needed anymore ?
-	if (!location)
-	{
-		response.setErrorMessage(404);
-		return (response);
-	}
-*/
-	if (!rules.isMethodAllowed(Rules::POST))
-	{
-		response.setErrorMessage(405);
-		return (response);
-	}
+	if (!_message.containsHostField())
+		response.setErrorMessage(400, rules);
+	else if (!rules.isMethodAllowed(Rules::POST))
+		response.setErrorMessage(405, rules);
 	else
 	{
-		postedFile = rules.root + getRequestURI();  // this is not the right way to concatenate
-													// Instead, one should use LocationRules::getPathFromLocation()
+		postedFile = createPostedFilePath(rules.root, getRequestURI());
 		std::ofstream file;
-		file.open(postedFile.c_str());
+		file.open(postedFile.c_str(), std::ofstream::app);
 		if (file.good())
 		{
 			file << _message._body;
 			file.close();
-			//set post default response if everything works
-			response.setErrorMessage(201);
+			response.tryToOpenFile(postedFile);
+			response.setStatusLine(201);
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 		}
 		else
-		return (response);
+			response.setErrorMessage(400, rules);
 	}
-	response.setErrorMessage(400);
 	return (response);
 
 
 	//check content Type to know file information
 	//Content Length or Transfer Encoding MUST be present in the header
-
 	//POST creates a ressource or append it ? in the host server at the requestURI address
-
-
-	/*
-	  The action performed by the POST method might not result in a
-	  resource that can be identified by a URI. In this case, either 200
-	  (OK) or 204 (No Content) is the appropriate response status,
-	  depending on whether or not the response includes an entity that
-	  describes the result.
-
-	  If a resource has been created on the origin server, the response
-	  SHOULD be 201 (Created) and contain an entity which describes the
-	  status of the request and refers to the new resource, and a Location
-	  header (see section 14.30).
-
-	  Responses to this method are not cacheable, unless the response
-	  includes appropriate Cache-Control or Expires header fields. However,
-	  the 303 (See Other) response can be used to direct the user agent to
-	  retrieve a cacheable resource.
-
-	  POST requests MUST obey the message transmission requirements set out
-	  in section 8.2.
-	*/
 }
 
-/*
-bool postRequest::requestURIisvalid()
+std::string postRequest::createPostedFilePath(const std::string & root, const std::string & requestURI)
 {
-	const ServerNode * server = findServer();
-
-	const LocationRules * location = findServer()->getLocationFromUrl(_requestURI);
+	std::string::const_reverse_iterator it = root.rbegin();
+	if (*it != '/')
+		return (std::string(root + "/" + requestURI));
+	else
+		return (std::string(root + requestURI));
 }
-*/
+
+deleteRequest::deleteRequest()
+{}
+
+deleteRequest::~deleteRequest()
+{}
+
 response deleteRequest::createResponse() {
 
 	response response;
+	Rules rules;
+	rules.setValues(*findServer(), getRequestURI().c_str());
+
+	if (!_message.containsHostField())
+		response.setErrorMessage(400, rules);
+	else if (!rules.isMethodAllowed(Rules::DELETE))
+		response.setErrorMessage(405, rules);
+	else
+	{
+		std::string filePath(rules.root + "/"+ getRequestURI());
+		if (!remove(filePath.c_str()))
+			response.setStatusLine(204);
+		else
+			response.setStatusLine(404);
+	}
+	response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 	return response;
 }
 
-const char *days[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", NULL };
-const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
+const char *days[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 std::string date()
 {

@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/01 13:58:28 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/05 11:44:54 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -17,6 +17,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <deque>
 
 #include "responses/response.hpp"
 
@@ -53,17 +54,15 @@ struct requestHeaderToken {
 requestHeaderToken parseHost(std::string);
 std::vector<requestHeaderToken> parseRequestHeader(const char *input);
 
-std::list<std::string>split_header_to_lines(const std::string &input);
-
-requestHeaderToken treatLine(std::string line);
-
 struct requestBase {
 
 	requestBase();
 	void	parseRequest(const std::string &line);
 	void	parseHeader(std::string & input);
-	void	parseBody(const std::string &line);
+	void	parseBody(std::string &line);
 
+	bool containsHostField(void);
+	
 	bool _headerFinished;
 	bool _bodyFinished;
 	int _status;
@@ -76,12 +75,16 @@ struct requestBase {
 
 private:
 	std::pair<std::string, std::string>splitIntoPair(std::string line);
-	bool containsHostField(void);
+
 	void updateResponseStatus(void);
 	size_t	findBodyLength(void);
 
-
+	//chunked transfer utils
+	std::deque<size_t> _chunksList;
+	size_t	eatChunkSize(std::string & line);
+	void	processChunk(std::string & line);
 	
+	//parsing header functions
 	std::string	removeOneHeaderLineFromInput(std::string & input);
 	bool	HeaderLineIsCorrectlyFormatted(const std::string & line);
 	bool	lineIsHeaderEnd(const std::string & line);
