@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/06 18:09:51 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 18:49:56 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,11 +156,12 @@ std::string iRequest::createFileFromCgi( Rules& rules,
 
 	cgi.executeCgi(requestedFilePath);
 	status = cgi.parseAndRemoveHeaders(response);
-	if (status == 200)
+	if (status < 400)
+	{
+		response.setStatusLine(status);
 		return cgi.writeBodyToTmpFile();
-	response.setStatusLine(status);
-	response.setErrorMessage(status, rules);
-	return "";
+	}
+	throw httpError(status, "Status code set by cgi");
 }
 
 std::string iRequest::testIndexFile(std::string root, const std::vector<std::string> & indexList)
@@ -219,6 +220,13 @@ response getRequest::createResponse() {
 			try
 			{
 				std::string filePath = createFilePath(rules);
+				if (rules.isCgi(filePath))
+				{
+					response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+					response.setStatusLine(200);
+					response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
+					return response;
+				}
 				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
 				response.tryToOpenFile(filePath);
 				response.setStatusLine(200);
@@ -226,7 +234,7 @@ response getRequest::createResponse() {
 			catch (httpError& e) {
 				response.setErrorMessage(e.statusCode(), rules);
 			}
-			catch (std::exception) {
+			catch (std::exception& e) {
 				response.setErrorMessage(500, rules);
 			}
 		}

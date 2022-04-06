@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 16:34:53 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 18:28:57 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,10 @@ std::string Cgi::writeBodyToTmpFile( void )
 	fileFd = open(fileName, O_WRONLY | O_CREAT,
 			S_IRUSR | S_IRGRP | S_IROTH);
 	if (fileFd == -1)
-		throw serverError("Could not open file for writing");
+		throw serverError("Could not open cgi output file for writing");
 	if (write(fileFd, _rawCgiOutput.c_str(), _rawCgiOutput.size())
 			!= static_cast<ssize_t>(_rawCgiOutput.size()))
-		throw serverError("Problem writing to file");
+		throw serverError("Problem writing to cgi output file");
 	close(fileFd);
 	return fileName;
 }

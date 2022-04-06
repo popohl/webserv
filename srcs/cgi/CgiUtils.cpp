@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 15:49:56 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 18:24:15 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,7 +242,7 @@ bool	stringComparison( std::string str1, const char* str2, size_t index )
     return true;
 }
 
-static size_t	setHeaderField( response& response, std::string& rawHeaders,
+static void	setHeaderField( response& response, std::string& rawHeaders,
 		size_t& nextHeaderPosition )
 {
 	if (stringComparison(rawHeaders, "Content-Length", nextHeaderPosition))
@@ -255,7 +255,6 @@ static size_t	setHeaderField( response& response, std::string& rawHeaders,
 		response.replaceFieldToHeaderMap(std::make_pair("Pragma", getHeaderValue(rawHeaders, nextHeaderPosition)));
 	else
 		throw serverError(503, "Unexpected field found in cgi header");
-	return nextHeaderPosition;
 }
 
 int		Cgi::writeHeadersToResponse( std::string& rawHeaders,
@@ -275,8 +274,10 @@ int		Cgi::writeHeadersToResponse( std::string& rawHeaders,
 		}
 		else if (stringComparison(rawHeaders, "Status", nextHeaderPosition))
 		{
-			response.setStatusLine(atoi(getHeaderValue(rawHeaders,
-							nextHeaderPosition).c_str()));
+			int statusCode = atoi(getHeaderValue(rawHeaders,
+							nextHeaderPosition).c_str());
+			response.setStatusLine(statusCode);
+			status = statusCode;
 		}
 		else
 			setHeaderField(response, rawHeaders, nextHeaderPosition);
