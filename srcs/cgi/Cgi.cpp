@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 18:28:57 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 19:10:43 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,13 @@ void	Cgi::executeCgi( std::string requestedFilePath )
 		exit(0);
 	}
 	waitpid(forkPid, &returnValue, 0);
-	_status = WEXITSTATUS(returnValue);
-	if (_status != 0)
-		throw httpError(_status, "Error during cgi execution");
+	returnValue = WEXITSTATUS(returnValue);
+	if (returnValue == EACCES)
+		throw httpError(403);
+	if (returnValue == ENOENT)
+		throw httpError(404);
+	if (returnValue != 0)
+		throw httpError(503);
 	readCgiOutput();
 }
 
@@ -117,9 +121,4 @@ void	Cgi::executeChildProcess( std::string requestedFilePath )
 	err = execve(cgiProgramPath, _argv, _envp);
 	if (err != -1)
 		exit(0);
-	if (errno == EACCES)
-		exit(403);
-	if (errno == ENOENT)
-		exit(404);
-	exit(503);
 }
