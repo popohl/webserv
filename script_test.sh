@@ -15,10 +15,10 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-gnome-terminal -x sh -c "./webserv ./srcs/testing/config_files/basic_file.conf"
+gnome-terminal -x sh -c "./webserv ./config_files/basic_file.conf"
 
-echo -e "\n${RED}ATTACK GET - PORT 9000 ${NC}"
-echo "GET http://localhost:9000/" | stress_test/vegeta attack -duration=2s | tee results.bin | stress_test/vegeta report
+# echo -e "\n${RED}ATTACK GET - PORT 9000 ${NC}"
+# echo "GET http://localhost:9000/" | stress_test/vegeta attack -duration=2s | tee results.bin | stress_test/vegeta report
 echo -e "\n${RED}ATTACK GET - PORT 9000 ${NC}"
 echo "GET http://localhost:9000/basic.html" | stress_test/vegeta attack -duration=5s | tee results.bin | stress_test/vegeta report
 echo -e "\n${RED}ATTACK GET - PORT 8000 ${NC}"
@@ -26,6 +26,6 @@ echo "GET http://localhost:8000/" | stress_test/vegeta attack -duration=2s | tee
 echo -e "\n${BLUE}SIMULTANEOUS ATTACK GET - PORT 9000 & 8000${NC}"
 stress_test/vegeta attack -duration=5s -targets=stress_test/target.list | tee results.bin | stress_test/vegeta report
 
-gnome-terminal -x sh -c "./webserv ./srcs/testing/config_files/basic2.conf"
-echo -e "\n${RED}ATTACK GET - PORT 9042 ${NC}"
-echo "GET http://localhost:9042/" | stress_test/vegeta attack -duration=10s | tee results.bin | stress_test/vegeta report
+gnome-terminal -x sh -c "./webserv ./config_files/pierre_basic_file.conf"
+echo -e "\n${RED}ATTACK POST - PORT 9042 ${NC}"
+echo "POST http://localhost:7000/" | stress_test/vegeta attack -duration=10s | tee results.bin | stress_test/vegeta report
