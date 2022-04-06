@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/06 15:33:52 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/04/06 19:52:25 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,16 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		deleteClient(client, socket, sets);
 		return ;
 	}
+
+	std::vector<unsigned char> data;
+	data.reserve(ret);
+	data.assign(buff, buff + ret);
 	std::string tmp(buff);
 	//hide the details later
 	if (!client._request)
-		client._request = iRequest::createRequest(tmp, client._servers);
+		client._request = iRequest::createRequest(data, client._servers);
 	else
-		client._request->_message.parseRequest(buff);
+		client._request->_message.parseRequest(data);
 
 	if (!client._request || client._request->receivingisDone())
 	{

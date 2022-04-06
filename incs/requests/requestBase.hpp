@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/05 11:44:54 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 20:38:06 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -57,21 +57,21 @@ std::vector<requestHeaderToken> parseRequestHeader(const char *input);
 struct requestBase {
 
 	requestBase();
-	void	parseRequest(const std::string &line);
+	void	parseRequest(std::vector<unsigned char> &data);
 	void	parseHeader(std::string & input);
-	void	parseBody(std::string &line);
-
+	void	parseBody(std::vector<unsigned char> &data);
 	bool containsHostField(void);
 	
 	bool _headerFinished;
 	bool _bodyFinished;
 	int _status;
 
-	std::string	_unfinishedField;
+
+	std::vector<unsigned char>	_unfinishedData;
 	std::map<std::string, std::string> _header;
 	size_t		_bodySize;
 	size_t		_bodyExpectedSize;
-	std::string _body;
+	std::vector<unsigned char> _body;
 
 private:
 	std::pair<std::string, std::string>splitIntoPair(std::string line);
@@ -80,9 +80,12 @@ private:
 	size_t	findBodyLength(void);
 
 	//chunked transfer utils
+
 	std::deque<size_t> _chunksList;
-	size_t	eatChunkSize(std::string & line);
-	void	processChunk(std::string & line);
+	size_t	eatChunkSize(std::vector<unsigned char> & data);
+	void	processChunk(std::vector<unsigned char> & data);
+	size_t	dataContainsCRLF(const std::vector<unsigned char> & data);
+	size_t	findCRLFPositionInData(const std::vector<unsigned char> & data);
 	
 	//parsing header functions
 	std::string	removeOneHeaderLineFromInput(std::string & input);
