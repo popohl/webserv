@@ -1,0 +1,14 @@
+server {
+	listen 8000;
+	server_name localhost;
+
+	client_max_body_size 500K;
+
+	cgi py /bin/python3;
+
+	location / {
+		root ./srcs/testing/cgi_scripts/;
+		allowed_method GET POST;
+		index ./envp.py;
+	}
+}

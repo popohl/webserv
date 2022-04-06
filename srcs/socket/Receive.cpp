@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/06 16:18:31 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 17:20:18 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	if ((ret = recv(client.getSocketFd(), buff, 90000, 0)) < 0)
 	{
 		perror("Recv failed:");
+		deleteClient(client, socket, sets);
 		return ;
 	}
 	if (ret == 0) // if recv = 0 the connection is closed so we have to delete the client

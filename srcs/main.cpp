@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 16:04:33 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 17:21:39 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int main( int argc, char **argv )
 				else
 					free_memory(socket);
 			}
-	//		signal(SIGPIPE, SIG_IGN);
+			signal(SIGPIPE, SIG_IGN);
 			//Create two sets of fd for select : readfds and writefds
 			t_FD	sets;
 			fillFdSets(sets, socket);
