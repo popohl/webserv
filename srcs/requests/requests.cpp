@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/05 20:24:42 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 11:28:34 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,12 @@
 
 void		iRequest::printRequest()
 {
-	std::cout << getRequestURI() << std::endl;
+	std::cout << "requestURI is " + getRequestURI() << std::endl;
 	for (std::map<std::string, std::string>::iterator it = _message._header.begin();
 		 it != _message._header.end();
 		 it++)
 		std::cout << "[" << it->first << "] " << it->second << std::endl;
+	std::cout << _message._body << std::endl;
 }
 
 iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerNode *> & server)
@@ -105,7 +106,7 @@ const std::string & iRequest::getRequestURI()
 
 bool fileExists(std::string file)
 {
-	if (!access(file.c_str(), F_OK | R_OK))
+	if (!access(file.c_str(), F_OK))
 		return (true);
 	else
 		return (false);
@@ -149,7 +150,8 @@ std::string iRequest::createFilePath()
 		else
 			filePath = (rules.root + getRequestURI());
 	}
-	if (!filePath.length())
+	std::cout << "filePath is : " + filePath << std::endl;
+	if (!filePath.length() || !fileExists(filePath))
 		throw fileNotFound();
 	return (filePath);
 }
@@ -210,25 +212,18 @@ response getRequest::createResponse() {
 		{
 			std::string filePath = createFilePath();
 			std::cout << "this is the path " << filePath << std::endl;
-			if (filePath.length() && fileExists(filePath))
-			{
-				std::cout << "opening filePath" << std::endl;
-				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-				response.tryToOpenFile(filePath);
-				response.setStatusLine(200);
-			}
-			else
-			{
-				std::cout << "file not found " << std::endl;
-				response.setStatusLine(404);
-				response.setErrorMessage(404, rules);
-			}
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+			response.tryToOpenFile(filePath);
+			response.setStatusLine(200);
 		}
-		catch (std::exception &e)
-		{
-			std::cout << e.what() << std::endl;
-			response.setStatusLine(403);
+		catch (fileNotFound) {
+			response.setErrorMessage(404, rules);
+		}
+		catch (fileCouldNotBeOpen) {
 			response.setErrorMessage(403, rules);
+		}
+		catch (std::exception) {
+			response.setErrorMessage(500, rules);
 		}
 	}
 
@@ -256,14 +251,17 @@ response postRequest::createResponse() {
 	{
 		postedFile = createPostedFilePath(rules.root, getRequestURI());
 		std::ofstream file;
-		file.open(postedFile.c_str());
+		file.open(postedFile.c_str(), std::ofstream::app);
 		if (file.good())
 		{
 			file << _message._body;
 			file.close();
+			response.tryToOpenFile(postedFile);
 			//set post default response if everything works
-			response.setErrorMessage(201, rules);
+			response.setStatusLine(201);
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
+//			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Content-Length", getResponseFileSize()));
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 		}
 		else
 			response.setErrorMessage(400, rules);
@@ -307,7 +305,7 @@ response deleteRequest::createResponse() {
 		if (!remove(filePath.c_str()))
 			response.setStatusLine(204);
 		else
-			response.setStatusLine(404);;
+			response.setStatusLine(404);
 	}
 	response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 	return response;

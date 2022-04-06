@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/05 20:14:26 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 10:47:27 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -208,6 +208,10 @@ response::~response()
 		_file.close();
 }
 
+void response::printHeader() { std::cout << _header << std::endl;}
+void response::printStatus() { std::cout << "status line : " +_statusLine << std::endl; }
+
+
 std::vector<unsigned char> response::createFormattedResponse()
 {
 	std::vector<unsigned char>raw;
@@ -263,7 +267,6 @@ std::string findContentType(std::string content)
 
 void response::tryToOpenFile(std::string filePath)
 {
-	std::cout << "try to open this file "<< filePath << std::endl;
 	_file.open(filePath.c_str(), std::ios::in | std::ios::binary);
 	if (_file.good())
 	{
@@ -272,12 +275,8 @@ void response::tryToOpenFile(std::string filePath)
 //		setStatusLine(200);
 	}
 	else
-	{
-		std::cout << "throw could not open exception for " << filePath << std::endl;
 		throw fileCouldNotBeOpen();
-	}
 }
-
 
 size_t response::getResponseFileSize()
 {
@@ -326,32 +325,13 @@ void response::setStatusLine(int status)
 
 void response::setErrorMessage(int errorStatus, Rules &rules)
 {
-	std::cout << "set error message call " << std::endl;
+	setStatusLine(errorStatus);
 	if (rules.errorPage.find(errorStatus) != rules.errorPage.end())
 	{
-		std::cout << "errorPage name " << rules.root +"|/|"+ rules.errorPage[errorStatus] << std::endl;
 		tryToOpenFile(rules.root + "/" + rules.errorPage[errorStatus]);
-		
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Location", rules.errorPage[errorStatus]));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Location", rules.errorPage[errorStatus]));
 	}
-	else
-	{
-//		_body = defaultErrorMessage(errorStatus);
-//		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
-	}
-//	setStatusLine(errorStatus);
-}
-
-std::string to_string(int n)
-{
-	std::stringstream tmp;
-
-	tmp << n;
-	std::string result;
-
-	tmp >> result;
-	return (result);
 }
 
 std::string defaultErrorMessage(int errorStatus)
@@ -373,7 +353,16 @@ std::string defaultErrorMessage(int errorStatus)
 	return (result);
 }
 
+std::string to_string(int n)
+{
+	std::stringstream tmp;
 
+	tmp << n;
+	std::string result;
+
+	tmp >> result;
+	return (result);
+}
 
 void response::tryToOpenAndReadFile(std::string filePath)
 {
@@ -409,12 +398,12 @@ void response::tryToOpenAndReadFile(std::string filePath)
 	_body = body;
 	if (file.good())
 	{
-		//	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/html, image/*, image/webp"));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
 	}
 }
 
+/*
 
 size_t response::continueReadingFile()
 {
@@ -443,3 +432,4 @@ size_t response::fillSendBuffer()
 	return (bufferSize);
 
 }
+*/

@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/05 12:12:23 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 09:31:36 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -214,7 +214,7 @@ std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
 	size_t whitespace_index = 0;
 	while (line[whitespace_index] == ' ')
 		whitespace_index++;
-	std::string value(line, whitespace_index, line.find("\r\n") - 1);
+	std::string value(line, whitespace_index, line.find("\r\n"));
 	return (std::make_pair<std::string, std::string>(std::string(key), std::string(value)));
 }
 
