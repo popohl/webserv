@@ -6,34 +6,11 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/05 16:41:16 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/06 14:30:31 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket/Server.hpp"
-
-// static std::string	requestType(iRequest *request)
-// {
-// 	getRequest	*tempA = dynamic_cast<getRequest*>(request);
-// 	if (tempA)
-// 		return ("GET");
-// 	else
-// 	{
-// 		postRequest	*tempB = dynamic_cast<postRequest*>(request);
-// 		if (tempB)
-// 			return ("POST");
-// 		else
-// 		{
-// 			deleteRequest	*tempC = dynamic_cast<deleteRequest*>(request);
-// 			if (tempC)
-// 				return ("DELETE");
-// 			else
-// 			{
-// 				return ("Undefined");
-// 			}
-// 		}
-// 	}
-// }
 
 void	serverLog(SocketClient & client)
 {
