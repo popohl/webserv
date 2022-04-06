@@ -1,7 +1,7 @@
 import os
 import cgi, cgitb 
 
-print('Content-Type: text/html\b\n\b\n')
+print('conTENt-TyPe: text/html\b\n\b\n')
 print("hello world!");
 print("\b\n\b\n");
 print('<font size=+1>Environment</font></br>')

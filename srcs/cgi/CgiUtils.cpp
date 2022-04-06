@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/05 14:01:55 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 09:33:42 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,22 +237,40 @@ static std::pair<std::string, std::string>	makeHeaderPair(
 	return headerPair;
 }
 
+static std::string getHeaderValue( std::string& rawHeaders, size_t& nextHeaderPosition )
+{
+	size_t		valueBeginPos = rawHeaders.find(':', nextHeaderPosition) + 1;
+	size_t		endOfHeader = rawHeaders.find('\n', nextHeaderPosition);
+	std::string headerValue = rawHeaders.substr(valueBeginPos, endOfHeader - valueBeginPos);
+
+	std::cout << "Header value: " << headerValue << std::endl;
+	nextHeaderPosition = endOfHeader;
+	if (endOfHeader != std::string::npos)
+		nextHeaderPosition++;
+	return headerValue;
+}
+
 bool	stringComparison( std::string str1, const char* str2, size_t index )
 {
-	return str1.compare(index, strlen(str2), str2) == 0;
+	unsigned int sz = strlen(str2);
+
+    for (unsigned int i = 0; i < sz; i++)
+        if (tolower(str1[i + index]) != tolower(str2[i]))
+            return false;
+    return true;
 }
 
 static size_t	setHeader( response& response, std::string& rawHeaders,
 		size_t& nextHeaderPosition )
 {
 	if (stringComparison(rawHeaders, "Content-Length", nextHeaderPosition))
-		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
+		response.addFieldToHeaderMap(std::make_pair("Content-Length", getHeaderValue(rawHeaders, nextHeaderPosition)));
 	else if (stringComparison(rawHeaders, "Content-Type", nextHeaderPosition))
-		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
-	else if (stringComparison(rawHeaders,  "Expires", nextHeaderPosition))
-		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
-	else if (stringComparison(rawHeaders,  "Pragma", nextHeaderPosition))
-		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
+		response.addFieldToHeaderMap(std::make_pair("Content-Type", getHeaderValue(rawHeaders, nextHeaderPosition)));
+	else if (stringComparison(rawHeaders, "Expires", nextHeaderPosition))
+		response.addFieldToHeaderMap(std::make_pair("Expires", getHeaderValue(rawHeaders, nextHeaderPosition)));
+	else if (stringComparison(rawHeaders, "Pragma", nextHeaderPosition))
+		response.addFieldToHeaderMap(std::make_pair("Pragma", getHeaderValue(rawHeaders, nextHeaderPosition)));
 	else
 		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
 	return nextHeaderPosition;
@@ -269,12 +287,12 @@ void	Cgi::writeHeadersToResponse( std::string& rawHeaders,
 		{
 			_rules.redirectCode = 302;
 			_rules.redirectUri
-				= makeHeaderPair(rawHeaders, nextHeaderPosition).second;
+				= getHeaderValue(rawHeaders, nextHeaderPosition);
 		}
 		else if (stringComparison(rawHeaders, "Status", nextHeaderPosition))
 		{
-			response.setStatusLine(atoi(makeHeaderPair(rawHeaders,
-							nextHeaderPosition).second.c_str()));
+			response.setStatusLine(atoi(getHeaderValue(rawHeaders,
+							nextHeaderPosition).c_str()));
 		}
 		else
 			setHeader(response, rawHeaders, nextHeaderPosition);
