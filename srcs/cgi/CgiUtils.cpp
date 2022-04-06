@@ -6,10 +6,11 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 09:33:42 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 11:21:44 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "responses/httpExceptions.hpp"
 #include "cgi/Cgi.hpp"
 #include <unistd.h>
 #include <cstdlib>
@@ -22,13 +23,13 @@ void	Cgi::createArgv( const char* binPath, const char* filePath )
 {
 	_argv = (char**)malloc(sizeof(*_argv) * (3 + 1));
 	if (_argv == NULL)
-		exit(500);
+		exit(503);
 	_argv[0] = strdup(binPath);
 	if (_argv[0] == NULL)
-		exit(500);
+		exit(503);
 	_argv[1] = strdup(filePath);
 	if (_argv[1] == NULL)
-		exit(500);
+		exit(503);
 	_argv[2] = 0;
 }
 
@@ -39,7 +40,7 @@ void	Cgi::writeToEnvp( const std::map<std::string, std::string>& mapEnvp)
 
 	_envp = (char**)malloc(sizeof(*_envp) * (mapEnvp.size() + 1));
 	if (_envp == NULL)
-		exit(500);
+		exit(503);
 	for (std::map<std::string, std::string>::const_iterator it = mapEnvp.begin();
 			it != mapEnvp.end(); it++)
 	{
@@ -48,7 +49,7 @@ void	Cgi::writeToEnvp( const std::map<std::string, std::string>& mapEnvp)
 		tmp += it->second;
 		_envp[index] = strdup(tmp.c_str());
 		if (_envp[index] == NULL)
-			exit(500);
+			exit(503);
 		index++;
 	}
 	_envp[index] = 0;
@@ -72,7 +73,7 @@ void	Cgi::setPathInfo( std::string& requestedFilePath, string_map& envp )
 	size_t	queryPosition = requestedFilePath.find('?');
 
 	if (documentRoot == NULL)
-		exit(500);
+		exit(503);
 	envp["DOCUMENT_ROOT"] = documentRoot;
 	free(documentRoot);
 	if (queryPosition != std::string::npos)
@@ -121,10 +122,10 @@ void	Cgi::writeBodyToStdIn( void )
 	createPipe(pipeFd);
 	if (write(pipeFd[PIPE_WRITE], body.c_str(), body.size())
 			!= static_cast<ssize_t>(body.size()))
-		exit(500);
+		exit(503);
 	close(pipeFd[PIPE_WRITE]);
 	if (dup2(pipeFd[PIPE_READ], STDIN_FILENO) == -1)
-		exit(500);
+		exit(503);
 	close(pipeFd[PIPE_READ]);
 }
 
@@ -133,9 +134,7 @@ int	Cgi::createFork( void )
 	int forkPid = fork();
 
 	if (forkPid == -1)
-	{
-		throw std::exception(); // 500 Internal Server Error
-	}
+		throw serverError(503, "Fork failed");
 	return forkPid;
 }
 
@@ -150,7 +149,7 @@ void	Cgi::createPipe( int pipeFd[2] )
 
 	if (returnValue != 0)
 	{
-		throw std::exception(); // 500 Internal Server Error
+		throw serverError(503, "Pipe failed");
 	}
 }
 
@@ -213,7 +212,7 @@ std::string Cgi::popHeadersFromCgiOutput( void )
 		endOfHeaders = _rawCgiOutput.find(possibleEndOfHeader[selectedEoh]);
 	} while (endOfHeaders == std::string::npos && ++selectedEoh < 3);
 	if (endOfHeaders == std::string::npos)
-		throw std::logic_error("No headers found in cgi output"); // error 500
+		throw serverError("No headers found in cgi output");
 	rawHeaders = _rawCgiOutput.substr(0, endOfHeaders);
 	_rawCgiOutput.erase(0, endOfHeaders
 			+ strlen(possibleEndOfHeader[selectedEoh]));

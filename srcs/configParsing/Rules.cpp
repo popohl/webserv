@@ -6,10 +6,11 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:10:41 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/05 10:21:54 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 11:25:10 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "responses/httpExceptions.hpp"
 #include "configParsing/Rules.hpp"
 
 Rules::Rules( void ) { return; }
@@ -102,8 +103,9 @@ bool	Rules::isMethodAllowed( std::string method ) const
 		return isMethodAllowed(Rules::POST);
 	else if (method == "DELETE")
 		return isMethodAllowed(Rules::DELETE);
-	else
-		throw std::exception();
+	std::string errorMessage = "Method not implemented: ";
+	errorMessage += method;
+	throw serverError(501, errorMessage.c_str());
 }
 
 std::ostream &	operator<<( std::ostream & ostr, Rules const & instance)
