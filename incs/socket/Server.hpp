@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/06 14:40:48 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/06 15:30:50 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ typedef struct s_FD
 
 void		sendMessage(int link, char *buff);
 void		receiveDataOrNewClient(int i, std::vector<ASocket*> & socket, t_FD & sets);
-void		sendToClient(ASocket *tmp_socket, t_FD & sets);
+void		sendToClient(ASocket *tmp_client, std::vector<ASocket*> & socket, t_FD & sets);
 void		deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & sets);
 
 ASocket*	createSocket(int port, const std::vector<ServerNode *> & server);

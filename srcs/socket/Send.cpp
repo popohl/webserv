@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/06 14:57:12 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/06 15:35:01 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,12 @@ void	serverLog(SocketClient & client)
 	std::cout << "\e[1;33m##############################\e[0m" << std::endl;
 }
 
-void	sendToClient(ASocket *tmp_socket, t_FD & sets)
+void	sendToClient(ASocket *tmp_client, std::vector<ASocket*> & socket, t_FD & sets)
 {
-	SocketClient	*client = dynamic_cast<SocketClient*>(tmp_socket);
+	SocketClient					*client = dynamic_cast<SocketClient*>(tmp_client);
 	std::vector<unsigned char>		response = client->getResponse();
-	int				ret;
-	char			buffer[SENDING];
+	int								ret;
+	char							buffer[SENDING];
 
 	if (response.size() > SENDING)
 	{
@@ -53,6 +53,7 @@ void	sendToClient(ASocket *tmp_socket, t_FD & sets)
 		if ((ret = send(client->getSocketFd(), buffer, SENDING, 0)) < 0)
 		{
 			perror("Send failed:");
+			deleteClient(*client, socket, sets);
 			return ;
 		}
 		client->erasePartResponse(SENDING);
@@ -65,6 +66,7 @@ void	sendToClient(ASocket *tmp_socket, t_FD & sets)
 		if ((ret = send(client->getSocketFd(), buffer, response.size(), 0)) < 0)
 		{
 			perror("Send failed:");
+			deleteClient(*client, socket, sets);
 			return ;
 		}
 		client->_totalSend += ret;
