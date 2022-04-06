@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/05 20:15:44 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 16:12:11 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,16 @@
 #include <unistd.h>
 #include "configParsing/Rules.hpp"
 
+void		iRequest::printRequest()
+{
+	std::cout << "requestURI is " + getRequestURI() << std::endl;
+	for (std::map<std::string, std::string>::iterator it = _message._header.begin();
+		 it != _message._header.end();
+		 it++)
+		std::cout << "[" << it->first << "] " << it->second << std::endl;
+	std::cout << _message._body << std::endl;
+}
+
 iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerNode *> & server)
 {
 	iRequest * result = NULL;
@@ -32,6 +42,7 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 	if (eraseLen != std::string::npos)
 	{
 		std::string requestLine(input, 0, eraseLen);
+		std::cout << "request Line Parsed is " << requestLine << std::endl;
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
 		method = eatWord(requestLine);
 		// expect an URI or replace it with / if field is empty
@@ -88,14 +99,14 @@ std::string iRequest::eatWord(std::string & line)
 	return (word);
 }
 
-const std::string & iRequest::getRequestURI() const
+const std::string & iRequest::getRequestURI()
 {
 	return (_requestURI);
 }
 
 bool fileExists(std::string file)
 {
-	if (!access(file.c_str(), F_OK | R_OK))
+	if (!access(file.c_str(), F_OK))
 		return (true);
 	else
 		return (false);
@@ -202,29 +213,39 @@ response getRequest::createResponse() {
 		response.setErrorMessage(405, rules);
 	else
 	{
-		try
+		if (!isAutoindex(rules))
 		{
-			std::string filePath = createFilePath(rules);
-			if (filePath.length())
+			try
 			{
-				if (rules.isCgi(filePath))
-				{
-					filePath = createFileFromCgi(rules, filePath, response);
-					if (!filePath.empty())
-						response.tryToOpenFile(filePath);
-				}
-				else
-					response.tryToOpenFile(filePath);
+				std::string filePath = createFilePath();
 				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+				response.tryToOpenFile(filePath);
+				response.setStatusLine(200);
+			}
+			catch (fileNotFound) {
+				response.setErrorMessage(404, rules);
+			}
+			catch (fileCouldNotBeOpen) {
+				response.setErrorMessage(403, rules);
+			}
+			catch (std::exception) {
+				response.setErrorMessage(500, rules);
 			}
 		}
-		catch (std::exception &e)
-		{
-			std::cout << e.what() << std::endl;
-			response.setErrorMessage(404, rules);
-		}
+		else
+			response.createAutoindexResponse();
 	}
 	return response;
+}
+
+bool	getRequest::isAutoindex(const Rules & rules)
+{
+	if (getRequestURI() == "/"
+		&& !(testIndexFile(rules.root + "/", rules.index).length())
+		&& rules.autoindex)
+		return true;
+	else
+		return false;
 }
 
 postRequest::postRequest()
@@ -236,7 +257,7 @@ postRequest::~postRequest()
 response postRequest::createResponse() {
 
 	Rules rules;
-	rules.setValues(*findServer(), getRequestURI());
+	rules.setValues(*findServer(), getRequestURI().c_str());
 	response	response;
 	std::string	postedFile;
 
@@ -248,14 +269,15 @@ response postRequest::createResponse() {
 	{
 		postedFile = createPostedFilePath(rules.root, getRequestURI());
 		std::ofstream file;
-		file.open(postedFile.c_str());
+		file.open(postedFile.c_str(), std::ofstream::app);
 		if (file.good())
 		{
 			file << _message._body;
 			file.close();
-			//set post default response if everything works
-			response.setErrorMessage(201, rules);
+			response.tryToOpenFile(postedFile);
+			response.setStatusLine(201);
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 		}
 		else
 			response.setErrorMessage(400, rules);
@@ -277,21 +299,6 @@ std::string postRequest::createPostedFilePath(const std::string & root, const st
 		return (std::string(root + requestURI));
 }
 
-response	postRequest::createPostCgiResponse( Rules& rules, response& response, std::string& filePath )
-{
-	try
-	{
-		response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-		response.setErrorMessage(404, rules);
-	}
-	response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-	return response;
-}
-
 deleteRequest::deleteRequest()
 {}
 
@@ -310,11 +317,11 @@ response deleteRequest::createResponse() {
 		response.setErrorMessage(405, rules);
 	else
 	{
-		std::string filePath(rules.root + getRequestURI());
+		std::string filePath(rules.root + "/"+ getRequestURI());
 		if (!remove(filePath.c_str()))
 			response.setStatusLine(204);
 		else
-			response.setStatusLine(404);;
+			response.setStatusLine(404);
 	}
 	response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 	return response;

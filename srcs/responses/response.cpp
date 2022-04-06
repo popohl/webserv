@@ -1,12 +1,12 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   response.cpp                                       :+:      :+:    :+:   //
+/*   response.cpp                                       :+:      :+:    :+:   */
 //                                                    +:+ +:+         +:+     //
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/04 18:50:19 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/06 16:17:49 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
@@ -208,15 +208,25 @@ response::~response()
 		_file.close();
 }
 
+void response::printHeader() { std::cout << _header << std::endl;}
+void response::printStatus() { std::cout << "status line : " +_statusLine << std::endl; }
+
+
 std::vector<unsigned char> response::createFormattedResponse()
 {
 	std::vector<unsigned char>raw;
 	createHeader();
-	size_t size = _header.length() + getResponseFileSize();
+	size_t size = _header.length();
+	if (_body.length())
+		size += _body.length();
+	else
+		size += getResponseFileSize();
 	raw.reserve(size);
 	raw.insert(raw.begin(), _header.begin(), _header.end());
-	readWholeFile(raw);
-	std::cout << " raw data size is " << raw.size() << std::endl;
+	if (_body.length())
+		raw.insert(raw.end(), _body.begin(), _body.end());
+	else
+		readWholeFile(raw);
 	return (raw);
 }
 
@@ -262,47 +272,8 @@ std::string findContentType(std::string content)
 }
 
 
-void response::tryToOpenAndReadFile(std::string filePath)
-{
-	std::string body;
-	char buffer[1048];
-	memset(&buffer[0], 0, 1048);
-
-	//improve open and read
-	std::ifstream file;
-	file.open(filePath.c_str(), std::ios::in | std::ios::binary);
-	if (file.good())
-	{
-		std::streamsize bufferSize = 1048;
-		try {
-			do {
-				bufferSize = file.readsome(&buffer[0], bufferSize);
-				body += std::string(buffer);
-				memset(&buffer[0], 0, 1048);
-			} while (bufferSize == 1048);
-		}
-		catch (std::exception &e) {
-			std::cout << "in tryToOpenAndReadFile : " << e.what() << std::endl;
-			file.close();
-			return;
-		}
-		file.close();
-	}
-	else
-		throw fileCouldNotBeOpen();
-	_body = body;
-	if (file.good())
-	{
-		//	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/html, image/*, image/webp"));
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
-		setStatusLine(200);
-	}
-}
-
 void response::tryToOpenFile(std::string filePath)
 {
-	std::cout << "try to open this file "<< filePath << std::endl;
 	_file.open(filePath.c_str(), std::ios::in | std::ios::binary);
 	if (_file.good())
 	{
@@ -310,12 +281,10 @@ void response::tryToOpenFile(std::string filePath)
 			addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
 		if (_headerFields.count("Content-Length") == 0)
 			addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
-		setStatusLine(200);
 	}
 	else
 		throw fileCouldNotBeOpen();
 }
-
 
 size_t response::getResponseFileSize()
 {
@@ -342,6 +311,121 @@ void	response::readWholeFile(std::vector<unsigned char> & store)
 	delete [] buffer;
 }
 
+std::string findStatus(int status)
+{
+	for (int i = 0; responseStatus[i].first; i++)
+	{
+		if (responseStatus[i].first == status)
+			return responseStatus[i].second;
+	}
+	return (std::string(""));
+}
+
+void response::setStatusLine(int status)
+{
+	_statusLine = "HTTP/1.1";
+	_statusLine += " ";
+	_statusLine += to_string(status);
+	_statusLine += " ";
+	_statusLine += findStatus(status);
+	_statusLine += "\r\n";
+}
+
+void response::setErrorMessage(int errorStatus, Rules &rules)
+{
+	setStatusLine(errorStatus);
+	if (rules.errorPage.find(errorStatus) != rules.errorPage.end())
+	{
+		tryToOpenFile(rules.root + "/" + rules.errorPage[errorStatus]);
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Location", rules.errorPage[errorStatus]));
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Location", rules.errorPage[errorStatus]));
+	}
+	else
+	{
+		_body += defaultErrorMessage(errorStatus);
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/plain"));
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
+		
+	}
+}
+
+std::string defaultErrorMessage(int errorStatus)
+{
+	std::string result;
+
+	for (int i = 0; responseStatus[i].first; i++)
+	{
+		if (responseStatus[i].first == errorStatus)
+		{
+			result = "Error ";
+			result += to_string(errorStatus);
+			result += "\n";
+			result += responseStatus[i].second;
+			return (result);
+		}
+	}
+	result = "Very bad Error, you should never see this message\nIt means that no responseStatus were found.";
+	return (result);
+}
+
+void response::createAutoindexResponse()
+{
+	_body = autoIndex(_rules.root);
+	setStatusLine(200);
+	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/html"));
+	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
+}
+
+
+std::string to_string(int n)
+{
+	std::stringstream tmp;
+
+	tmp << n;
+	std::string result;
+
+	tmp >> result;
+	return (result);
+}
+
+void response::tryToOpenAndReadFile(std::string filePath)
+{
+	std::string body;
+	char buffer[1048];
+	memset(&buffer[0], 0, 1048);
+
+	//improve open and read
+	std::ifstream file;
+	file.open(filePath.c_str(), std::ios::in | std::ios::binary);
+	if (file.good())
+	{
+		std::streamsize bufferSize = 1048;
+		size_t fileSize = 0;
+		try {
+			do {
+				bufferSize = file.readsome(&buffer[0], bufferSize);
+				body += std::string(buffer);
+				fileSize += bufferSize;
+				memset(&buffer[0], 0, 1048);
+			} while (bufferSize == 1048);
+		}
+		catch (std::exception &e) {
+			file.close();
+			return;
+		}
+		file.close();
+	}
+	else
+		throw fileCouldNotBeOpen();
+	_body = body;
+	if (file.good())
+	{
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
+	}
+}
+
+/*
 
 size_t response::continueReadingFile()
 {
@@ -370,71 +454,4 @@ size_t response::fillSendBuffer()
 	return (bufferSize);
 
 }
-
-std::string findStatus(int status)
-{
-	for (int i = 0; responseStatus[i].first; i++)
-	{
-		if (responseStatus[i].first == status)
-			return responseStatus[i].second;
-	}
-	return (std::string(""));
-}
-
-void response::setStatusLine(int status)
-{
-	_statusLine = "HTTP/1.1";
-	_statusLine += " ";
-	_statusLine += to_string(status);
-	_statusLine += " ";
-	_statusLine += findStatus(status);
-	_statusLine += "\r\n";
-}
-
-void response::setErrorMessage(int errorStatus, Rules &rules)
-{	
-	setStatusLine(errorStatus);
-
-	if (rules.errorPage.find(errorStatus) != rules.errorPage.end())
-	{
-		std::cout << "errorPage name " << rules.root +"/"+ rules.errorPage[errorStatus] << std::endl;
-		tryToOpenFile(rules.root + "/" + rules.errorPage[errorStatus]);
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Location", rules.errorPage[errorStatus]));
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Location", rules.errorPage[errorStatus]));
-	}
-	else
-	{
-		_body = defaultErrorMessage(errorStatus);
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Accept", "text/plain"));
-	}
-}
-
-std::string to_string(int n)
-{
-	std::stringstream tmp;
-
-	tmp << n;
-	std::string result;
-
-	tmp >> result;
-	return (result);
-}
-
-std::string defaultErrorMessage(int errorStatus)
-{
-	std::string result;
-
-	for (int i = 0; responseStatus[i].first; i++)
-	{
-		if (responseStatus[i].first == errorStatus)
-		{
-			result = "Error ";
-			result += to_string(errorStatus);
-			result += "\n";
-			result += responseStatus[i].second;
-			return (result);
-		}
-	}
-	result = "Very bad Error, you should never see this message\nIt means that no responseStatus were found.";
-	return (result);
-}
+*/

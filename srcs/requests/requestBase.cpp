@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/02 17:16:19 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 12:03:22 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -49,7 +49,7 @@ void requestBase::parseRequest(const std::string &line)
 
 	if (!_headerFinished)
 		parseHeader(copy);
-	if (_headerFinished && !_bodyFinished)
+	if (_headerFinished && !_bodyFinished && copy.length())
 	{
 		if (_bodyExpectedSize)
 			parseBody(copy);
@@ -64,7 +64,7 @@ void requestBase::parseHeader(std::string & input)
 	if (_unfinishedField.length())
 	{
 		input.insert(0, _unfinishedField);
-			_unfinishedField.erase(_unfinishedField.begin(), _unfinishedField.end());
+		_unfinishedField.clear();
 	}
 	while (input.length())
 	{
@@ -72,17 +72,21 @@ void requestBase::parseHeader(std::string & input)
 		if (_unfinishedField.length())
 		{
 			line.insert(0, _unfinishedField);
-			_unfinishedField.erase(_unfinishedField.begin(), _unfinishedField.end());
+			_unfinishedField.clear();
 		}
 		if (HeaderLineIsCorrectlyFormatted(line))
 			this->_header.insert(splitIntoPair(line));
 		else if (lineIsHeaderEnd(line))
 		{
 			_headerFinished = true;
-			if (_header.find("Content-Length") != _header.end())
+			if (_header.find("Content-Length") != _header.end()
+				&& std::strtoul(_header["Content-Length"].c_str(), NULL, 10))
 				_bodyExpectedSize = std::strtoul(_header["Content-Length"].c_str(), NULL, 10);
+			else if ((_header.find("Transfer-Encoding") != _header.end()) && (_chunksList.empty()))
+				_bodyExpectedSize = -1;
 			else
 				_bodyFinished = true;
+			break;
 		}
 		else
 			_unfinishedField = line; 				//it should break automagically
@@ -109,7 +113,9 @@ std::string	requestBase::removeOneHeaderLineFromInput(std::string & input)
 bool	requestBase::HeaderLineIsCorrectlyFormatted(const std::string & line)
 {
 	if ((line.find(":") != std::string::npos)
-		&& (line.find("\r\n") != std::string::npos))
+		&& (line.find("\r\n") != std::string::npos)
+		&& (*(--(line.end())) == '\n')
+		&& (*(--(--(line.end()))) == '\r'))
 		return (true);
 	else
 		return (false);
@@ -124,15 +130,15 @@ bool	requestBase::lineIsHeaderEnd(const std::string & line)
 }
 
 //it should only get the body string
-void requestBase::parseBody(const std::string &line)
+void requestBase::parseBody(std::string &line)
 {
 	std::map<std::string, std::string>::iterator notFound = _header.end();
-	if (_header.find("Transfert-Encoding") != notFound)
+	if (_header.find("Transfer-Encoding") != notFound)
 	{
-		if (_header["Transfert-Encoding"] == "chuncked")
-		{
+		if (_header["Transfer-Encoding"] == "chunked")
 			//parse chunked body
-		}
+			processChunk(line);
+
 	}
 	else if	(_header.find("Content-Length") != notFound)
 	{
@@ -143,10 +149,52 @@ void requestBase::parseBody(const std::string &line)
 	}
 }
 
+void	requestBase::processChunk(std::string & line)
+{
+	if (_chunksList.empty() || _chunksList.back())
+		_chunksList.push_back(eatChunkSize(line));
+	if (_chunksList.back())
+	{
+		_body += std::string(line, 0, line.find("\r\n") - 1);
+		line.erase(0, line.find("\r\n") + 2);
+	}
+	else
+	{
+		if (line.length())
+		{
+			if (_unfinishedField.length())
+			{
+				line.insert(0, _unfinishedField);
+				_unfinishedField.clear();
+			}
+			std::string tmp = removeOneHeaderLineFromInput(line);
+			if (lineIsHeaderEnd(tmp))
+			{
+				_bodyFinished = true;
+				_bodyExpectedSize = 0;
+				_headerFinished = false;
+				parseHeader(line);
+			}
+			else
+				_unfinishedField = tmp + line;
+		}
+	}
+}
+
+size_t requestBase::eatChunkSize(std::string & line)
+{
+	std::string chunkSize(line, 0, line.find("\r\n") - 1);
+	std::stringstream superConverter;
+	superConverter << chunkSize;
+	size_t result;
+	superConverter >> result;
+	line.erase(0, chunkSize.length() + 2);
+	return (result);
+}
+
 std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
 {
 	size_t sep_index = line.find(":");
-	//here we could handle the case of a field unfinished with :
 	std::string key(line, 0, sep_index);
 	if (sep_index != std::string::npos)
 		sep_index += 1;
@@ -154,7 +202,7 @@ std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
 	size_t whitespace_index = 0;
 	while (line[whitespace_index] == ' ')
 		whitespace_index++;
-	std::string value(line, whitespace_index, line.length() - 2);
+	std::string value(line, whitespace_index, line.find("\r\n"));
 	return (std::make_pair<std::string, std::string>(std::string(key), std::string(value)));
 }
 

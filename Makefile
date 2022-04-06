@@ -12,16 +12,16 @@ NAME	= webserv
 
 # list of your source files
 
-SRCS	= cgi/Cgi.cpp cgi/CgiUtils.cpp configParsing/AST/ConfigFileNode.cpp \
+SRCS	= configParsing/AST/ConfigFileNode.cpp \
+		  configParsing/Rules.cpp configParsing/Token.cpp \
 		  configParsing/AST/LocationRules.cpp \
 		  configParsing/AST/ServerNode.cpp configParsing/AST/ServerRules.cpp \
 		  configParsing/Lexer.cpp configParsing/Parser.cpp \
-		  configParsing/Rules.cpp configParsing/Token.cpp \
-		  main.cpp requests/requestBase.cpp requests/requests.cpp \
-		  responses/autoindex.cpp responses/response.cpp \
-		  socket/ASocket.cpp socket/FdSet.cpp \
-		  socket/Receive.cpp socket/Send.cpp socket/Server.cpp \
-		  socket/SocketClient.cpp socket/SocketPort.cpp \
+		  requests/requests.cpp requests/requestBase.cpp \
+		  responses/response.cpp responses/autoindex.cpp \
+		  socket/ASocket.cpp socket/FdSet.cpp socket/Receive.cpp socket/Send.cpp \
+		  socket/Server.cpp socket/SocketClient.cpp socket/SocketPort.cpp \
+		  configParsing/helperFunctions.cpp main.cpp
 
 # Compiler
 CC		= c++

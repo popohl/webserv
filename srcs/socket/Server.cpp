@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 17:50:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/04 19:43:04 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 16:19:31 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 		tmp_read = sets.readfds.getset();
 		tmp_write = sets.writefds.getset();
 		fillFdMax(sets, socket);
-//		std::cout << "\n\e[0;35m----------- Waiting for New connection -----------\e[0m\n" << std::endl;
+		std::cout << "\n\e[0;35m----------- Waiting for New connection -----------\e[0m\n" << std::endl;
 		if ((ret = select(sets.fdmax + 1, &tmp_read, &tmp_write, NULL, &sets.tv)) < 0)
 			perror("Select:");
 //		if (ret == 0)
@@ -114,14 +114,16 @@ void	portListening(t_FD & sets, std::vector<ASocket*> & socket)
 			}
 			else
 			{
-				// temp = findSocket(i, socket);
-				// if (temp && temp->getType() == CLIENT)
-				// {
-				// 	std::cout << "\e[4;31mYou take too long..\e[0m" << std::endl;
-				// 	client = dynamic_cast<SocketClient*>(temp);
-				// 	if (client->checkTimeout())
-				// 		deleteClient(*client, socket, sets);
-				// }
+				temp = findSocket(i, socket);
+				if (temp && temp->getType() == CLIENT)
+				{
+					client = dynamic_cast<SocketClient*>(temp);
+					if (client->checkTimeout())
+					{
+						std::cout << "\e[4;31mYou take too long to responde :(\e[0m" << std::endl;
+						deleteClient(*client, socket, sets);
+					}
+				}
 			}
 		}
 	}

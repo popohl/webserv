@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/04/04 16:49:20 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/06 14:57:59 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ SocketClient::SocketClient(int port, int fd, const std::vector<ServerNode *> & r
 //   CANONICAL FORM 					        //
 // +------------------------------------------+ //
 
-SocketClient::SocketClient(void) : ASocket(), _response(), _request(NULL) {}
+SocketClient::SocketClient(void) : ASocket(), _response(), _request(NULL), _totalSend(0) {}
 
 SocketClient::~SocketClient(void)
 {
@@ -59,7 +59,7 @@ bool	SocketClient::checkTimeout() const
 	double ret;
 
 	time(&now);
-	ret = difftime(_timer, now);
+	ret = difftime(now, _timer);
 	std::cout << "client " << _socket_fd << " is running for " << ret << " secondes" <<std::endl;
 	if (ret > CLIENT_TIMEOUT)
 		return(true);

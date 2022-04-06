@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/04/04 19:18:43 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/06 14:40:48 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,17 @@ typedef struct s_FD
 	FdSet writefds;
 }	t_FD;
 
-void	sendMessage(int link, char *buff);
-void	receiveDataOrNewClient(int i, std::vector<ASocket*> & socket, t_FD & sets);
-void	sendToClient(ASocket *tmp_socket, t_FD & sets);
-void	deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & sets);
+void		sendMessage(int link, char *buff);
+void		receiveDataOrNewClient(int i, std::vector<ASocket*> & socket, t_FD & sets);
+void		sendToClient(ASocket *tmp_socket, t_FD & sets);
+void		deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & sets);
 
 ASocket*	createSocket(int port, const std::vector<ServerNode *> & server);
-ASocket *findSocket(int fd, std::vector<ASocket*> & socket);
+ASocket		*findSocket(int fd, std::vector<ASocket*> & socket);
 
-void	fillFdSets(t_FD & sets, std::vector<ASocket*> & socket);
-void	portListening(t_FD & sets, std::vector<ASocket*> & socket);
+void		fillFdSets(t_FD & sets, std::vector<ASocket*> & socket);
+void		portListening(t_FD & sets, std::vector<ASocket*> & socket);
+std::string	autoIndex(std::string root);
 
 
 #endif

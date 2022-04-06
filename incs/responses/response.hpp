@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/04 18:38:37 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 14:15:51 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -37,9 +37,7 @@
 
 std::string to_string(int n);
 std::string defaultErrorMessage(int errorStatus);
-//std::string to_string(std::streamsize n);
-
-#define RESPONSE_BUFFER_SIZE 512
+std::string autoIndex(std::string	root);
 
 class fileNotFound : public std::exception
 {
@@ -59,14 +57,12 @@ struct response
 {
 //	void buildResponseMessage(iRequest *);
 private:
-	bool		_hasBeenFullySent;
 	std::map<std::string, std::string> _headerFields;
 	int			_status;
 	std::string _statusLine;
 	std::string	_header;
 	std::string	_body;
 	std::ifstream	_file;
-	char			_buffer[RESPONSE_BUFFER_SIZE];
 	Rules		_rules;
 	
 //	ServerNode * _server;
@@ -87,19 +83,22 @@ public:
 	void		setStatusLine(int status);	
 	void		setErrorMessage(int errorStatus, Rules & rules);
 	void		readWholeFile(std::vector<unsigned char> & store);
+
+	void		createAutoindexResponse();
+/*
 	size_t		continueReadingFile();
 	size_t		fillSendBuffer();
-	/*
 	void		prepareHeaderForSend();
 	void		prepareBodyForSend();
-	*/
+*/
 
-	void printHeader() { std::cout << _header << std::endl;}
-
+	void printHeader();
+	void printStatus();
 	
 private:
 	void		createHeader();
 	size_t		getResponseFileSize();
+
 };
 
 #endif

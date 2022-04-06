@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/05 10:53:09 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 16:13:36 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,28 +26,28 @@ class iRequest
 {
 	public:
 
-	virtual ~iRequest();
-	static iRequest * createRequest(std::string &, const std::vector<ServerNode *> & ref);
-	virtual response createResponse() = 0;
-	
+	virtual		~iRequest();
+	static		iRequest * createRequest(std::string &, const std::vector<ServerNode *> & ref);
+	virtual		response createResponse() = 0;
+	virtual		std::string printType() = 0;
+
 	requestBase	_message;
-	
+//	response	_response;
+
 	bool receivingisDone();
+	const std::string & getRequestURI();
+	ServerNode * findServer();
+	void		printRequest();
 
-
-	const std::string & getRequestURI( void ) const;
-	
 protected:
-	const std::vector<ServerNode *> *_server;
+	const		std::vector<ServerNode *> *_server;
 	std::string _requestURI;
-
 	std::string createFilePath( Rules& rules );
-	std::string createFileFromCgi( Rules& rules, std::string requestedFilePath, response& response );
-	ServerNode * findServer( void );
+	std::string	testIndexFile(std::string root, const std::vector<std::string> & indexList);
+
 private:
-	std::string testIndexFile(std::string root, const std::vector<std::string> & indexList);
 	static std::string eatWord(std::string & line);
-	bool containsPort(std::string hostname);
+	bool		containsPort(std::string hostname);
 };
 
 class getRequest : public iRequest
@@ -56,8 +56,13 @@ public:
 	getRequest();
 	~getRequest();
 
-	response createResponse();
+	response	createResponse();
 	std::string	createResponseBody();
+	std::string printType() {return ("GET");};
+
+//private:
+private:
+	bool	isAutoindex(const Rules &);
 };
 
 class postRequest : public iRequest
@@ -66,10 +71,13 @@ class postRequest : public iRequest
 	postRequest();
 	~postRequest();
 
+	std::string printType() {return ("POST");};
+
+private:
+//	void sendRequest(void) {};
 	response createResponse();
 private:
 	std::string createPostedFilePath(const std::string & root, const std::string & requestURI);
-	response	createPostCgiResponse( Rules& rules, response& response, std::string& filePath );
 };
 
 class deleteRequest : public iRequest
@@ -78,6 +86,9 @@ class deleteRequest : public iRequest
 	deleteRequest();
 	~deleteRequest();
 
+	std::string printType() {return ("DELETE");};
+
+//	void	sendRequest(void) {};
 	response createResponse();
 };
 

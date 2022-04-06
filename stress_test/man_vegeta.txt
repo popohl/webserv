@@ -1,0 +1,21 @@
+https://www.scaleway.com/en/docs/tutorials/load-testing-vegeta/
+
+Stress TEST on port 9000 with GET request
+
+echo "GET http://localhost:9000/" | ./stress_test/vegeta attack -duration=30s | tee results.bin | ./stress_test/vegeta report
+
+Attack with a Target list (multiple URL)
+./stress_test/vegeta attack -duration=20s -targets=stress_test/target.list | tee results.bin | ./stress_test/vegeta report
+
+-rate define the number of attack per second (default = 50/1s)
+
+./stress_test/vegeta plot -title=Result_of_the_attack results.bin > results.html
+
+Requests shows the total number of requests sent during the test and the rate of the requests
+Duration shows the total duration of the test, the attack period simulating load on the application and the wait time
+Latencies shows the mean latency, 50th, 95th an 99th percentiles, respectively, of the latencies of all requests in an attack as well as the maximum latency recognized.
+Bytes In and Bytes Out shows:
+The total number of bytes sent (out) or received (in) with the request or response bodies.
+The mean number of bytes sent (out) or received (in) with the request or response bodies.
+Success shows the percentiles of successful requests sent to the application
+Status Codes provides a counter of the HTTP response codes received and their occurrence. A 0 status codes mean a request failed to be sent.

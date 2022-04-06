@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 11:57:16 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/04 19:48:49 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 16:15:14 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <string>
 #include <fstream>
+#include <unistd.h>
 
 static void	createLink(std::string & index, std::string & root, struct dirent *direntp)
 {
@@ -31,15 +32,17 @@ static void	createLink(std::string & index, std::string & root, struct dirent *d
 
 // The autoindex function return a string with an automatic index create in HTML
 // Root is the directory where the autoindex have to function
-
 std::string autoIndex(std::string	root)
 {
 	DIR*			dirp;
 	struct dirent*	direntp;
 	std::string		index;
-	root = "/mnt/nfs/homes/fmonbeig/Project/webserv"; // Enlever quand on aura le lien vers le dossier
+	char			buffer[PATH_MAX];
+	std::string		path;
 
-	dirp = opendir(root.c_str());
+	path = getcwd(buffer, PATH_MAX) + root;
+
+	dirp = opendir(path.c_str());
 	index += "<!DOCTYPE html>\n<html>\n\n<title>INDEX</title>\n\n<h1>INDEX</h1>";
 	if( dirp != NULL )
 	{
@@ -61,5 +64,6 @@ std::string autoIndex(std::string	root)
 		index += "</html>";
 		closedir( dirp );
 	}
+	std::cout << index << std::endl;
 	return index;
 }
