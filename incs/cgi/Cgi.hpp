@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:55 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/05 20:19:52 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 16:35:14 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ private:
 
 public:
 
-	Cgi( Rules& rules, const iRequest* request );
+	Cgi( Rules& rules, iRequest* request );
 	~Cgi( void );
 
 	void		executeCgi( std::string requestedFilePath );
@@ -66,7 +66,7 @@ private:
 
 	Rules&			_rules;
 	int				_pipeFd[2];
-	const iRequest*	_request;
+	iRequest*	_request;
 	char**			_envp;
 	char**			_argv;
 	std::string		_rawCgiOutput;

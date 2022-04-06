@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/06 16:13:36 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 16:31:37 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ protected:
 	std::string _requestURI;
 	std::string createFilePath( Rules& rules );
 	std::string	testIndexFile(std::string root, const std::vector<std::string> & indexList);
+	std::string createFileFromCgi( Rules& rules, std::string requestedFilePath, response& response );
 
 private:
 	static std::string eatWord(std::string & line);

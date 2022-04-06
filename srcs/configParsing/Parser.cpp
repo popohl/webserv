@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/01 08:41:37 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 16:42:56 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,10 @@ void	Parser::parseServerRule( void )
 	else if (ruleName == "server_name")
 		parseServerNameRule(serverRules);
 	else
-		throw ParsingException("rule name invalid");
+	{
+		std::string error = "rule name " + ruleName + " invalid";
+		throw ParsingException(error.c_str());
+	}
 	eat(Token::semicolon);
 }
 
@@ -186,7 +189,10 @@ void	Parser::parseLocationRule( void )
 	else if (ruleName == "upload_path")
 		parseUploadPathRule(locationRules.uploadPath);
 	else
-		throw ParsingException("rule name invalid");
+	{
+		std::string error = "rule name " + ruleName + " invalid";
+		throw ParsingException(error.c_str());
+	}
 	eat(Token::semicolon);
 }
 

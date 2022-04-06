@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/06 16:12:11 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 16:32:36 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,7 @@ response getRequest::createResponse() {
 		{
 			try
 			{
-				std::string filePath = createFilePath();
+				std::string filePath = createFilePath(rules);
 				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
 				response.tryToOpenFile(filePath);
 				response.setStatusLine(200);
