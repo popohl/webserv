@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/06 14:07:18 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 17:33:43 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,7 +310,7 @@ response deleteRequest::createResponse() {
 		if (!remove(filePath.c_str()))
 			response.setStatusLine(204);
 		else
-			response.setStatusLine(404);
+			response.setErrorMessage(200, rules);
 	}
 	response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 	return response;
