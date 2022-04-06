@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/06 11:28:34 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 12:05:36 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 			httpVersion = eatWord(requestLine);
 		//check httpVersion
 	}
-
+	
 	//allocate memory
 	if (method.length() && requestUri.length() && httpVersion.length())
 	{
@@ -71,7 +71,6 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 			result->_server = &server;
 			result->_requestURI = requestUri;
 			result->_message.parseRequest(input);
-//			result->printRequest();
 		}
 	}
 	return result;
@@ -150,7 +149,6 @@ std::string iRequest::createFilePath()
 		else
 			filePath = (rules.root + getRequestURI());
 	}
-	std::cout << "filePath is : " + filePath << std::endl;
 	if (!filePath.length() || !fileExists(filePath))
 		throw fileNotFound();
 	return (filePath);
@@ -257,10 +255,8 @@ response postRequest::createResponse() {
 			file << _message._body;
 			file.close();
 			response.tryToOpenFile(postedFile);
-			//set post default response if everything works
 			response.setStatusLine(201);
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
-//			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Content-Length", getResponseFileSize()));
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 		}
 		else
@@ -301,7 +297,7 @@ response deleteRequest::createResponse() {
 		response.setErrorMessage(405, rules);
 	else
 	{
-		std::string filePath(rules.root + getRequestURI());
+		std::string filePath(rules.root + "/"+ getRequestURI());
 		if (!remove(filePath.c_str()))
 			response.setStatusLine(204);
 		else

@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/06 09:31:36 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 12:03:22 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -79,7 +79,8 @@ void requestBase::parseHeader(std::string & input)
 		else if (lineIsHeaderEnd(line))
 		{
 			_headerFinished = true;
-			if (_header.find("Content-Length") != _header.end())
+			if (_header.find("Content-Length") != _header.end()
+				&& std::strtoul(_header["Content-Length"].c_str(), NULL, 10))
 				_bodyExpectedSize = std::strtoul(_header["Content-Length"].c_str(), NULL, 10);
 			else if ((_header.find("Transfer-Encoding") != _header.end()) && (_chunksList.empty()))
 				_bodyExpectedSize = -1;
@@ -150,10 +151,8 @@ void requestBase::parseBody(std::string &line)
 
 void	requestBase::processChunk(std::string & line)
 {
-	std::cout << "in process chgunck line size before eat " << line.length() << std::endl;
 	if (_chunksList.empty() || _chunksList.back())
 		_chunksList.push_back(eatChunkSize(line));
-	std::cout << "in process chgunck line size after eat " << line.length() << std::endl;
 	if (_chunksList.back())
 	{
 		_body += std::string(line, 0, line.find("\r\n") - 1);
@@ -171,22 +170,14 @@ void	requestBase::processChunk(std::string & line)
 			std::string tmp = removeOneHeaderLineFromInput(line);
 			if (lineIsHeaderEnd(tmp))
 			{
-				std::cout << "found last chunck CRLF, line length is " <<line.length() << std::endl;
 				_bodyFinished = true;
 				_bodyExpectedSize = 0;
 				_headerFinished = false;
-				if (line[0] == '\r')
-					std::cout << "CR FOUND IN LINE" << std::endl;
 				parseHeader(line);
-				std::cout << "after parse Header, line length is "  <<line.length() << std::endl;
 			}
 			else
-			{
 				_unfinishedField = tmp + line;
-			}
-
 		}
-
 	}
 }
 
@@ -194,11 +185,9 @@ size_t requestBase::eatChunkSize(std::string & line)
 {
 	std::string chunkSize(line, 0, line.find("\r\n") - 1);
 	std::stringstream superConverter;
-	std::cout << "line is " + chunkSize << std::endl;
 	superConverter << chunkSize;
 	size_t result;
 	superConverter >> result;
-	std::cout << "chunk size is " << result  << std::endl;
 	line.erase(0, chunkSize.length() + 2);
 	return (result);
 }
@@ -206,7 +195,6 @@ size_t requestBase::eatChunkSize(std::string & line)
 std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
 {
 	size_t sep_index = line.find(":");
-	//here we could handle the case of a field unfinished with :
 	std::string key(line, 0, sep_index);
 	if (sep_index != std::string::npos)
 		sep_index += 1;
