@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 11:19:39 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 12:02:56 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,9 +116,9 @@ void	Cgi::executeChildProcess( std::string requestedFilePath )
 	err = execve(cgiProgramPath, _argv, _envp);
 	if (err != -1)
 		exit(0);
-	if (errno == ENOENT)
-		exit(404);
 	if (errno == EACCES)
 		exit(403);
+	if (errno == ENOENT)
+		exit(404);
 	exit(503);
 }

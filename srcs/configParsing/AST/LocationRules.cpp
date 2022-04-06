@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/04/06 11:29:04 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 12:04:16 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ LocationRules &	LocationRules::operator=( LocationRules const & src )
 
 void	LocationRules::resetRules( void )
 {
-	allowedMethod = GET | POST | DELETE;
+	allowedMethod = GET;
 	autoindex = false;
 	cgiExtension.clear();
 	cgiPath.clear();

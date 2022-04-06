@@ -52,14 +52,14 @@ TEST(ParserSuite, EveryRightPossibilityFile)
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].locationPath, "/");
 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].locationPath, "/www/");
 
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].getPathFromLocation("/www/bonjour/etc.html"),
-			"/www/bonjour/etc.html");
-	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].getPathFromLocation("/www/bonjour/etc.html"),
-			"/www/rootsite/bonjour/etc.html");
-	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].getPathFromLocation("/www/downloads/bonjour/etc.html"),
-			"/www/downloads/bonjour/etc.html");
-	EXPECT_EQ(result.getServerList()[3].getLocationList()[1].getPathFromLocation("/www/downloads/bonjour/etc.html"),
-			"/etc/systemd/bonjour/etc.html");
+/* 	EXPECT_EQ(result.getServerList()[2].getLocationList()[0].getPathFromLocation("/www/bonjour/etc.html"), */
+/* 			"/www/bonjour/etc.html"); */
+/* 	EXPECT_EQ(result.getServerList()[2].getLocationList()[1].getPathFromLocation("/www/bonjour/etc.html"), */
+/* 			"/www/rootsite/bonjour/etc.html"); */
+/* 	EXPECT_EQ(result.getServerList()[3].getLocationList()[0].getPathFromLocation("/www/downloads/bonjour/etc.html"), */
+/* 			"/www/downloads/bonjour/etc.html"); */
+/* 	EXPECT_EQ(result.getServerList()[3].getLocationList()[1].getPathFromLocation("/www/downloads/bonjour/etc.html"), */
+/* 			"/etc/systemd/bonjour/etc.html"); */
 
 	const LocationRules* selectedLocation = result.getServerList()[2].getLocationFromUrl("/web/pouet.html");
 	EXPECT_EQ(selectedLocation, &result.getServerList()[2].getLocationList()[0]);
