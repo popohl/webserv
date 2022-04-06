@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/06 19:22:09 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 19:53:42 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,21 +275,23 @@ response postRequest::createResponse() {
 	{
 		try
 		{
-		std::string filePath = createFilePath(rules);
-		if (rules.isCgi(filePath))
-		{
-			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-			response.setStatusLine(200);
-			response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
-			return response;
-		}
+			std::string filePath = createFilePath(rules);
+			if (rules.isCgi(filePath))
+			{
+				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+				response.setStatusLine(200);
+				response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
+				return response;
+			}
 		}
 		catch (httpError& e)
 		{
 			response.setErrorMessage(e.statusCode(), rules);
+			return response;
 		}
 		catch (std::exception& e) {
 			response.setErrorMessage(500, rules);
+			return response;
 		}
 		postedFile = createPostedFilePath(rules.root, getRequestURI());
 		std::ofstream file;

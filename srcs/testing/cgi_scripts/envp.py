@@ -12,4 +12,4 @@ print('</br>')
 
 form = cgi.FieldStorage()
 print(form)
-# print(form["fname"].value);
+print(form.getvalue('fname'));

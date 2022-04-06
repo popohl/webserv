@@ -54,7 +54,7 @@ void	Cgi::executeCgi( std::string requestedFilePath )
 	if (returnValue == ENOENT)
 		throw httpError(404);
 	if (returnValue != 0)
-		throw httpError(503);
+		throw httpError(500);
 	readCgiOutput();
 }
 
@@ -112,7 +112,7 @@ void	Cgi::executeChildProcess( std::string requestedFilePath )
 	/* 	<< std::endl; */
 	close(_pipeFd[PIPE_READ]);
 	if (dup2(_pipeFd[PIPE_WRITE], STDOUT_FILENO) == -1)
-		exit(503);
+		exit(500);
 	close(_pipeFd[PIPE_WRITE]);
 	createEnvp(requestedFilePath);
 	createArgv(cgiProgramPath, stripExtraPathInfo(requestedFilePath));

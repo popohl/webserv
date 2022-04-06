@@ -254,7 +254,7 @@ static void	setHeaderField( response& response, std::string& rawHeaders,
 	else if (stringComparison(rawHeaders, "Pragma", nextHeaderPosition))
 		response.replaceFieldToHeaderMap(std::make_pair("Pragma", getHeaderValue(rawHeaders, nextHeaderPosition)));
 	else
-		throw serverError(503, "Unexpected field found in cgi header");
+		throw serverError(500, "Unexpected field found in cgi header");
 }
 
 int		Cgi::writeHeadersToResponse( std::string& rawHeaders,
