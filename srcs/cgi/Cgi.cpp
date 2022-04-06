@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 12:02:56 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 15:32:42 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,12 @@ void	Cgi::executeCgi( std::string requestedFilePath )
 	readCgiOutput();
 }
 
-void	Cgi::parseAndRemoveHeaders( response& response )
+int	Cgi::parseAndRemoveHeaders( response& response )
 {
 	std::string rawHeaders = popHeadersFromCgiOutput();
 
-	writeHeadersToResponse(rawHeaders, response);
+	response.replaceFieldToHeaderMap(std::make_pair("Content-Type", "text/plain"));
+	return writeHeadersToResponse(rawHeaders, response);
 }
 
 std::string Cgi::writeBodyToTmpFile( void )

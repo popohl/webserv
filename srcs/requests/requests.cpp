@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/05 10:23:35 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/05 20:15:44 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,11 +139,16 @@ std::string iRequest::createFilePath( Rules& rules )
 std::string iRequest::createFileFromCgi( Rules& rules,
 		std::string requestedFilePath, response& response )
 {
-	Cgi			cgi(rules, this);
+	Cgi	cgi(rules, this);
+	int	status;
 
 	cgi.executeCgi(requestedFilePath);
-	cgi.parseAndRemoveHeaders(response);
-	return cgi.writeBodyToTmpFile();
+	status = cgi.parseAndRemoveHeaders(response);
+	if (status == 200)
+		return cgi.writeBodyToTmpFile();
+	response.setStatusLine(status);
+	response.setErrorMessage(status, rules);
+	return "";
 }
 
 std::string iRequest::testIndexFile(std::string root, const std::vector<std::string> & indexList)
@@ -203,7 +208,11 @@ response getRequest::createResponse() {
 			if (filePath.length())
 			{
 				if (rules.isCgi(filePath))
-					response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
+				{
+					filePath = createFileFromCgi(rules, filePath, response);
+					if (!filePath.empty())
+						response.tryToOpenFile(filePath);
+				}
 				else
 					response.tryToOpenFile(filePath);
 				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));

@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 11:21:44 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/06 15:36:33 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,23 +219,6 @@ std::string Cgi::popHeadersFromCgiOutput( void )
 	return rawHeaders;
 }
 
-static std::pair<std::string, std::string>	makeHeaderPair(
-		std::string& rawHeaders, size_t &nextHeaderPosition )
-{
-	std::pair<std::string, std::string>	headerPair;
-	size_t	colonPosition = rawHeaders.find(':', nextHeaderPosition);
-	size_t	endOfHeader = rawHeaders.find('\n', nextHeaderPosition);
-
-	headerPair.first = rawHeaders.substr(nextHeaderPosition,
-			colonPosition - nextHeaderPosition);
-	colonPosition++;
-	headerPair.second = rawHeaders.substr(colonPosition, endOfHeader - colonPosition);
-	nextHeaderPosition = endOfHeader;
-	if (endOfHeader != std::string::npos)
-		nextHeaderPosition++;
-	return headerPair;
-}
-
 static std::string getHeaderValue( std::string& rawHeaders, size_t& nextHeaderPosition )
 {
 	size_t		valueBeginPos = rawHeaders.find(':', nextHeaderPosition) + 1;
@@ -259,7 +242,7 @@ bool	stringComparison( std::string str1, const char* str2, size_t index )
     return true;
 }
 
-static size_t	setHeader( response& response, std::string& rawHeaders,
+static size_t	setHeaderField( response& response, std::string& rawHeaders,
 		size_t& nextHeaderPosition )
 {
 	if (stringComparison(rawHeaders, "Content-Length", nextHeaderPosition))
@@ -271,14 +254,15 @@ static size_t	setHeader( response& response, std::string& rawHeaders,
 	else if (stringComparison(rawHeaders, "Pragma", nextHeaderPosition))
 		response.addFieldToHeaderMap(std::make_pair("Pragma", getHeaderValue(rawHeaders, nextHeaderPosition)));
 	else
-		response.addFieldToHeaderMap(makeHeaderPair(rawHeaders, nextHeaderPosition));
+		throw serverError(503, "Unexpected field found in cgi header");
 	return nextHeaderPosition;
 }
 
-void	Cgi::writeHeadersToResponse( std::string& rawHeaders,
+int		Cgi::writeHeadersToResponse( std::string& rawHeaders,
 		response& response )
 {
 	size_t	nextHeaderPosition = 0;
+	int		status = 200;
 
 	while (nextHeaderPosition != std::string::npos)
 	{
@@ -287,6 +271,7 @@ void	Cgi::writeHeadersToResponse( std::string& rawHeaders,
 			_rules.redirectCode = 302;
 			_rules.redirectUri
 				= getHeaderValue(rawHeaders, nextHeaderPosition);
+			status = 302;
 		}
 		else if (stringComparison(rawHeaders, "Status", nextHeaderPosition))
 		{
@@ -294,6 +279,7 @@ void	Cgi::writeHeadersToResponse( std::string& rawHeaders,
 							nextHeaderPosition).c_str()));
 		}
 		else
-			setHeader(response, rawHeaders, nextHeaderPosition);
+			setHeaderField(response, rawHeaders, nextHeaderPosition);
 	}
+	return status;
 }
