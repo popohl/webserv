@@ -6,12 +6,13 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-//   Updated: 2022/04/05 13:22:48 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 13:29:31 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <fstream>
+#include <signal.h>
 #include "configParsing/Parser.hpp"
 #include "socket/ASocket.hpp"
 #include "socket/Server.hpp"
@@ -47,6 +48,7 @@ int main( int argc, char **argv )
 			else
 				free_memory(socket); //NOTA BENE fonction qui free tout si une socket ne se Fabrique/Bind/Listen pas bien
 		}
+		signal(SIGPIPE, SIG_IGN);
 		//Create two sets of fd for select : readfds and writefds
 		t_FD	sets;
 		fillFdSets(sets, socket);
