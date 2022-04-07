@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/07 10:29:53 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 11:32:23 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
@@ -201,9 +201,9 @@ void response::printHeader() { std::cout << _header << std::endl;}
 void response::printStatus() { std::cout << "status line : " +_statusLine << std::endl; }
 
 
-std::vector<unsigned char> response::createFormattedResponse()
+std::vector<char> response::createFormattedResponse()
 {
-	std::vector<unsigned char>raw;
+	std::vector<char>raw;
 	createHeader();
 	size_t size = _header.length();
 	if (_body.length())
@@ -281,11 +281,21 @@ size_t response::getResponseFileSize()
 		return (0);
 }
 
-void	response::readWholeFile(std::vector<unsigned char> & store)
+void	response::readWholeFile(std::vector<char> & store)
 {
 	size_t	fileSize = getResponseFileSize();
 	char * buffer = new char[fileSize];
-	_file.read(buffer, fileSize);
+	std::cout << ">> before reserve " << store.size() << " " << store.capacity() << std::endl;
+	std::cerr << ">> fileSize: " << fileSize << std::endl;
+	_file.seekg(0, _file.beg);
+	store.reserve(store.size() + fileSize);
+	std::cout << ">> after reserve" << store.size() << " " << store.capacity() << std::endl;
+	std::vector<char>::iterator it = store.begin();
+	_file.read(&(*it), fileSize);
+	std::cout << std::boolalpha << _file.eof() << std::endl;
+	std::cout << ">> fail " <<  std::boolalpha << _file.fail()<< std::endl;
+	std::cout << ">> badbit " <<  std::boolalpha << _file.bad()<< std::endl;
+	std::cout << ">> after read" << store.size() << " " << store.capacity() << std::endl;
 	store.insert(store.end(), buffer, buffer + fileSize);
 	delete [] buffer;
 }

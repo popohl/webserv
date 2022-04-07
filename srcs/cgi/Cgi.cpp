@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/07 10:49:18 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ Cgi::~Cgi( void )
 	return;
 }
 
-void	Cgi::executeCgi( std::string requestedFilePath, std::vector<unsigned char>& body )
+void	Cgi::executeCgi( std::string requestedFilePath, std::vector<char>& body )
 {
 	int			forkPid;
 	int			returnValue;
@@ -101,7 +101,7 @@ void	Cgi::readCgiOutput( void )
 		throw serverError("Error reading cgi output");
 }
 
-void	Cgi::executeChildProcess( std::string requestedFilePath, std::vector<unsigned char>& body )
+void	Cgi::executeChildProcess( std::string requestedFilePath, std::vector<char>& body )
 {
 	const char*	cgiProgramPath = _rules.cgiPath.c_str();
 	int		err;

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:54:51 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/04/07 10:39:37 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class SocketClient : public ASocket
 	protected:
 		SocketClient();
 
-		std::vector<unsigned char> _response;
+		std::vector<char> _response;
 		time_t		_timer;
 
 	public:
@@ -34,8 +34,8 @@ class SocketClient : public ASocket
 		virtual ~SocketClient();
 
 		void		clearAll();
-		std::vector<unsigned char>	getResponse() const;
-		void		setResponse(std::vector<unsigned char> input);
+		std::vector<char>	getResponse() const;
+		void		setResponse(std::vector<char> input);
 		void		resetTimer();
 		bool		checkTimeout()const;
 		void		erasePartResponse(int i);

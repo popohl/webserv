@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/07 10:32:27 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
@@ -43,7 +43,7 @@ public:
 	response & operator = (const response & src);
 	~response();
 	
-	std::vector<unsigned char>	createFormattedResponse();
+	std::vector<char>	createFormattedResponse();
 	void		addFieldToHeaderMap(std::pair<std::string, std::string>input);
 	void		replaceFieldToHeaderMap(std::pair<std::string, std::string>input);
 
@@ -51,7 +51,7 @@ public:
 	void		tryToOpenAndReadFile(std::string RequestUri);
 
 	void		setErrorMessage(int errorStatus, Rules & rules);
-	void		readWholeFile(std::vector<unsigned char> & store);
+	void		readWholeFile(std::vector<char> & store);
 
 	void		createAutoindexResponse();
 	int			getStatus();

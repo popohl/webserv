@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 10:51:16 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void		iRequest::printRequest()
 //	std::cout << _message._body << std::endl;
 }
 
-iRequest * iRequest::createRequest(std::vector<unsigned char> &data, const std::vector<ServerNode *> & server)
+iRequest * iRequest::createRequest(std::vector<char> &data, const std::vector<ServerNode *> & server)
 {
 	iRequest * result = NULL;
 	std::string input(data.begin(), data.end());
@@ -323,7 +323,7 @@ response postRequest::createResponse() {
 		std::ofstream file(postedFile.c_str(), std::ofstream::app);
 		if (file.good())
 		{
-			for (std::vector<unsigned char>::iterator it = _message._body.begin();
+			for (std::vector<char>::iterator it = _message._body.begin();
 				 it != _message._body.end();
 				 it++)
 				file << *it;
