@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/06 16:31:37 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 10:32:44 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class iRequest
 	public:
 
 	virtual		~iRequest();
-	static		iRequest * createRequest(std::string &, const std::vector<ServerNode *> & ref);
+	static		iRequest * createRequest(std::vector<unsigned char> &, const std::vector<ServerNode *> & ref);
 	virtual		response createResponse() = 0;
 	virtual		std::string printType() = 0;
 

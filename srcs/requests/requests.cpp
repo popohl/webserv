@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 09:21:35 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 10:31:52 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,13 @@ void		iRequest::printRequest()
 		 it != _message._header.end();
 		 it++)
 		std::cout << "[" << it->first << "] " << it->second << std::endl;
-	std::cout << _message._body << std::endl;
+//	std::cout << _message._body << std::endl;
 }
 
-iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerNode *> & server)
+iRequest * iRequest::createRequest(std::vector<unsigned char> &data, const std::vector<ServerNode *> & server)
 {
 	iRequest * result = NULL;
+	std::string input(data.begin(), data.end());
 	std::string method, requestUri, httpVersion;
 
 	//isolate first line and three string tokens
@@ -61,18 +62,19 @@ iRequest * iRequest::createRequest(std::string &input, const std::vector<ServerN
 	//allocate memory
 	if (method.length() && requestUri.length() && httpVersion.length())
 	{
-		input.erase(0, eraseLen + 2);
+		data.erase(data.begin(), data.begin() + eraseLen + 2);
 		if (method == "GET")
 			result = new getRequest;
 		else if (method == "POST")
 			result = new postRequest;
 		else if (method == "DELETE")
 			result = new deleteRequest;
+
 		if (result)
 		{
 			result->_server = &server;
 			result->_requestURI = requestUri;
-			result->_message.parseRequest(input);
+			result->_message.parseRequest(data);
 		}
 	}
 	return result;
@@ -134,13 +136,7 @@ std::string iRequest::createFilePath( Rules& rules )
 	//check each location for the vector
 	std::string filePath;
 	if (getRequestURI() == "/")
-	{
-		if (rules.autoindex == true)
-			//display an autoindex;
-			std::cout << "autoindex is on" << std::endl;
-		else
-			filePath = testIndexFile(rules.root + "/", rules.index);
-	}
+		filePath = testIndexFile(rules.root + "/", rules.index);
 	else
 		filePath = rules.getPathFromLocation(getRequestURI());
 	if (!filePath.length())
@@ -294,12 +290,18 @@ response postRequest::createResponse() {
 			return response;
 		}
 		postedFile = createPostedFilePath(rules.root, getRequestURI());
+		std::cout << "posted file is " << postedFile << std::endl;
 		std::ofstream file;
 		file.open(postedFile.c_str(), std::ofstream::app);
 		if (file.good())
 		{
-			file << _message._body;
+			for (std::vector<unsigned char>::iterator it = _message._body.begin();
+				 it != _message._body.end();
+				 it++)
+				file << *it;
+//			if (file.tellp() >= std::atoi(_headerFields["Content-Length"]))
 			file.close();
+			
 			response.tryToOpenFile(postedFile);
 			response.setStatusLine(201);
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
@@ -347,7 +349,7 @@ response deleteRequest::createResponse() {
 		if (!remove(filePath.c_str()))
 			response.setStatusLine(204);
 		else
-			response.setStatusLine(404);
+			response.setErrorMessage(200, rules);
 	}
 	response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 	return response;

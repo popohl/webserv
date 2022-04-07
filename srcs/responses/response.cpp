@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/06 18:11:36 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 10:29:53 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
@@ -251,16 +251,6 @@ void	response::createHeader()
 	_header += "\r\n";
 }
 
-std::string findContentType(std::string content)
-{
-	std::string extension(content, content.rfind('.') + 1, content.length());
-	for (int i = 0; documentType[i].first != "END"; i++)
-		if (extension == documentType[i].first)
-			return (documentType[i].second);
-	return (std::string());
-}
-
-
 void response::tryToOpenFile(std::string filePath)
 {
 	_file.open(filePath.c_str(), std::ios::in | std::ios::binary);
@@ -300,18 +290,15 @@ void	response::readWholeFile(std::vector<unsigned char> & store)
 	delete [] buffer;
 }
 
-std::string findStatus(int status)
+
+int	response::getStatus()
 {
-	for (int i = 0; responseStatus[i].first; i++)
-	{
-		if (responseStatus[i].first == status)
-			return responseStatus[i].second;
-	}
-	return (std::string(""));
+	return _status;
 }
 
 void response::setStatusLine(int status)
 {
+	_status = status;
 	_statusLine = "HTTP/1.1";
 	_statusLine += " ";
 	_statusLine += to_string(status);
@@ -333,10 +320,40 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 	{
 		_body += defaultErrorMessage(errorStatus);
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/plain"));
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
-		
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));	
 	}
 }
+
+void response::createAutoindexResponse()
+{
+	_body = autoIndex(_rules.root);
+	setStatusLine(200);
+	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/html"));
+	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
+}
+
+
+
+std::string findStatus(int status)
+{
+	for (int i = 0; responseStatus[i].first; i++)
+	{
+		if (responseStatus[i].first == status)
+			return responseStatus[i].second;
+	}
+	return (std::string(""));
+}
+
+
+std::string findContentType(std::string content)
+{
+	std::string extension(content, content.rfind('.') + 1, content.length());
+	for (int i = 0; documentType[i].first != "END"; i++)
+		if (extension == documentType[i].first)
+			return (documentType[i].second);
+	return (std::string());
+}
+
 
 std::string defaultErrorMessage(int errorStatus)
 {
@@ -357,14 +374,6 @@ std::string defaultErrorMessage(int errorStatus)
 	return (result);
 }
 
-void response::createAutoindexResponse()
-{
-	_body = autoIndex(_rules.root);
-	setStatusLine(200);
-	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/html"));
-	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
-}
-
 
 std::string to_string(int n)
 {
@@ -376,6 +385,8 @@ std::string to_string(int n)
 	tmp >> result;
 	return (result);
 }
+
+/*
 
 void response::tryToOpenAndReadFile(std::string filePath)
 {
@@ -411,8 +422,6 @@ void response::tryToOpenAndReadFile(std::string filePath)
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
 	}
 }
-
-/*
 
 size_t response::continueReadingFile()
 {

@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/06 12:03:22 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/06 20:42:29 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -41,38 +41,43 @@ void checkLineEnd(const std::string &input)
 		throw malformedHeader();
 }
 
-requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _status(), _unfinishedField(),  _header(), _bodySize(0), _bodyExpectedSize(0), _body() {}
+requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _status(), _unfinishedData(),  _header(), _bodySize(0), _bodyExpectedSize(0), _body() {}
 
-void requestBase::parseRequest(const std::string &line)
+void requestBase::parseRequest(std::vector<unsigned char> &data)
 {
-	std::string copy(line);
-
 	if (!_headerFinished)
-		parseHeader(copy);
-	if (_headerFinished && !_bodyFinished && copy.length())
+	{
+		std::string input(data.begin(), data.end());
+		std::cout << input << std::endl;
+		size_t		before = input.length();
+
+		parseHeader(input);
+
+		size_t		after = input.length();
+		size_t		diff = before - after;
+		data.erase(data.begin(), data.begin() + diff);
+	}
+	if (_headerFinished && !_bodyFinished && data.size())
 	{
 		if (_bodyExpectedSize)
-			parseBody(copy);
+			parseBody(data);
 		else
 			_bodyFinished = true;
+		std::cout << data.size() << std::endl;
 	}
+
 }
 
 void requestBase::parseHeader(std::string & input)
 {
 	std::string line;
-	if (_unfinishedField.length())
-	{
-		input.insert(0, _unfinishedField);
-		_unfinishedField.clear();
-	}
 	while (input.length())
 	{
 		line = removeOneHeaderLineFromInput(input);
-		if (_unfinishedField.length())
+		if (_unfinishedData.size())
 		{
-			line.insert(0, _unfinishedField);
-			_unfinishedField.clear();
+			input.insert(input.begin(), _unfinishedData.begin(), _unfinishedData.end());
+			_unfinishedData.clear();
 		}
 		if (HeaderLineIsCorrectlyFormatted(line))
 			this->_header.insert(splitIntoPair(line));
@@ -81,7 +86,10 @@ void requestBase::parseHeader(std::string & input)
 			_headerFinished = true;
 			if (_header.find("Content-Length") != _header.end()
 				&& std::strtoul(_header["Content-Length"].c_str(), NULL, 10))
+			{
 				_bodyExpectedSize = std::strtoul(_header["Content-Length"].c_str(), NULL, 10);
+				_body.reserve(_bodyExpectedSize);
+			}
 			else if ((_header.find("Transfer-Encoding") != _header.end()) && (_chunksList.empty()))
 				_bodyExpectedSize = -1;
 			else
@@ -89,7 +97,7 @@ void requestBase::parseHeader(std::string & input)
 			break;
 		}
 		else
-			_unfinishedField = line; 				//it should break automagically
+			_unfinishedData.insert(_unfinishedData.end(), line.begin(), line.end());
 	}
 }
 
@@ -130,32 +138,59 @@ bool	requestBase::lineIsHeaderEnd(const std::string & line)
 }
 
 //it should only get the body string
-void requestBase::parseBody(std::string &line)
+void requestBase::parseBody(std::vector<unsigned char> & data)
 {
+	std::cout << "call to parseBody" << std::endl;
 	std::map<std::string, std::string>::iterator notFound = _header.end();
 	if (_header.find("Transfer-Encoding") != notFound)
 	{
 		if (_header["Transfer-Encoding"] == "chunked")
-			//parse chunked body
-			processChunk(line);
-
+			processChunk(data);
 	}
 	else if	(_header.find("Content-Length") != notFound)
 	{
-		size_t sizeDifference(_bodyExpectedSize - _body.length());
-		_body.insert(_body.length(), line, 0, sizeDifference);
-		if (_body.length() >= _bodyExpectedSize)
+		_body.insert(_body.end(), data.begin(), data.end());
+		if (_body.size() >= _bodyExpectedSize)
 			_bodyFinished = true;
 	}
 }
 
-void	requestBase::processChunk(std::string & line)
+size_t	requestBase::dataContainsCRLF(const std::vector<unsigned char> & data)
+{
+	for (std::vector<unsigned char>::const_iterator it = data.begin();
+		 it != data.end();
+		 it++)
+	{
+		if ((*it == '\r') && (it != data.end()) && (*(it + 1) == '\n'))
+			return true;
+	}
+	return (false);
+}
+
+size_t	requestBase::findCRLFPositionInData(const std::vector<unsigned char> & data)
+{
+	size_t index(0);
+	for (std::vector<unsigned char>::const_iterator it = data.begin();
+		 it != data.end();
+		 it++)
+	{
+		if (!((*it == '\r') && (it != data.end()) && (*(it + 1) == '\n')))
+			index++;
+		else
+			break ;
+	}
+	return index;
+}
+
+void	requestBase::processChunk(std::vector<unsigned char> & data)
 {
 	if (_chunksList.empty() || _chunksList.back())
-		_chunksList.push_back(eatChunkSize(line));
+		_chunksList.push_back(eatChunkSize(data));
+	/* all broken, fix it by changing string to vec please
 	if (_chunksList.back())
 	{
-		_body += std::string(line, 0, line.find("\r\n") - 1);
+		std::string chunk(line, 0, line.find("\r\n") - 1);
+		_body.insert(_body.end(), chunk.begin(), chunk.end());
 		line.erase(0, line.find("\r\n") + 2);
 	}
 	else
@@ -179,16 +214,21 @@ void	requestBase::processChunk(std::string & line)
 				_unfinishedField = tmp + line;
 		}
 	}
+	*/
 }
 
-size_t requestBase::eatChunkSize(std::string & line)
+size_t requestBase::eatChunkSize(std::vector<unsigned char> & data)
 {
-	std::string chunkSize(line, 0, line.find("\r\n") - 1);
+	std::string chunkSize;
+	for (std::vector<unsigned char>::const_iterator it = data.begin();
+		 isdigit(*it) && it != data.end();
+		 it++)
+		chunkSize += *it;
 	std::stringstream superConverter;
 	superConverter << chunkSize;
 	size_t result;
 	superConverter >> result;
-	line.erase(0, chunkSize.length() + 2);
+	data.erase(data.begin(), data.begin() + chunkSize.length());
 	return (result);
 }
 
@@ -204,25 +244,6 @@ std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
 		whitespace_index++;
 	std::string value(line, whitespace_index, line.find("\r\n"));
 	return (std::make_pair<std::string, std::string>(std::string(key), std::string(value)));
-}
-
-std::list<std::string>split_header_to_lines(const std::string & input)
-{
-	std::list<std::string> hold;
-	std::string copy(input);
-
-	size_t start = 0;
-	size_t end = copy.length();
-
-	while (copy.length())
-	{
-		end = copy.find("\r\n", start);
-		if (end != std::string::npos)
-			end += 2;
-		hold.push_back(std::string(copy, start, end));
-		copy.erase(start, end);
-	}
-	return (hold);
 }
 
 bool isHeaderEnd(const char *input)
