@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/06 19:41:58 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/07 10:17:04 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,16 @@ class iRequest
 protected:
 	const		std::vector<ServerNode *> *_server;
 	std::string _requestURI;
+	std::string _httpVersion;
 	std::string createFilePath();
 	std::string	testIndexFile(std::string root, const std::vector<std::string> & indexList);
 
+	static bool	methodIsValid(const std::string & method);
+	static bool	requestURIIsValid(const std::string & requestURI);
+	static bool	httpVersionIsValid(const std::string & httpVersion);
+
 private:
+	static iRequest * allocateRequest(const std::string & method, const std::string & requestURI, const std::string & httpVersion);
 	static std::string eatWord(std::string & line);
 	bool		containsPort(std::string hostname);
 };
@@ -57,9 +63,8 @@ public:
 
 	response	createResponse();
 	std::string	createResponseBody();
-	std::string printType() {return ("GET");};
+	std::string printType();
 
-//private:
 private:
 	bool	isAutoindex(const Rules &);
 };
@@ -70,25 +75,31 @@ class postRequest : public iRequest
 	postRequest();
 	~postRequest();
 
-	std::string printType() {return ("POST");};
-
-private:
-//	void sendRequest(void) {};
 	response createResponse();
+	std::string printType();
+
 private:
 	std::string createPostedFilePath(const std::string & root, const std::string & requestURI);
 };
 
 class deleteRequest : public iRequest
 {
-	public:
+public:
 	deleteRequest();
 	~deleteRequest();
 
-	std::string printType() {return ("DELETE");};
-
-//	void	sendRequest(void) {};
 	response createResponse();
+	std::string printType();
+};
+
+class errorRequest : public iRequest
+{
+public:
+	errorRequest();
+	~errorRequest();
+
+	response createResponse();
+	std::string printType();
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/06 19:55:28 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/07 10:41:25 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,28 +54,52 @@ iRequest * iRequest::createRequest(std::vector<unsigned char> &data, const std::
 		}
 		else
 			httpVersion = eatWord(requestLine);
-		//check httpVersion
-	}
-	
-	//allocate memory
-	if (method.length() && requestUri.length() && httpVersion.length())
-	{
-		data.erase(data.begin(), data.begin() + eraseLen + 2);
-		if (method == "GET")
-			result = new getRequest;
-		else if (method == "POST")
-			result = new postRequest;
-		else if (method == "DELETE")
-			result = new deleteRequest;
-
-		if (result)
-		{
-			result->_server = &server;
-			result->_requestURI = requestUri;
-			result->_message.parseRequest(data);
-		}
-	}
+	}	
+	result = allocateRequest(method, requestUri, httpVersion);
+	data.erase(data.begin(), data.begin() + eraseLen + 2);
+	result->_server = &server;
+	result->_requestURI = requestUri;
+	result->_httpVersion = httpVersion;
+	result->_message.parseRequest(data);
 	return result;
+}
+
+iRequest * iRequest::allocateRequest(const std::string & method, const std::string & requestURI, const std::string & httpVersion)
+{
+	if (methodIsValid(method) && requestURIIsValid(requestURI) && httpVersionIsValid(httpVersion))
+	{
+		if (method == "GET")
+			return (new getRequest);
+		else if (method == "POST")
+			return (new postRequest);
+		else if (method == "DELETE")
+			return (new deleteRequest);
+	}
+	return (new errorRequest);
+}
+
+bool iRequest::methodIsValid(const std::string &method)
+{
+	if (method == "GET" || method == "POST" || method == "DELETE")
+		return (true);
+	else
+		return (false);
+}
+
+bool iRequest::requestURIIsValid(const std::string &requestURI)
+{
+	if (*requestURI.begin() == '/')
+		return (true);
+	else
+		return (false);
+}
+
+bool	iRequest::httpVersionIsValid(const std::string &httpVersion)
+{
+	if (httpVersion == "HTTP/1.0" || httpVersion == "HTTP/1.1")
+		return (true);
+	else
+		return (false);
 }
 
 iRequest::~iRequest()
@@ -227,6 +251,11 @@ response getRequest::createResponse() {
 	return response;
 }
 
+std::string getRequest::printType()
+{
+	return ("GET");
+}
+
 bool	getRequest::isAutoindex(const Rules & rules)
 {
 	if (getRequestURI() == "/"
@@ -236,6 +265,7 @@ bool	getRequest::isAutoindex(const Rules & rules)
 	else
 		return false;
 }
+
 
 postRequest::postRequest()
 {}
@@ -257,18 +287,14 @@ response postRequest::createResponse() {
 	else
 	{
 		postedFile = createPostedFilePath(rules.root, getRequestURI());
-		std::cout << "posted file is " << postedFile << std::endl;
-		std::ofstream file;
-		file.open(postedFile.c_str(), std::ofstream::app);
+		std::ofstream file(postedFile.c_str(), std::ofstream::app);
 		if (file.good())
 		{
 			for (std::vector<unsigned char>::iterator it = _message._body.begin();
 				 it != _message._body.end();
 				 it++)
 				file << *it;
-//			if (file.tellp() >= std::atoi(_headerFields["Content-Length"]))
-			file.close();
-			
+			file.close();			
 			response.tryToOpenFile(postedFile);
 			response.setStatusLine(201);
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
@@ -278,12 +304,13 @@ response postRequest::createResponse() {
 			response.setErrorMessage(400, rules);
 	}
 	return (response);
-
-
-	//check content Type to know file information
-	//Content Length or Transfer Encoding MUST be present in the header
-	//POST creates a ressource or append it ? in the host server at the requestURI address
 }
+
+std::string postRequest::printType()
+{
+	return ("POST");
+}
+
 
 std::string postRequest::createPostedFilePath(const std::string & root, const std::string & requestURI)
 {
@@ -321,6 +348,40 @@ response deleteRequest::createResponse() {
 	response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 	return response;
 }
+
+errorRequest::errorRequest()
+{}
+
+errorRequest::~errorRequest()
+{}
+
+response errorRequest::createResponse()
+{
+	response response;
+	Rules rules;
+	rules.setValues(*findServer(), getRequestURI().c_str());
+
+	if (iRequest::requestURIIsValid(getRequestURI()) && iRequest::httpVersionIsValid(_httpVersion))
+		response.setErrorMessage(405, rules);
+	else if (!requestURIIsValid(getRequestURI()))
+		response.setErrorMessage(400, rules);
+	else
+		response.setErrorMessage(505, rules);
+	return (response);
+}
+
+std::string deleteRequest::printType()
+{
+	return ("DELETE");
+}
+
+
+
+std::string errorRequest::printType()
+{
+	return ("ERROR");
+}
+
 
 const char *days[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};

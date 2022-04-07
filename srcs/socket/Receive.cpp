@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/04/06 19:52:25 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/07 10:34:23 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,18 +33,12 @@ void	deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & 
 	delete addr;
 }
 
-std::vector<unsigned char> buildSendReponse(iRequest * request)
+std::vector<unsigned char> buildSendReponse(SocketClient & client)
 {
 	std::vector<unsigned char> responseRawData;
-	if (!request)
-	{
-		std::string error("INVALID 405 Method Not Allowed\r\n\r\n");
-		responseRawData.assign(error.begin(), error.end());
-	}
-	if (request && request->receivingisDone())
-	{
-		response response = request->createResponse();
-		responseRawData = response.createFormattedResponse();
+	response response = client._request->createResponse();
+	client._responseStatus = response.getStatus();
+	responseRawData = response.createFormattedResponse();
 
 		// for logging purposes
 /*
@@ -54,7 +48,6 @@ std::vector<unsigned char> buildSendReponse(iRequest * request)
 		response.printHeader();
 		std::cout << "==============" << std::endl;
 */
-	}
 	return (responseRawData);
 }
 
@@ -77,20 +70,18 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		deleteClient(client, socket, sets);
 		return ;
 	}
-
 	std::vector<unsigned char> data;
 	data.reserve(ret);
 	data.assign(buff, buff + ret);
-	std::string tmp(buff);
-	//hide the details later
+
 	if (!client._request)
 		client._request = iRequest::createRequest(data, client._servers);
 	else
 		client._request->_message.parseRequest(data);
 
-	if (!client._request || client._request->receivingisDone())
+	if (client._request->receivingisDone())
 	{
-		client.setResponse(buildSendReponse(client._request));
+		client.setResponse(buildSendReponse(client));
 		sets.readfds.remove(client.getSocketFd());
 		sets.writefds.add(client.getSocketFd());
 		client.resetTimer();

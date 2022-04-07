@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 11:57:16 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/06 14:54:31 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/04/07 10:42:19 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,9 @@
 #include <fstream>
 #include <unistd.h>
 
-static void	createLink(std::string & index, std::string & root, struct dirent *direntp)
+static void	createLink(std::string & index, struct dirent *direntp)
 {
 	index += "<a href=\"";
-	// index += root;
-	// index += "/";
 	index += direntp->d_name;
 	index += "\">";
 	index += direntp->d_name;
@@ -58,7 +56,7 @@ std::string autoIndex(std::string	root)
 				index += "_Regular file_| ";
 			else
 				index += "                ";
-			createLink(index, root, direntp);
+			createLink(index, direntp);
 			index += "</h4>\n";
 		}
 		index += "</html>";
