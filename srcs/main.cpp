@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 17:21:39 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 16:48:39 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,13 @@ void	free_memory(std::vector<ASocket*> & socket)
 	for(size_t i = 0; i < socket.size(); i++)
 		delete socket[i];
 	throw std::exception();
-	// throw std::exception("\e[0;31mSocket Failed in creation\n Exit webserv\e[0m");
 }
+
+	//1- Parse the config file and get all the port to listen
+	//2 -Create a containers of Socket pointer.
+	//3 -With Socket Class you can bind and listening a new Socket easily
+	//4 -Create two sets of fd for select : readfds and writefds
+	//5- Mainloop of the server with select
 
 int main( int argc, char **argv )
 {
@@ -32,17 +37,14 @@ int main( int argc, char **argv )
 	{
 		try
 		{
-			// Parser  parser("./srcs/testing/config_files/basic_file.conf");
-			Parser			parser(argv[1]);
-			ConfigFileNode	config = parser.getConfigFile();
-
-			// Get all the port to listen from configuration file parsing
-			mapPortToServers listeningPorts = config.getListeningPorts();
-
-			//Create a containers of Socket pointer.
-			//The Class Socket initialize the bind and the listening for every Socket
+			Parser					parser(argv[1]);
+			ConfigFileNode			config = parser.getConfigFile();
+			mapPortToServers		listeningPorts = config.getListeningPorts();
 			std::vector<ASocket*>	socket;
 			ASocket					*temp;
+			t_FD					sets;
+
+			std::cout << "\e[1;36m--WELCOME HUMAN--\e[0m" << std::endl;
 			for (mapPortToServers::iterator serverIt = listeningPorts.begin();
 				serverIt != listeningPorts.end();
 				serverIt++)
@@ -54,8 +56,6 @@ int main( int argc, char **argv )
 					free_memory(socket);
 			}
 			signal(SIGPIPE, SIG_IGN);
-			//Create two sets of fd for select : readfds and writefds
-			t_FD	sets;
 			fillFdSets(sets, socket);
 			portListening(sets, socket);
 		}
