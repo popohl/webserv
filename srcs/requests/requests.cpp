@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/07 12:03:48 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,9 +162,13 @@ std::string iRequest::createFilePath( Rules& rules )
 	if (getRequestURI() == "/")
 		filePath = testIndexFile(rules.root + "/", rules.index);
 	else
+	{
 		filePath = rules.getPathFromLocation(getRequestURI());
+		std::cout << "after get Path from location " << filePath<< std::endl;
+	}
 	if (!filePath.length())
 		throw httpError(404, "Requested file not found");
+
 	return (filePath);
 }
 
