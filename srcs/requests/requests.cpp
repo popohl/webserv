@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/07 13:42:14 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/07 14:03:17 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ std::string iRequest::createFileFromCgi( Rules& rules,
 
 	cgi.executeCgi(requestedFilePath, _message._body);
 	status = cgi.parseAndRemoveHeaders(response);
-	if (status < 400)
+	if (status < 300)
 	{
 		response.setStatusLine(status);
 		return cgi.writeBodyToTmpFile();
@@ -231,6 +231,13 @@ response getRequest::createResponse() {
 		response.setErrorMessage(400, rules);
 	else if (!rules.isMethodAllowed(Rules::GET))
 		response.setErrorMessage(405, rules);
+	else if (rules.redirectCode != 0)
+	{
+		std::string newUri = getRequestURI().substr(rules.locationPath.size(), std::string::npos);
+		response.addFieldToHeaderMap(std::make_pair("Location", "https://" + rules.redirectUri + "/" + newUri));
+		response.setErrorMessage(rules.redirectCode, rules);
+		return response;
+	}
 	else
 	{
 		if (!isAutoindex(rules))

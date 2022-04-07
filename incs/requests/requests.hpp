@@ -31,7 +31,6 @@ class iRequest
 	virtual		std::string printType() = 0;
 
 	requestBase	_message;
-//	response	_response;
 
 	bool receivingisDone();
 	const std::string & getRequestURI();
