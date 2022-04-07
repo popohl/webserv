@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/07 13:41:10 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 #include "configParsing/Rules.hpp"
 
 std::string date();
-bool fileExists(std::string file);
 
 class iRequest
 {

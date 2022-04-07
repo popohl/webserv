@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/07 13:25:41 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/07 13:42:14 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ void		iRequest::printRequest()
 		 it != _message._header.end();
 		 it++)
 		std::cout << "[" << it->first << "] " << it->second << std::endl;
-//	std::cout << _message._body << std::endl;
 }
 
 iRequest * iRequest::createRequest(std::vector<char> &data, const std::vector<ServerNode *> & server)
@@ -44,7 +43,6 @@ iRequest * iRequest::createRequest(std::vector<char> &data, const std::vector<Se
 	if (eraseLen != std::string::npos)
 	{
 		std::string requestLine(input, 0, eraseLen);
-		std::cout << "request Line Parsed is " << requestLine << std::endl;
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
 		method = eatWord(requestLine);
 		// expect an URI or replace it with / if field is empty
@@ -162,13 +160,9 @@ std::string iRequest::createFilePath( Rules& rules )
 	if ((*(getRequestURI().rbegin())) == '/')
 		filePath = testIndexFile(rules.root + getRequestURI(), rules.index);
 	else
-	{
 		filePath = rules.getPathFromLocation(getRequestURI());
-		std::cout << "after get Path from location " << filePath<< std::endl;
-	}
-	if (!filePath.length() || !fileExists(filePath))
+	if (!filePath.length())
 		throw httpError(404, "Requested file not found");
-
 	return (filePath);
 }
 

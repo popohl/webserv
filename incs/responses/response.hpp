@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/07 13:41:19 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -22,7 +22,7 @@
 #include "configParsing/Parser.hpp"
 #include "configParsing/Rules.hpp"
 
-
+bool fileExists(std::string file);
 
 //#include "requests/requests.hpp"
 

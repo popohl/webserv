@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/07 12:00:48 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/07 13:40:27 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -168,11 +168,6 @@ const std::pair<std::string, std::string>documentType[] = {
 response::response() : _headerFields(), _status(), _statusLine(), _header(), _body(), _file()
 {}
 
-/*
-response::response(Rules rules) : _headerFields(), _status(), _statusLine(), _header(), _body(), _rules(rules)
-{}
-*/
-
 response::response(const response & src) :  _headerFields(src._headerFields),
 											_status(src._status),
 											_statusLine(src._statusLine),
@@ -253,7 +248,8 @@ void	response::createHeader()
 
 void response::tryToOpenFile(std::string filePath)
 {
-	std::cout << filePath << std::endl;
+	if (!fileExists(filePath))
+		throw httpError(404, "Requested file not found");
 	_file.open(filePath.c_str(), std::ios::in | std::ios::binary);
 	if (_file.good())
 	{

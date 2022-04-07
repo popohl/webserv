@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/07 13:30:46 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -48,7 +48,6 @@ void requestBase::parseRequest(std::vector<char> &data)
 	if (!_headerFinished)
 	{
 		std::string input(data.begin(), data.end());
-		std::cout << input << std::endl;
 		size_t		before = input.length();
 
 		parseHeader(input);
@@ -122,8 +121,8 @@ bool	requestBase::HeaderLineIsCorrectlyFormatted(const std::string & line)
 {
 	if ((line.find(":") != std::string::npos)
 		&& (line.find("\r\n") != std::string::npos)
-		&& (*(--(line.end())) == '\n')
-		&& (*(--(--(line.end()))) == '\r'))
+		&& (*(line.rbegin()) == '\n')
+		&& (*(++(line.rbegin())) == '\r'))
 		return (true);
 	else
 		return (false);
@@ -140,7 +139,6 @@ bool	requestBase::lineIsHeaderEnd(const std::string & line)
 //it should only get the body string
 void requestBase::parseBody(std::vector<char> & data)
 {
-	std::cout << "call to parseBody" << std::endl;
 	std::map<std::string, std::string>::iterator notFound = _header.end();
 	if (_header.find("Transfer-Encoding") != notFound)
 	{
