@@ -63,6 +63,8 @@ echo -e "\n${BLUE}SIMULTANEOUS ATTACK GET - PORT 9000 & 7000${NC}"
 stress_test/vegeta attack -duration=5s -targets=stress_test/target.list | tee results.bin | stress_test/vegeta report
 
 rm file_temp_1649785.conf;
+rm results.bin
+rm results.html
 
 
 #Attack post ???
