@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 16:42:56 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 12:23:35 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,8 @@ void	Parser::parseLocation( void )
 	eat(Token::word);
 	configFile.latestServer().latestLocation().locationPath
 		= currentToken.getValue();
+	if (*(configFile.latestServer().latestLocation().locationPath.rbegin()) != '/')
+		configFile.latestServer().latestLocation().locationPath.push_back('/');
 	eat(Token::path);
 	eat(Token::openingBracket);
 	while (currentToken.getType() != Token::closingBracket)
@@ -321,6 +323,8 @@ void	Parser::parseRedirectRule( LocationRules& locationRules )
 void	Parser::parseRootRule( std::string& root )
 {
 	root = currentToken.getValue();
+	if (*(root.rbegin()) != '/')
+		root.push_back('/');
 	eat(Token::path);
 }
 

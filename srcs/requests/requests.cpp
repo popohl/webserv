@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/07 12:03:48 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/07 12:13:54 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,8 +159,8 @@ std::string iRequest::createFilePath( Rules& rules )
 {
 	//check each location for the vector
 	std::string filePath;
-	if (getRequestURI() == "/")
-		filePath = testIndexFile(rules.root + "/", rules.index);
+	if ((*(getRequestURI().rbegin())) == '/')
+		filePath = testIndexFile(rules.root + getRequestURI(), rules.index);
 	else
 	{
 		filePath = rules.getPathFromLocation(getRequestURI());
