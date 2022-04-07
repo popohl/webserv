@@ -1,14 +1,14 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
 /*   requestBase.cpp                                    :+:      :+:    :+:   */
-//                                                    +:+ +:+         +:+     //
-//   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
+/*                                                    +:+ +:+         +:+     */
+/*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/07 13:30:46 by pcharton         ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
+/*   Updated: 2022/04/07 15:22:48 by fmonbeig         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "requests/requestBase.hpp"
 #include <string.h>
@@ -43,8 +43,29 @@ void checkLineEnd(const std::string &input)
 
 requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _status(), _unfinishedData(),  _header(), _bodySize(0), _bodyExpectedSize(0), _body() {}
 
+bool isbullshit( std::vector<char >& data)
+{
+	for (std::vector<char>::iterator it = data.begin();
+		it != data.end();
+		it++)
+	{
+		if (iscntrl(*it))
+			return (true);
+	}
+	return (false);
+
+}
+
 void requestBase::parseRequest(std::vector<char> &data)
 {
+	if (isbullshit(data))
+	{
+		data.clear();
+		_headerFinished = true;
+		_bodyFinished = true;
+		return;
+	}
+
 	if (!_headerFinished)
 	{
 		std::string input(data.begin(), data.end());

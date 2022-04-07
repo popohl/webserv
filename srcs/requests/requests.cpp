@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 14:03:17 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 15:04:18 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ iRequest * iRequest::createRequest(std::vector<char> &data, const std::vector<Se
 		}
 		else
 			httpVersion = eatWord(requestLine);
-	}	
+	}
 	result = allocateRequest(method, requestUri, httpVersion);
 	data.erase(data.begin(), data.begin() + eraseLen + 2);
 	result->_server = &server;
@@ -226,7 +226,7 @@ response getRequest::createResponse() {
 	response response;
 
 	rules.setValues(*findServer(), getRequestURI().c_str());
-	
+
 	if (!_message.containsHostField())
 		response.setErrorMessage(400, rules);
 	else if (!rules.isMethodAllowed(Rules::GET))
@@ -332,7 +332,7 @@ response postRequest::createResponse() {
 				 it != _message._body.end();
 				 it++)
 				file << *it;
-			file.close();			
+			file.close();
 			response.tryToOpenFile(postedFile);
 			response.setStatusLine(201);
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
