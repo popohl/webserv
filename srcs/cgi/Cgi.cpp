@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/07 09:21:35 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 10:07:22 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void	Cgi::executeCgi( std::string requestedFilePath, std::string body )
 	int			forkPid;
 	int			returnValue;
 
-	std::cout << "Uri requested: " << requestedFilePath << std::endl;
 	createPipe(_pipeFd);
 	forkPid = createFork();
 	if (isChildProcess(forkPid))
@@ -107,16 +106,13 @@ void	Cgi::executeChildProcess( std::string requestedFilePath, std::string body )
 	const char*	cgiProgramPath = _rules.cgiPath.c_str();
 	int		err;
 
-	/* std::cout << "Cgi infos:" << std::endl << "cgiProgramPath: " */
-	/* 	<< cgiProgramPath << ", requestedFilePath: " << requestedFilePath */
-	/* 	<< std::endl; */
 	close(_pipeFd[PIPE_READ]);
 	if (dup2(_pipeFd[PIPE_WRITE], STDOUT_FILENO) == -1)
 		exit(500);
 	close(_pipeFd[PIPE_WRITE]);
 	createEnvp(requestedFilePath);
 	createArgv(cgiProgramPath, stripExtraPathInfo(requestedFilePath));
-	/* if (isPostRequest()) */
+	if (isPostRequest())
 		writeBodyToStdIn(body);
 	err = execve(cgiProgramPath, _argv, _envp);
 	if (err != -1)
