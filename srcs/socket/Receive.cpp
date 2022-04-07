@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/07 14:14:06 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 14:18:13 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void	deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & 
 	sets.readfds.remove(client.getSocketFd());
 	sets.writefds.remove(client.getSocketFd());
 	close(client.getSocketFd());
-//	std::cout << "suppression of client " << client.getSocketFd() << std::endl;
 	delete addr;
 }
 
@@ -39,15 +38,6 @@ std::vector<char> buildSendReponse(SocketClient & client)
 	response response = client._request->createResponse();
 	client._responseStatus = response.getStatus();
 	responseRawData = response.createFormattedResponse();
-
-		// for logging purposes
-/*
-		request->printRequest();
-		std::cout << "==============" << std::endl;
-		response.printStatus();
-		response.printHeader();
-		std::cout << "==============" << std::endl;
-*/
 	return (responseRawData);
 }
 
@@ -73,7 +63,6 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 	std::vector<char> data;
 	data.reserve(ret);
 	data.assign(buff, buff + ret);
-
 	if (!client._request)
 		client._request = iRequest::createRequest(data, client._servers);
 	else
@@ -99,7 +88,6 @@ void	createClient(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & s
 		return ;
 	}
 	fcntl(temp_fd, F_SETFL, O_NONBLOCK);
-																			// Pierre : I need this part !
 	SocketClient *client = new SocketClient(socket_port.getPort(), temp_fd, socket_port._servers);
 	socket.push_back(client);
 	sets.readfds.add(temp_fd);

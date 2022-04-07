@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 14:20:43 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,14 @@
 void	serverLog(SocketClient & client)
 {
 	Rules rules;
+	
 	rules.setValues(*(client._request->findServer()), client._request->getRequestURI().c_str());
 	std::cout << "\e[1;33m###########  LOG  ############\e[0m" << std::endl;
 	std::cout << "\e[1;37mClient FD: \e[0m" << client.getSocketFd() << "\e[1;37m    Port: \e[0m" << client.getPort() << std::endl;
 	std::cout << "\e[1;37mRequest  : \e[0m" << "\e[1;34m"<< client._request->printType() << "\e[0m"<< std::endl;
 	std::cout << "\e[1;37mByte send: \e[0m" << client._totalSend << std::endl;
-	std::cout << "\e[1;37mStatus   :\e[0m \e[1;32m" << client._responseStatus << "\e[0m" << std::endl;
+	//client._request->getRequestURI();
+	std::cout << "\e[1;37mStatus   :\e[0m \e[1;32m" << client._responseStatus << "\e[0m" << std::endl; // mettre en couleur
 
 	std::cout << "\e[1;33m######  SERVER RULES  ########\e[0m" << std::endl;
 	std::cout << "\e[1;37mServer Name: \e[0m" << rules.serverName[0] <<std::endl;
@@ -53,7 +55,6 @@ void	sendToClient(ASocket *tmp_client, std::vector<ASocket*> & socket, t_FD & se
 		}
 		client->erasePartResponse(SENDING);
 		client->_totalSend += ret;
-		// std::cout << "TOTAL = " << client->_totalSend << std::endl;
 	}
 	else
 	{
@@ -73,7 +74,4 @@ void	sendToClient(ASocket *tmp_client, std::vector<ASocket*> & socket, t_FD & se
 		sets.writefds.remove(client->getSocketFd());
 		sets.readfds.add(client->getSocketFd());
 	}
-	// std::cout << " Message bytes =" << response.size() << " Bytes Sent =" << ret << std::endl;
-	// std::cout << "\n\e[0;32m======== Message sent to client ========\e[0m\n" << std::endl;
-	// Remove request to serve another one (need to handle multi write case)
 }

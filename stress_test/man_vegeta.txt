@@ -19,3 +19,7 @@ The total number of bytes sent (out) or received (in) with the request or respon
 The mean number of bytes sent (out) or received (in) with the request or response bodies.
 Success shows the percentiles of successful requests sent to the application
 Status Codes provides a counter of the HTTP response codes received and their occurrence. A 0 status codes mean a request failed to be sent.
+
+
+Man Siege
+https://www.tecmint.com/load-testing-web-servers-with-siege-benchmarking-tool/
