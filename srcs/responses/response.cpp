@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/07 11:32:23 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/07 11:50:59 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -285,13 +285,17 @@ void	response::readWholeFile(std::vector<char> & store)
 {
 	size_t	fileSize = getResponseFileSize();
 	char * buffer = new char[fileSize];
+	size_t storePreviousSize = store.size();
 	std::cout << ">> before reserve " << store.size() << " " << store.capacity() << std::endl;
 	std::cerr << ">> fileSize: " << fileSize << std::endl;
+	std::cout << "is file good :" << std::boolalpha << _file.good() << std::endl;
+	std::cout << "file offset " << _file.tellg() << std::endl;
 	_file.seekg(0, _file.beg);
-	store.reserve(store.size() + fileSize);
+	store.resize(store.size() + fileSize);
 	std::cout << ">> after reserve" << store.size() << " " << store.capacity() << std::endl;
-	std::vector<char>::iterator it = store.begin();
-	_file.read(&(*it), fileSize);
+	std::vector<char>::iterator it = store.end();
+	_file.read(&store[storePreviousSize], fileSize);
+	std::cout << std::boolalpha << _file.good() << std::endl;
 	std::cout << std::boolalpha << _file.eof() << std::endl;
 	std::cout << ">> fail " <<  std::boolalpha << _file.fail()<< std::endl;
 	std::cout << ">> badbit " <<  std::boolalpha << _file.bad()<< std::endl;
