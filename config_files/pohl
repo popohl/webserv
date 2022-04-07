@@ -14,4 +14,7 @@ server {
 	location /www/ {
 		root ./www/;
 	}
+	location /arch/ {
+		redirect 301 www.archlinux.org;
+	}
 }
