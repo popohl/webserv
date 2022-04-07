@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 10:51:16 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 12:00:36 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ std::string iRequest::createFileFromCgi( Rules& rules,
 
 	cgi.executeCgi(requestedFilePath, _message._body);
 	status = cgi.parseAndRemoveHeaders(response);
-	if (status < 400)
+	if (status < 300)
 	{
 		response.setStatusLine(status);
 		return cgi.writeBodyToTmpFile();

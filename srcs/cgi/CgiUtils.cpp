@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/07 10:44:07 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 12:03:29 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,6 @@ void	Cgi::writeBodyToStdIn( std::vector<unsigned char>& body )
 	int			pipeFd[2];
 	std::vector<unsigned char>::iterator it = body.begin();
 
-	std::cerr << ">> " << "WAS HERE" << std::endl;
 	createPipe(pipeFd);
 	if (write(pipeFd[PIPE_WRITE], &(*it), body.size())
 			!= static_cast<ssize_t>(body.size()))
@@ -226,7 +225,6 @@ static std::string getHeaderValue( std::string& rawHeaders, size_t& nextHeaderPo
 	size_t		endOfHeader = rawHeaders.find('\n', nextHeaderPosition);
 	std::string headerValue = rawHeaders.substr(valueBeginPos, endOfHeader - valueBeginPos);
 
-	std::cout << "Header value: " << headerValue << std::endl;
 	nextHeaderPosition = endOfHeader;
 	if (endOfHeader != std::string::npos)
 		nextHeaderPosition++;
@@ -268,10 +266,8 @@ int		Cgi::writeHeadersToResponse( std::string& rawHeaders,
 	{
 		if (stringComparison(rawHeaders, "Location", nextHeaderPosition))
 		{
-			_rules.redirectCode = 302;
-			_rules.redirectUri
-				= getHeaderValue(rawHeaders, nextHeaderPosition);
 			status = 302;
+			response.replaceFieldToHeaderMap(std::make_pair("Location", getHeaderValue(rawHeaders, nextHeaderPosition)));
 		}
 		else if (stringComparison(rawHeaders, "Status", nextHeaderPosition))
 			status = atoi(getHeaderValue(rawHeaders, nextHeaderPosition).c_str());
