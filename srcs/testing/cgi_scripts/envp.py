@@ -1,4 +1,5 @@
 import os
+import sys
 import cgi, cgitb 
 
 print('conTENt-TyPe: text/html\b\n\b\n')
@@ -13,3 +14,6 @@ print('</br>')
 form = cgi.FieldStorage()
 print(form)
 print(form.getvalue('fname'));
+
+query_string = sys.stdin.read()
+print(query_string)
