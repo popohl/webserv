@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:54 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 19:10:43 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 09:21:35 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ Cgi::~Cgi( void )
 	return;
 }
 
-void	Cgi::executeCgi( std::string requestedFilePath )
+void	Cgi::executeCgi( std::string requestedFilePath, std::string body )
 {
 	int			forkPid;
 	int			returnValue;
@@ -44,7 +44,7 @@ void	Cgi::executeCgi( std::string requestedFilePath )
 	forkPid = createFork();
 	if (isChildProcess(forkPid))
 	{
-		executeChildProcess(requestedFilePath);
+		executeChildProcess(requestedFilePath, body);
 		exit(0);
 	}
 	waitpid(forkPid, &returnValue, 0);
@@ -102,7 +102,7 @@ void	Cgi::readCgiOutput( void )
 		throw serverError("Error reading cgi output");
 }
 
-void	Cgi::executeChildProcess( std::string requestedFilePath )
+void	Cgi::executeChildProcess( std::string requestedFilePath, std::string body )
 {
 	const char*	cgiProgramPath = _rules.cgiPath.c_str();
 	int		err;
@@ -116,8 +116,8 @@ void	Cgi::executeChildProcess( std::string requestedFilePath )
 	close(_pipeFd[PIPE_WRITE]);
 	createEnvp(requestedFilePath);
 	createArgv(cgiProgramPath, stripExtraPathInfo(requestedFilePath));
-	if (isPostRequest())
-		writeBodyToStdIn();
+	/* if (isPostRequest()) */
+		writeBodyToStdIn(body);
 	err = execve(cgiProgramPath, _argv, _envp);
 	if (err != -1)
 		exit(0);

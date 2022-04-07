@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 14:51:55 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 19:08:07 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 09:21:32 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ public:
 	Cgi( Rules& rules, iRequest* request );
 	~Cgi( void );
 
-	void		executeCgi( std::string requestedFilePath );
+	void		executeCgi( std::string requestedFilePath, std::string body );
 	int			parseAndRemoveHeaders( response& response );
 	std::string writeBodyToTmpFile( void );
 
@@ -43,12 +43,12 @@ private:
 	Cgi	&operator=( const Cgi &src );
 
 	void	readCgiOutput( void );
-	void	executeChildProcess( std::string requestedFilePath );
+	void	executeChildProcess( std::string requestedFilePath, std::string body );
 
 	void	createArgv( const char* binPath, const char* filePath );
 	void	writeToEnvp( const std::map<std::string, std::string>& envp);
 	void	createEnvp( std::string requestedFilePath );
-	void	writeBodyToStdIn( void );
+	void	writeBodyToStdIn( std::string bdy );
 	int		createFork( void );
 	bool	isChildProcess( int forkPid );
 	void	createPipe( int pipeFd[2] );

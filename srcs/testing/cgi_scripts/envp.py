@@ -12,8 +12,11 @@ for param in os.environ.keys():
 print('</br>')
 
 form = cgi.FieldStorage()
+print("</br>cgi.FieldStorage: </br>")
 print(form)
+print("</br>fname value: </br>")
 print(form.getvalue('fname'));
 
+print("</br>stdin:</br>")
 query_string = sys.stdin.read()
 print(query_string)

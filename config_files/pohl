@@ -11,4 +11,7 @@ server {
 		allowed_method GET POST;
 		index ./envp.py;
 	}
+	location /www/ {
+		root ./www/;
+	}
 }
