@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:56 by pohl              #+#    #+#             */
-/*   Updated: 2022/03/24 17:08:27 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 21:23:02 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ private:
 	void	parseRootRule( std::string& root );
 	void	parseServerNameRule( ServerRules& serverRules );
 	void	parseUploadPathRule( std::string& uploadPath );
+
+	void	theCorrectionIsTrash( void );
 
 	ConfigFileNode						configFile;
 	Lexer								lexer;

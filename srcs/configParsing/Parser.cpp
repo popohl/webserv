@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/07 12:23:35 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 21:29:27 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,10 +83,27 @@ void	Parser::openFile( const std::string inputFileName )
 	this->parseConfigFile();
 }
 
+void	Parser::theCorrectionIsTrash( void )
+{
+	std::vector<ServerNode>::iterator it1, it2;
+
+	for (it1 = configFile.getServerList().begin();
+			it1 != configFile.getServerList().end(); it1++)
+	{
+		for (it2 = it1 + 1; it2 != configFile.getServerList().end(); it2++)
+		{
+			if (it1->getServerRules().listenPort == it2->getServerRules().listenPort)
+				throw ParsingException("Multiple servers listening on the same "
+						"port is not allowed");
+		}
+	}
+}
+
 void	Parser::parseConfigFile( void )
 {
 	while (currentToken.getType() != Token::endOfFile)
 		parseServer();
+	theCorrectionIsTrash();
 }
 
 void	Parser::afterParseLocations( std::vector<Token> &locationTokens )
