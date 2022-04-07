@@ -1,12 +1,12 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   requestBase.cpp                                    :+:      :+:    :+:   //
+/*   requestBase.cpp                                    :+:      :+:    :+:   */
 //                                                    +:+ +:+         +:+     //
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/06 20:42:29 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/07 13:30:46 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -43,12 +43,11 @@ void checkLineEnd(const std::string &input)
 
 requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _status(), _unfinishedData(),  _header(), _bodySize(0), _bodyExpectedSize(0), _body() {}
 
-void requestBase::parseRequest(std::vector<unsigned char> &data)
+void requestBase::parseRequest(std::vector<char> &data)
 {
 	if (!_headerFinished)
 	{
 		std::string input(data.begin(), data.end());
-		std::cout << input << std::endl;
 		size_t		before = input.length();
 
 		parseHeader(input);
@@ -122,8 +121,8 @@ bool	requestBase::HeaderLineIsCorrectlyFormatted(const std::string & line)
 {
 	if ((line.find(":") != std::string::npos)
 		&& (line.find("\r\n") != std::string::npos)
-		&& (*(--(line.end())) == '\n')
-		&& (*(--(--(line.end()))) == '\r'))
+		&& (*(line.rbegin()) == '\n')
+		&& (*(++(line.rbegin())) == '\r'))
 		return (true);
 	else
 		return (false);
@@ -138,9 +137,8 @@ bool	requestBase::lineIsHeaderEnd(const std::string & line)
 }
 
 //it should only get the body string
-void requestBase::parseBody(std::vector<unsigned char> & data)
+void requestBase::parseBody(std::vector<char> & data)
 {
-	std::cout << "call to parseBody" << std::endl;
 	std::map<std::string, std::string>::iterator notFound = _header.end();
 	if (_header.find("Transfer-Encoding") != notFound)
 	{
@@ -155,9 +153,9 @@ void requestBase::parseBody(std::vector<unsigned char> & data)
 	}
 }
 
-size_t	requestBase::dataContainsCRLF(const std::vector<unsigned char> & data)
+size_t	requestBase::dataContainsCRLF(const std::vector<char> & data)
 {
-	for (std::vector<unsigned char>::const_iterator it = data.begin();
+	for (std::vector<char>::const_iterator it = data.begin();
 		 it != data.end();
 		 it++)
 	{
@@ -167,10 +165,10 @@ size_t	requestBase::dataContainsCRLF(const std::vector<unsigned char> & data)
 	return (false);
 }
 
-size_t	requestBase::findCRLFPositionInData(const std::vector<unsigned char> & data)
+size_t	requestBase::findCRLFPositionInData(const std::vector<char> & data)
 {
 	size_t index(0);
-	for (std::vector<unsigned char>::const_iterator it = data.begin();
+	for (std::vector<char>::const_iterator it = data.begin();
 		 it != data.end();
 		 it++)
 	{
@@ -182,7 +180,7 @@ size_t	requestBase::findCRLFPositionInData(const std::vector<unsigned char> & da
 	return index;
 }
 
-void	requestBase::processChunk(std::vector<unsigned char> & data)
+void	requestBase::processChunk(std::vector<char> & data)
 {
 	if (_chunksList.empty() || _chunksList.back())
 		_chunksList.push_back(eatChunkSize(data));
@@ -217,10 +215,10 @@ void	requestBase::processChunk(std::vector<unsigned char> & data)
 	*/
 }
 
-size_t requestBase::eatChunkSize(std::vector<unsigned char> & data)
+size_t requestBase::eatChunkSize(std::vector<char> & data)
 {
 	std::string chunkSize;
-	for (std::vector<unsigned char>::const_iterator it = data.begin();
+	for (std::vector<char>::const_iterator it = data.begin();
 		 isdigit(*it) && it != data.end();
 		 it++)
 		chunkSize += *it;

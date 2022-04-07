@@ -30,10 +30,9 @@ void		iRequest::printRequest()
 		 it != _message._header.end();
 		 it++)
 		std::cout << "[" << it->first << "] " << it->second << std::endl;
-//	std::cout << _message._body << std::endl;
 }
 
-iRequest * iRequest::createRequest(std::vector<unsigned char> &data, const std::vector<ServerNode *> & server)
+iRequest * iRequest::createRequest(std::vector<char> &data, const std::vector<ServerNode *> & server)
 {
 	iRequest * result = NULL;
 	std::string input(data.begin(), data.end());
@@ -44,7 +43,6 @@ iRequest * iRequest::createRequest(std::vector<unsigned char> &data, const std::
 	if (eraseLen != std::string::npos)
 	{
 		std::string requestLine(input, 0, eraseLen);
-		std::cout << "request Line Parsed is " << requestLine << std::endl;
 		//Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
 		method = eatWord(requestLine);
 		// expect an URI or replace it with / if field is empty
@@ -159,8 +157,8 @@ std::string iRequest::createFilePath( Rules& rules )
 {
 	//check each location for the vector
 	std::string filePath;
-	if (getRequestURI() == "/")
-		filePath = testIndexFile(rules.root + "/", rules.index);
+	if ((*(getRequestURI().rbegin())) == '/')
+		filePath = testIndexFile(rules.root + getRequestURI(), rules.index);
 	else
 		filePath = rules.getPathFromLocation(getRequestURI());
 	if (!filePath.length())
@@ -330,7 +328,7 @@ response postRequest::createResponse() {
 		std::ofstream file(postedFile.c_str(), std::ofstream::app);
 		if (file.good())
 		{
-			for (std::vector<unsigned char>::iterator it = _message._body.begin();
+			for (std::vector<char>::iterator it = _message._body.begin();
 				 it != _message._body.end();
 				 it++)
 				file << *it;

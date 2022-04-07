@@ -33,9 +33,9 @@ void	deleteClient(SocketClient & client, std::vector<ASocket*> & socket, t_FD & 
 	delete addr;
 }
 
-std::vector<unsigned char> buildSendReponse(SocketClient & client)
+std::vector<char> buildSendReponse(SocketClient & client)
 {
-	std::vector<unsigned char> responseRawData;
+	std::vector<char> responseRawData;
 	response response = client._request->createResponse();
 	client._responseStatus = response.getStatus();
 	responseRawData = response.createFormattedResponse();
@@ -70,7 +70,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		deleteClient(client, socket, sets);
 		return ;
 	}
-	std::vector<unsigned char> data;
+	std::vector<char> data;
 	data.reserve(ret);
 	data.assign(buff, buff + ret);
 

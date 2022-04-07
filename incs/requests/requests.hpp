@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 11:50:04 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/07 13:41:10 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,19 +20,17 @@
 #include "configParsing/Rules.hpp"
 
 std::string date();
-bool fileExists(std::string file);
 
 class iRequest
 {
 	public:
 
 	virtual		~iRequest();
-	static		iRequest * createRequest(std::vector<unsigned char> &, const std::vector<ServerNode *> & ref);
+	static		iRequest * createRequest(std::vector<char> &, const std::vector<ServerNode *> & ref);
 	virtual		response createResponse() = 0;
 	virtual		std::string printType() = 0;
 
 	requestBase	_message;
-//	response	_response;
 
 	bool receivingisDone();
 	const std::string & getRequestURI();

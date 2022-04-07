@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/07 12:03:29 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,10 +114,10 @@ void	Cgi::createEnvp( std::string requestedFilePath )
 	writeToEnvp(envp);
 }
 
-void	Cgi::writeBodyToStdIn( std::vector<unsigned char>& body )
+void	Cgi::writeBodyToStdIn( std::vector<char>& body )
 {
 	int			pipeFd[2];
-	std::vector<unsigned char>::iterator it = body.begin();
+	std::vector<char>::iterator it = body.begin();
 
 	createPipe(pipeFd);
 	if (write(pipeFd[PIPE_WRITE], &(*it), body.size())

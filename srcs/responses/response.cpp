@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/07 10:29:53 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/07 13:40:27 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -168,11 +168,6 @@ const std::pair<std::string, std::string>documentType[] = {
 response::response() : _headerFields(), _status(), _statusLine(), _header(), _body(), _file()
 {}
 
-/*
-response::response(Rules rules) : _headerFields(), _status(), _statusLine(), _header(), _body(), _rules(rules)
-{}
-*/
-
 response::response(const response & src) :  _headerFields(src._headerFields),
 											_status(src._status),
 											_statusLine(src._statusLine),
@@ -201,9 +196,9 @@ void response::printHeader() { std::cout << _header << std::endl;}
 void response::printStatus() { std::cout << "status line : " +_statusLine << std::endl; }
 
 
-std::vector<unsigned char> response::createFormattedResponse()
+std::vector<char> response::createFormattedResponse()
 {
-	std::vector<unsigned char>raw;
+	std::vector<char>raw;
 	createHeader();
 	size_t size = _header.length();
 	if (_body.length())
@@ -253,6 +248,8 @@ void	response::createHeader()
 
 void response::tryToOpenFile(std::string filePath)
 {
+	if (!fileExists(filePath))
+		throw httpError(404, "Requested file not found");
 	_file.open(filePath.c_str(), std::ios::in | std::ios::binary);
 	if (_file.good())
 	{
@@ -281,13 +278,13 @@ size_t response::getResponseFileSize()
 		return (0);
 }
 
-void	response::readWholeFile(std::vector<unsigned char> & store)
+void	response::readWholeFile(std::vector<char> & store)
 {
 	size_t	fileSize = getResponseFileSize();
-	char * buffer = new char[fileSize];
-	_file.read(buffer, fileSize);
-	store.insert(store.end(), buffer, buffer + fileSize);
-	delete [] buffer;
+	size_t storePreviousSize = store.size();
+	_file.seekg(0, _file.beg);
+	store.resize(store.size() + fileSize);
+	_file.read(&store[storePreviousSize], fileSize);
 }
 
 

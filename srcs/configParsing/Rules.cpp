@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:10:41 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 11:25:10 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 12:20:13 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,8 @@ std::string	Rules::getPathFromLocation( std::string pathFromUrl ) const
 	if (root.empty())
 		return pathFromUrl;
 
-	std::string result = pathFromUrl;
+	std::string realPath = pathFromUrl;
 
-	result.replace(0, locationPath.size(), root);
-	return result;
+	realPath.replace(0, locationPath.size(), root);
+	return realPath;
 }

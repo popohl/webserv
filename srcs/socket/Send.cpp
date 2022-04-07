@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/07 10:49:57 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	serverLog(SocketClient & client)
 void	sendToClient(ASocket *tmp_client, std::vector<ASocket*> & socket, t_FD & sets)
 {
 	SocketClient					*client = dynamic_cast<SocketClient*>(tmp_client);
-	std::vector<unsigned char>		response = client->getResponse();
+	std::vector<char>		response = client->getResponse();
 	int								ret;
 	char							buffer[SENDING];
 

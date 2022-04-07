@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/04/07 10:40:05 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,10 @@ SocketClient::~SocketClient(void)
 //   MEMBER FUNCTION					        //
 // +------------------------------------------+ //
 
-std::vector<unsigned char>	SocketClient::getResponse() const
+std::vector<char>	SocketClient::getResponse() const
 { return (_response); }
 
-void SocketClient::setResponse(std::vector<unsigned char> input)
+void SocketClient::setResponse(std::vector<char> input)
 { _response = input; }
 
 void	SocketClient::clearAll()
