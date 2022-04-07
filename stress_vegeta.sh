@@ -15,6 +15,15 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+tfile=$(mktemp /tmp/XXXXX.conf) #Create a temp file .conf
+
+#listen : port you want to listen
+#server_name : Name of the domain (e.g amazon.fr / amazon.fr)
+#index : name of the main index
+#location : all the rules to access files / img ...
+#E.G : location / { root ./www } if you go to amazon.be you can access all the files in directory ./www
+#allowed method : if no method allowed you only have GET
+
 echo "server {
 	   listen :9000;
 	   server_name localhost;
@@ -43,30 +52,24 @@ server {
 	   index	doesnotexist index.html;
 
 	   location / {
+		  allowed_method POST GET;
 		  root ./www;
 	   }
 	   error_page 404 ./404.html;
 	   error_page 403 ./403.html;
 }
-" > file_temp_1649785.conf
+" > $tfile
 
-
-gnome-terminal -x sh -c "./webserv ./file_temp_1649785.conf"
+gnome-terminal -x sh -c "./webserv $tfile"
 
 echo -e "\n${RED}ATTACK GET - PORT 9000 ${NC}"
-echo "GET http://localhost:9000" | stress_test/vegeta attack -duration=5s | tee results.bin | stress_test/vegeta report
+echo "GET http://localhost:9000" | stress_test/vegeta attack -duration=10s | tee results.bin | stress_test/vegeta report
+
 echo -e "\n${RED}ATTACK GET - PORT 8000 ${NC}"
-echo "GET http://localhost:8000/" | stress_test/vegeta attack -duration=2s | tee results.bin | stress_test/vegeta report
-echo -e "\n${YELLOW}ATTACK POST - PORT 7000 ${NC}"
-echo "POST http://localhost:7000" | stress_test/vegeta attack -duration=2s | tee results.bin | stress_test/vegeta report
+echo "GET http://localhost:8000/" | stress_test/vegeta attack -duration=10s| tee results.bin | stress_test/vegeta report
+
 echo -e "\n${BLUE}SIMULTANEOUS ATTACK GET - PORT 9000 & 7000${NC}"
-stress_test/vegeta attack -duration=5s -targets=stress_test/target.list | tee results.bin | stress_test/vegeta report
+stress_test/vegeta attack -duration=10s -targets=stress_test/target.list | tee results.bin | stress_test/vegeta report
 
-rm file_temp_1649785.conf;
+rm $tfile;
 rm results.bin
-rm results.html
-
-
-#Attack post ???
-#gestion de delete avec rajout de boutton
-#

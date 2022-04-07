@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/06 15:35:01 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/07 11:21:35 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ void	sendToClient(ASocket *tmp_client, std::vector<ASocket*> & socket, t_FD & se
 		}
 		client->erasePartResponse(SENDING);
 		client->_totalSend += ret;
-		// std::cout << "TOTAL = " << client->_totalSend << std::endl;
 	}
 	else
 	{
@@ -78,7 +77,4 @@ void	sendToClient(ASocket *tmp_client, std::vector<ASocket*> & socket, t_FD & se
 		sets.writefds.remove(client->getSocketFd());
 		sets.readfds.add(client->getSocketFd());
 	}
-	// std::cout << " Message bytes =" << response.size() << " Bytes Sent =" << ret << std::endl;
-	// std::cout << "\n\e[0;32m======== Message sent to client ========\e[0m\n" << std::endl;
-	// Remove request to serve another one (need to handle multi write case)
 }

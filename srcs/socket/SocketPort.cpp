@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:57:54 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/01 15:56:44 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/07 11:19:17 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ bool	SocketPort::bindSocket() const
 
 bool	SocketPort::listenSocket() const
 {
-	if (listen(_socket_fd, 10) < 0) // only 10 connection at the same time
+	if (listen(_socket_fd, 10) < 0)
 	{
 		perror("Listen failed");
 		return (false);

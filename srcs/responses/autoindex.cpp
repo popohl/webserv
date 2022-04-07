@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 11:57:16 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/06 14:54:31 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/07 11:23:13 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,6 @@
 static void	createLink(std::string & index, std::string & root, struct dirent *direntp)
 {
 	index += "<a href=\"";
-	// index += root;
-	// index += "/";
 	index += direntp->d_name;
 	index += "\">";
 	index += direntp->d_name;
@@ -31,7 +29,7 @@ static void	createLink(std::string & index, std::string & root, struct dirent *d
 }
 
 // The autoindex function return a string with an automatic index create in HTML
-// Root is the directory where the autoindex have to function
+// Root is the directory where the html page are (ex: www)
 std::string autoIndex(std::string	root)
 {
 	DIR*			dirp;
