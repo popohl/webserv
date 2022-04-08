@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/08 19:37:56 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -78,10 +78,12 @@ private:
 
 	void updateResponseStatus(void);
 	size_t	findBodyLength(void);
-
+	void	eatCRLF(std::vector<char> & data);
+	
 	//chunked transfer utils
 
 	std::deque<size_t> _chunksList;
+
 	size_t	eatChunkSize(std::vector<char> & data);
 	void	processChunk(std::vector<char> & data);
 	size_t	dataContainsCRLF(const std::vector<char> & data);

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-//   Updated: 2022/04/08 16:28:08 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/08 23:03:08 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,11 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 {
 	SocketClient	&client = dynamic_cast<SocketClient&>(tmp_socket);
 	int				ret;
-	char			buff[90000];
+	char			buff[500000];
 
 	ret = 1;
-	memset((void*)buff, 0, 90000);
-	if ((ret = recv(client.getSocketFd(), buff, 90000, 0)) < 0)
+	memset((void*)buff, 0, 500000);
+	if ((ret = recv(client.getSocketFd(), buff, 500000, 0)) < 0)
 	{
 		perror("Recv failed:");
 		deleteClient(client, socket, sets);
@@ -60,7 +60,6 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		deleteClient(client, socket, sets);
 		return ;
 	}
-
 	std::vector<char> data;
 	data.reserve(ret);
 	data.assign(buff, buff + ret);

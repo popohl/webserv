@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/08 16:26:06 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/08 20:35:57 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,11 +167,27 @@ void requestBase::parseBody(std::vector<char> & data)
 	std::map<std::string, std::string>::iterator notFound = _header.end();
 	if (_header.find("Transfer-Encoding") != notFound)
 	{
-		if (_header["Transfer-Encoding"] == "chunked")
+		//does not work if file is bigger than recv buffer
+/*		if (_header["Transfer-Encoding"] == "chunked")
 		{
+			if (!_unfinishedData.empty())
+			{
+				data.insert(data.begin(), _unfinishedData.begin(), _unfinishedData.end());
+				_unfinishedData.clear();
+			}
+
 			while (!_bodyFinished && !data.empty())
+			{
+				if (_chunksList.empty() || _chunksList.back())
+					_chunksList.push_back(eatChunkSize(data));
+				std::cout << " before chunking " << data.size() << std::endl;
 				processChunk(data);
+				if (_chunksList.back() > data.size())
+					break
+				std::cout << data.size() << std::endl;
+			}
 		}
+*/
 	}
 	else if	(_header.find("Content-Length") != notFound)
 	{
@@ -210,26 +226,32 @@ size_t	requestBase::findCRLFPositionInData(const std::vector<char> & data)
 
 void	requestBase::processChunk(std::vector<char> & data)
 {
-	if (!_unfinishedData.empty())
-	{
-		data.insert(data.begin(), _unfinishedData.begin(), _unfinishedData.end());
-		_unfinishedData.clear();
-	}
-	if (_chunksList.empty() || _chunksList.back())
-		_chunksList.push_back(eatChunkSize(data));
 
 	if (_chunksList.back())
 	{
+		eatCRLF(data);
 		_body.insert(_body.end(), data.begin(), data.begin() + _chunksList.back());
-		data.erase(data.begin(), data.begin() + _chunksList.back());
-		if ((data.size() > 2) && data[0] == '\r' && data[0] == '\n')
-			data.erase(data.begin(), data.begin() + 2);
+		std::cout << "data size " << data.size() << std::endl;
+		if (data.size() > _chunksList.back())
+		{
+			data.erase(data.begin(), data.begin() + _chunksList.back());
+			eatCRLF(data);
+		}
+		else
+		{
+			_chunksList.back() -= data.size();
+			data.clear();
+
+		}
+				
+
 	}
 	else
 	{
-		if ((data.size() > 2) && data[0] == '\r' && data[0] == '\n')
+		if ((data.size() >= 2) && data[0] == '\r' && data[1] == '\n')
 		{
-			data.erase(data.begin(), data.begin() + 2);
+			std::cout << "last chunk found " << std::endl;
+//			data.erase(data.begin(), data.begin() + 2);
 			_bodyFinished = true;
 			_bodyExpectedSize = 0;
 			_headerFinished = false;
@@ -238,8 +260,14 @@ void	requestBase::processChunk(std::vector<char> & data)
 		}
 		else
 			_unfinishedData = data;			
-	}
+	}		
 }
+
+void	requestBase::eatCRLF(std::vector<char> & data)
+{
+	if ((data.size() >= 2) && (data[0] == '\r') && (data[1] == '\n'))
+		data.erase(data.begin(), data.begin() + 2);
+}	
 
 size_t requestBase::eatChunkSize(std::vector<char> & data)
 {
@@ -250,10 +278,16 @@ size_t requestBase::eatChunkSize(std::vector<char> & data)
 		chunkSize += *it;
 	
 	std::stringstream superConverter;
+	std::cout << "chunkSize is " << chunkSize << "of size " << chunkSize.size() << std::endl;
 	superConverter << std::hex << chunkSize;
 	size_t result;
 	superConverter >> result;
+	std::cout << "converted size is " << result << std::endl;
 	data.erase(data.begin(), data.begin() + chunkSize.length());
+/*
+	if ((data.size() > 2) && (data[0] == '\r') && (data[1] == '\n'))
+			data.erase(data.begin(), data.begin() + 2);
+*/
 	return (result);
 }
 
@@ -311,4 +345,3 @@ size_t requestBase::findBodyLength(void)
 	else
 		return (0);
 }
-

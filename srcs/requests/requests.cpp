@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/08 12:59:59 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/08 23:00:40 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ bool iRequest::receivingisDone()
 
 std::string iRequest::eatWord(std::string & line)
 {
+	//eats a word and remove spaces after
 	size_t endOfWord = line.find(" ");
 	std::string word(line, 0, endOfWord);
 
@@ -157,7 +158,6 @@ bool iRequest::containsPort(std::string hostname)
 
 std::string iRequest::createFilePath( Rules& rules )
 {
-	//check each location for the vector
 	std::string filePath;
 	filePath = rules.getPathFromLocation(getRequestURI());
 	if ((*(filePath.rbegin())) == '/')
@@ -172,7 +172,7 @@ std::string iRequest::createFileFromCgi( Rules& rules,
 {
 	Cgi	cgi(rules, this);
 	int	status;
-
+	std::cout << "path in cgi : " << requestedFilePath << std::endl;
 	cgi.executeCgi(requestedFilePath, _message._body);
 	status = cgi.parseAndRemoveHeaders(response);
 	if (status < 300)
@@ -224,7 +224,6 @@ getRequest::~getRequest()
 bool	isFolder( const char* filePath )
 {
 	DIR* directory = opendir(filePath);
-
 	if (directory)
 	{
 		closedir(directory);
@@ -236,20 +235,12 @@ bool	isFolder( const char* filePath )
 response getRequest::createResponse() {
 	Rules rules;
 	response response;
-
+	
 	rules.setValues(*findServer(), getRequestURI().c_str());
-
-	if (!_message.containsHostField())
-		response.setErrorMessage(400, rules);
-	else if (!rules.isMethodAllowed(Rules::GET))
-		response.setErrorMessage(405, rules);
-	else if (rules.redirectCode != 0)
-	{
-		std::string newUri = getRequestURI().substr(rules.locationPath.size(), std::string::npos);
-		response.addFieldToHeaderMap(std::make_pair("Location", "https://" + rules.redirectUri + "/" + newUri));
-		response.setErrorMessage(rules.redirectCode, rules);
-	}
-	else
+	std::cout << "client max body size is " << rules.clientMaxBodySize << std::endl;
+	if (_message.containsHostField()
+		&& rules.isMethodAllowed("GET")
+		&& !rules.redirectCode)
 	{
 		try
 		{
@@ -277,6 +268,18 @@ response getRequest::createResponse() {
 			response.setErrorMessage(500, rules);
 		}
 	}
+	else if (rules.redirectCode != 0)
+	{
+		std::string newUri = getRequestURI().substr(rules.locationPath.size(), std::string::npos);
+		response.addFieldToHeaderMap(std::make_pair("Location", "https://" + rules.redirectUri + "/" + newUri));
+		response.setErrorMessage(rules.redirectCode, rules);
+	}
+	else if (!_message.containsHostField())
+		response.setErrorMessage(400, rules);
+	else if (!rules.isMethodAllowed(Rules::GET))
+		response.setErrorMessage(405, rules);
+	else
+		response.setErrorMessage(500, rules);
 	return response;
 }
 
@@ -291,72 +294,68 @@ postRequest::postRequest()
 postRequest::~postRequest()
 {}
 
-response postRequest::createResponse() {
-
+response postRequest::createResponse()
+{
+	response	response;
 	Rules rules;
 	rules.setValues(*findServer(), getRequestURI().c_str());
-	response	response;
-	std::string	postedFile;
-
-	if (!_message.containsHostField())
-		response.setErrorMessage(400, rules);
-	else if (!rules.isMethodAllowed(Rules::POST))
-		response.setErrorMessage(405, rules);
-	else
+		
+	if (_message.containsHostField()
+		&& rules.isMethodAllowed(Rules::POST)
+		&& (static_cast<int>(_message._body.size()) < rules.clientMaxBodySize))
 	{
 		try
 		{
 			std::string filePath = createFilePath(rules);
 			if (rules.isCgi(filePath))
 			{
-				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
 				response.setStatusLine(200);
 				response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
-				return response;
 			}
+			else
+			{
+				filePath = rules.getPathFromLocation(getRequestURI());
+				createPostedFile(filePath);
+				response.tryToOpenFile(filePath);
+				response.setStatusLine(201);
+				response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
+			}
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
 		}
-		catch (httpError& e)
-		{
+		catch (httpError& e) {
 			response.setErrorMessage(e.statusCode(), rules);
-			return response;
 		}
 		catch (std::exception& e) {
 			response.setErrorMessage(500, rules);
-			return response;
 		}
-		postedFile = createPostedFilePath(rules.root, getRequestURI());
-		std::ofstream file(postedFile.c_str(), std::ofstream::app);
-		if (file.good())
-		{
-			for (std::vector<char>::iterator it = _message._body.begin();
-				 it != _message._body.end();
-				 it++)
-				file << *it;
-			file.close();
-			response.tryToOpenFile(postedFile);
-			response.setStatusLine(201);
-			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
-			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
-		}
-		else
-			response.setErrorMessage(400, rules);
 	}
+	else if (!_message.containsHostField())
+		response.setErrorMessage(400, rules);
+	else if (!rules.isMethodAllowed(Rules::POST))
+		response.setErrorMessage(405, rules);
+	else if (!(static_cast<int>(_message._body.size()) < rules.clientMaxBodySize))
+		response.setErrorMessage(413, rules);
+	else
+		response.setErrorMessage(500, rules);
 	return (response);
+}
+
+void	postRequest::createPostedFile(const std::string & path)
+{
+	std::ofstream file(path.c_str(), std::ofstream::app);
+	if (file.good())
+	{
+		file.write(&*_message._body.begin(), _message._body.size());
+		file.close();
+	}
+	else
+		throw serverError(400);
+
 }
 
 std::string postRequest::printType()
 {
 	return ("POST");
-}
-
-
-std::string postRequest::createPostedFilePath(const std::string & root, const std::string & requestURI)
-{
-	std::string::const_reverse_iterator it = root.rbegin();
-	if (*it != '/')
-		return (std::string(root + "/" + requestURI));
-	else
-		return (std::string(root + requestURI));
 }
 
 deleteRequest::deleteRequest()
@@ -377,7 +376,7 @@ response deleteRequest::createResponse() {
 		response.setErrorMessage(405, rules);
 	else
 	{
-		std::string filePath(rules.root + "/"+ getRequestURI());
+		std::string filePath = rules.getPathFromLocation(getRequestURI());
 		if (!remove(filePath.c_str()))
 			response.setStatusLine(204);
 		else
