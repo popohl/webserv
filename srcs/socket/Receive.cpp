@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/07 14:18:13 by fmonbeig         ###   ########.fr       */
+//   Updated: 2022/04/08 16:28:08 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ static void	receiveMessage(ASocket & tmp_socket, std::vector<ASocket*> & socket,
 		deleteClient(client, socket, sets);
 		return ;
 	}
+
 	std::vector<char> data;
 	data.reserve(ret);
 	data.assign(buff, buff + ret);

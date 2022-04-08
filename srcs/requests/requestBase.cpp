@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/08 12:58:21 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/08 16:26:06 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,10 @@ void	removeNonPrintableCharacters( std::vector<char >& data)
 
 void requestBase::parseRequest(std::vector<char> &data)
 {
-	removeNonPrintableCharacters(data);
+
 	if (!_headerFinished && data.size())
 	{
+		removeNonPrintableCharacters(data);
 		std::string input(data.begin(), data.end());
 		size_t		before = input.length();
 
@@ -167,7 +168,10 @@ void requestBase::parseBody(std::vector<char> & data)
 	if (_header.find("Transfer-Encoding") != notFound)
 	{
 		if (_header["Transfer-Encoding"] == "chunked")
-			processChunk(data);
+		{
+			while (!_bodyFinished && !data.empty())
+				processChunk(data);
+		}
 	}
 	else if	(_header.find("Content-Length") != notFound)
 	{
@@ -206,48 +210,47 @@ size_t	requestBase::findCRLFPositionInData(const std::vector<char> & data)
 
 void	requestBase::processChunk(std::vector<char> & data)
 {
+	if (!_unfinishedData.empty())
+	{
+		data.insert(data.begin(), _unfinishedData.begin(), _unfinishedData.end());
+		_unfinishedData.clear();
+	}
 	if (_chunksList.empty() || _chunksList.back())
 		_chunksList.push_back(eatChunkSize(data));
-	/* all broken, fix it by changing string to vec please
+
 	if (_chunksList.back())
 	{
-		std::string chunk(line, 0, line.find("\r\n") - 1);
-		_body.insert(_body.end(), chunk.begin(), chunk.end());
-		line.erase(0, line.find("\r\n") + 2);
+		_body.insert(_body.end(), data.begin(), data.begin() + _chunksList.back());
+		data.erase(data.begin(), data.begin() + _chunksList.back());
+		if ((data.size() > 2) && data[0] == '\r' && data[0] == '\n')
+			data.erase(data.begin(), data.begin() + 2);
 	}
 	else
 	{
-		if (line.length())
+		if ((data.size() > 2) && data[0] == '\r' && data[0] == '\n')
 		{
-			if (_unfinishedField.length())
-			{
-				line.insert(0, _unfinishedField);
-				_unfinishedField.clear();
-			}
-			std::string tmp = removeOneHeaderLineFromInput(line);
-			if (lineIsHeaderEnd(tmp))
-			{
-				_bodyFinished = true;
-				_bodyExpectedSize = 0;
-				_headerFinished = false;
-				parseHeader(line);
-			}
-			else
-				_unfinishedField = tmp + line;
+			data.erase(data.begin(), data.begin() + 2);
+			_bodyFinished = true;
+			_bodyExpectedSize = 0;
+			_headerFinished = false;
+			std::string header(data.begin(), data.end());
+			parseHeader(header);
 		}
+		else
+			_unfinishedData = data;			
 	}
-	*/
 }
 
 size_t requestBase::eatChunkSize(std::vector<char> & data)
 {
 	std::string chunkSize;
 	for (std::vector<char>::const_iterator it = data.begin();
-		 isdigit(*it) && it != data.end();
+		 isxdigit(*it) && it != data.end();
 		 it++)
 		chunkSize += *it;
+	
 	std::stringstream superConverter;
-	superConverter << chunkSize;
+	superConverter << std::hex << chunkSize;
 	size_t result;
 	superConverter >> result;
 	data.erase(data.begin(), data.begin() + chunkSize.length());
