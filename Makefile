@@ -31,7 +31,7 @@ CFLAGS	+= -Wall -Wextra -g3 -std=c++98
 LDFLAGS	=
 
 # Run command
-RUN_COMMAND	= ./webserv ./config_files/pohl
+RUN_COMMAND	= ./webserv
 
 # The rest is automatic
 
