@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 15:22:48 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/08 11:26:44 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ void requestBase::parseRequest(std::vector<char> &data)
 			parseBody(data);
 		else
 			_bodyFinished = true;
-		std::cout << data.size() << std::endl;
 	}
 
 }

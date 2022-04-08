@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/07 21:29:27 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 11:25:11 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void	Parser::parseConfigFile( void )
 {
 	while (currentToken.getType() != Token::endOfFile)
 		parseServer();
-	theCorrectionIsTrash();
+	/* theCorrectionIsTrash(); */
 }
 
 void	Parser::afterParseLocations( std::vector<Token> &locationTokens )

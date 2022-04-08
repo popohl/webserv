@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/06 17:21:39 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 11:05:57 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,42 +28,41 @@ void	free_memory(std::vector<ASocket*> & socket)
 
 int main( int argc, char **argv )
 {
-	if (argc == 2)
+	if (argc > 2)
 	{
-		try
-		{
-			// Parser  parser("./srcs/testing/config_files/basic_file.conf");
-			Parser			parser(argv[1]);
-			ConfigFileNode	config = parser.getConfigFile();
+		std::cout << "usage: ./webserv [path_to_config_file]" << std::endl;
+		exit(1);
+	}
+	try
+	{
+		Parser			parser(argc == 2 ? argv[1] : "./config_files/config.conf");
+		ConfigFileNode	config = parser.getConfigFile();
 
-			// Get all the port to listen from configuration file parsing
-			mapPortToServers listeningPorts = config.getListeningPorts();
+		// Get all the port to listen from configuration file parsing
+		mapPortToServers listeningPorts = config.getListeningPorts();
 
-			//Create a containers of Socket pointer.
-			//The Class Socket initialize the bind and the listening for every Socket
-			std::vector<ASocket*>	socket;
-			ASocket					*temp;
-			for (mapPortToServers::iterator serverIt = listeningPorts.begin();
+		//Create a containers of Socket pointer.
+		//The Class Socket initialize the bind and the listening for every Socket
+		std::vector<ASocket*>	socket;
+		ASocket					*temp;
+		for (mapPortToServers::iterator serverIt = listeningPorts.begin();
 				serverIt != listeningPorts.end();
 				serverIt++)
-			{
-				temp = createSocket(serverIt->first, serverIt->second);
-				if (temp)
-					socket.push_back(temp);
-				else
-					free_memory(socket);
-			}
-			signal(SIGPIPE, SIG_IGN);
-			//Create two sets of fd for select : readfds and writefds
-			t_FD	sets;
-			fillFdSets(sets, socket);
-			portListening(sets, socket);
-		}
-		catch(const std::exception& e)
 		{
-			std::cerr << e.what() << '\n';
+			temp = createSocket(serverIt->first, serverIt->second);
+			if (temp)
+				socket.push_back(temp);
+			else
+				free_memory(socket);
 		}
+		signal(SIGPIPE, SIG_IGN);
+		//Create two sets of fd for select : readfds and writefds
+		t_FD	sets;
+		fillFdSets(sets, socket);
+		portListening(sets, socket);
 	}
-	else
-		std::cout << "usage: ./webserv path_to_config_file" << std::endl;
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
 }
