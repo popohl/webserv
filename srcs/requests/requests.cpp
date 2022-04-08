@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/08 10:59:32 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/08 12:10:06 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,17 +198,24 @@ ServerNode * iRequest::findServer()
 	std::string host = _message._header["Host"];
 	std::string serverName ;
 
+	std::cout << "host is " << host << std::endl;
+	
 	for (std::vector<ServerNode *>::const_iterator it = _server->begin(); it != _server->end(); it++)
 	{
 		ServerRules tmpServerRules = (*it)->getServerRules();
 		int port = tmpServerRules.listenPort;
+		std::cout << "tmp server size " << tmpServerRules.serverName.size() << std::endl;
 		for (std::vector<std::string>::iterator names = tmpServerRules.serverName.begin(); names != tmpServerRules.serverName.end(); names++)
 		{
 			serverName = *names;
+
 			if (containsPort(host))
 				serverName += (":" + to_string(port));
 			if (serverName == host)
+			{
+				std::cout << "serveur name is " << serverName << std::endl;
 				return (*it);
+			}
 		}
 	}
 	return (*(_server->begin()));

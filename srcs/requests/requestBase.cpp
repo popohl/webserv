@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/08 11:26:44 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/08 12:58:21 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,30 +43,34 @@ void checkLineEnd(const std::string &input)
 
 requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _status(), _unfinishedData(),  _header(), _bodySize(0), _bodyExpectedSize(0), _body() {}
 
-bool isbullshit( std::vector<char >& data)
+void	removeNonPrintableCharacters( std::vector<char >& data)
 {
-	for (std::vector<char>::iterator it = data.begin();
-		it != data.end();
-		it++)
+	std::vector<char>::iterator it = data.begin();
+	while (it != data.end())
 	{
-		if (iscntrl(*it))
-			return (true);
+		size_t toErase = 0;
+		if (!isprint(*it) && !isspace(*it))
+		{
+			size_t position = it - data.begin();
+			while (!isprint(*(it + toErase))
+				   && !isspace(*(it + toErase))
+				   && (it + toErase) != data.end())
+				toErase++;
+			data.erase(it, it + toErase);
+			if (position <  data.size())
+				it = data.begin() + position;
+			else
+				it = data.end();
+		}
+		else
+			it++;
 	}
-	return (false);
-
 }
 
 void requestBase::parseRequest(std::vector<char> &data)
 {
-	if (isbullshit(data))
-	{
-		data.clear();
-		_headerFinished = true;
-		_bodyFinished = true;
-		return;
-	}
-
-	if (!_headerFinished)
+	removeNonPrintableCharacters(data);
+	if (!_headerFinished && data.size())
 	{
 		std::string input(data.begin(), data.end());
 		size_t		before = input.length();
