@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 09:11:42 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/08 11:05:57 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 12:35:36 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,13 @@ void	free_memory(std::vector<ASocket*> & socket)
 	for(size_t i = 0; i < socket.size(); i++)
 		delete socket[i];
 	throw std::exception();
-	// throw std::exception("\e[0;31mSocket Failed in creation\n Exit webserv\e[0m");
 }
+
+	//1- Parse the config file and get all the port to listen
+	//2 -Create a containers of Socket pointer.
+	//3 -With Socket Class you can bind and listening a new Socket easily
+	//4 -Create two sets of fd for select : readfds and writefds
+	//5- Mainloop of the server with select
 
 int main( int argc, char **argv )
 {
@@ -37,14 +42,11 @@ int main( int argc, char **argv )
 	{
 		Parser			parser(argc == 2 ? argv[1] : "./config_files/config.conf");
 		ConfigFileNode	config = parser.getConfigFile();
-
-		// Get all the port to listen from configuration file parsing
 		mapPortToServers listeningPorts = config.getListeningPorts();
-
-		//Create a containers of Socket pointer.
-		//The Class Socket initialize the bind and the listening for every Socket
 		std::vector<ASocket*>	socket;
 		ASocket					*temp;
+
+		std::cout << "\e[0;35m---WELCOME HUMAN---\e[0m" << std::endl;
 		for (mapPortToServers::iterator serverIt = listeningPorts.begin();
 				serverIt != listeningPorts.end();
 				serverIt++)
@@ -56,7 +58,6 @@ int main( int argc, char **argv )
 				free_memory(socket);
 		}
 		signal(SIGPIPE, SIG_IGN);
-		//Create two sets of fd for select : readfds and writefds
 		t_FD	sets;
 		fillFdSets(sets, socket);
 		portListening(sets, socket);

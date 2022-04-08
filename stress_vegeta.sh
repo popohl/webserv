@@ -19,9 +19,10 @@ tfile=$(mktemp /tmp/XXXXX.conf) #Create a temp file .conf
 
 #listen : port you want to listen
 #server_name : Name of the domain (e.g amazon.fr / amazon.fr)
-#index : name of the main index
+#index : name of the index . If the URI is /www then it will check at /www/index.html
 #location : all the rules to access files / img ...
 #E.G : location / { root ./www } if you go to amazon.be you can access all the files in directory ./www
+#client_max_body_size : limit the size of the client body
 #allowed method : if no method allowed you only have GET
 
 echo "server {
