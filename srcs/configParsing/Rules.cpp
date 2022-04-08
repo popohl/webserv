@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:10:41 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/08 10:14:20 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 11:48:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ Rules &	Rules::operator=( Rules const & src )
 	this->listenAddress = src.listenAddress;
 	this->redirectCode = src.redirectCode;
 	this->redirectUri = src.redirectUri;
-	this->uploadPath = src.uploadPath;
 	this->serverName = src.serverName;
 	return *this;
 }
@@ -68,7 +67,6 @@ void	Rules::setValuesFromLocationRules( const LocationRules* locationRules )
 		this->redirectCode = locationRules->redirectCode;
 		this->redirectUri = locationRules->redirectUri;
 		this->root = locationRules->root;
-		this->uploadPath = locationRules->uploadPath;
 		this->locationPath = locationRules->locationPath;
 	}
 	else
@@ -76,7 +74,6 @@ void	Rules::setValuesFromLocationRules( const LocationRules* locationRules )
 		allowedMethod = GET | POST | DELETE;
 		redirectCode = 0;
 		redirectUri.clear();
-		uploadPath.clear();
 		locationPath.clear();
 		root.clear();
 	}
@@ -137,7 +134,6 @@ std::ostream &	operator<<( std::ostream & ostr, Rules const & instance)
 	ostr << "listenAddress: " << instance.listenAddress << std::endl;
 	ostr << "redirectCode: " << instance.redirectCode << std::endl;
 	ostr << "redirectUri: " << instance.redirectUri << std::endl;
-	ostr << "uploadPath: " << instance.uploadPath << std::endl;
 	return ostr;
 }
 

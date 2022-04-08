@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:53 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/08 11:25:11 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 11:48:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,8 +205,6 @@ void	Parser::parseLocationRule( void )
 		parseRedirectRule(locationRules);
 	else if (ruleName == "root")
 		parseRootRule(locationRules.root);
-	else if (ruleName == "upload_path")
-		parseUploadPathRule(locationRules.uploadPath);
 	else
 	{
 		std::string error = "rule name " + ruleName + " invalid";
@@ -355,12 +353,6 @@ void	Parser::parseServerNameRule( ServerRules& serverRules )
 	}
 	if (serverRules.serverName.empty())
 		throw ParsingException("server_name rule cannot be empty");
-}
-
-void	Parser::parseUploadPathRule( std::string& uploadPath )
-{
-	uploadPath = currentToken.getValue();
-	eat(Token::path);
 }
 
 const ConfigFileNode	&Parser::getConfigFile( void ) const

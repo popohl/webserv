@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:12:34 by paulohl           #+#    #+#             */
-/*   Updated: 2022/04/06 15:48:14 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 11:48:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ LocationRules &	LocationRules::operator=( LocationRules const & src )
 	this->redirectCode = src.redirectCode;
 	this->redirectUri = src.redirectUri;
 	this->root = src.root;
-	this->uploadPath = src.uploadPath;
 	this->locationPath = src.locationPath;
 	return *this;
 }
@@ -74,7 +73,6 @@ void	LocationRules::resetRules( void )
 	redirectCode = 0;
 	redirectUri.clear();
 	root.clear();
-	uploadPath.clear();
 }
 
 void	LocationRules::allowMethod( char method )

@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:09:00 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/08 10:13:36 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 11:48:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ struct Rules
 	std::string					listenAddress;
 	int							redirectCode;
 	std::string					redirectUri;
-	std::string					uploadPath;
 	std::vector<std::string> 	serverName;
 
 private:

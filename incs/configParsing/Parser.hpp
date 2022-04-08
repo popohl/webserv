@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:25:56 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/07 21:23:02 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 11:48:07 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ private:
 	void	parseRedirectRule( LocationRules& locationRules );
 	void	parseRootRule( std::string& root );
 	void	parseServerNameRule( ServerRules& serverRules );
-	void	parseUploadPathRule( std::string& uploadPath );
 
 	void	theCorrectionIsTrash( void );
 

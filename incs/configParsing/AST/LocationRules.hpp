@@ -6,7 +6,7 @@
 /*   By: paulohl <pohl@student.42.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 18:11:02 by paulohl           #+#    #+#             */
-/*   Updated: 2022/04/05 10:21:54 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 11:48:05 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ struct LocationRules: public IRulesNode
 	std::vector<std::string>	index;
 	int							redirectCode;
 	std::string					redirectUri;
-	std::string					uploadPath;
 
 };
 
