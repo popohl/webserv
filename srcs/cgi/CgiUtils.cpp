@@ -6,7 +6,7 @@
 /*   By: pohl <paul.lv.ohl@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 15:05:06 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 12:41:35 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,9 +105,9 @@ void	Cgi::createEnvp( std::string requestedFilePath )
 	setFromHeader("HTTP_ACCEPT", envp, "Accept", header);
 	setFromHeader("HTTP_REFERER", envp, "Referer", header);
 	setFromHeader("HTTP_USER_AGENT", envp, "User-Agent", header);
-	setFromHeader("SERVER_NAME", envp, "Host", header);
+	/* setFromHeader("SERVER_NAME", envp, "Host", header); */
 	envp["REQUEST_URI"] = _request->getRequestURI();
-	envp["SERVER_PORT"] = _rules.listenPort;
+	/* envp["SERVER_PORT"] = _rules.listenPort; */
 	// "REMOTE_ADDR" -> client address
 	// "REMOTE_HOST" -> client name
 	setPathInfo(requestedFilePath, envp);
