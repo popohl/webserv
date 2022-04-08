@@ -92,7 +92,6 @@ void	createClient(ASocket & tmp_socket, std::vector<ASocket*> & socket, t_FD & s
 	SocketClient *client = new SocketClient(socket_port.getPort(), temp_fd, socket_port._servers);
 	socket.push_back(client);
 	sets.readfds.add(temp_fd);
-	std::cout << "New client is created // FD = " << client->getSocketFd() << std::endl;
 }
 
 void	receiveDataOrNewClient(int i, std::vector<ASocket*> & socket, t_FD & sets)

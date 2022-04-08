@@ -1,3 +1,5 @@
+
+<body style="background-color:#92be9a;"></body>
 <form action="/envp.py" method="get">
 	<p>This is a GET form.</p>
 	<label for="fname">First name:</label>
@@ -7,7 +9,7 @@
 	<input type="submit" value="Submit">
 </form>
 
-<form action="/envp.py" method="post">
+<form action="/cgi/envp.py" method="post">
 	<p>This is a POST form.</p>
 	<label for="fname">First name:</label>
 	<input type="text" id="fname" name="fname"><br><br>
@@ -16,7 +18,7 @@
 	<input type="submit" value="Submit">
 </form>
 
-<form action="/idontexist.py" method="get">
+<form action="/cgi/idontexist.py" method="get">
 	<p>This is an invalid get form.</p>
 	<label for="fname">First name:</label>
 	<input type="text" id="fname" name="fname"><br><br>
@@ -25,7 +27,7 @@
 	<input type="submit" value="Submit">
 </form>
 
-<form action="/idontexist.py" method="post">
+<form action="/cgi/idontexist.py" method="post">
 	<p>This is an invalid post form.</p>
 	<label for="fname">First name:</label>
 	<input type="text" id="fname" name="fname"><br><br>

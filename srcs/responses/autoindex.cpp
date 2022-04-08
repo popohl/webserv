@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 11:57:16 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/08 11:26:44 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 12:28:57 by fmonbeig         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ std::string autoIndex(std::string filePath)
 	path = getcwd(buffer, PATH_MAX);
 	path += "/";
 	path += filePath;
-
 	dirp = opendir(path.c_str());
 	index += "<!DOCTYPE html>\n<html>\n\n<title>INDEX</title>\n\n<h1>INDEX</h1>";
 	if( dirp != NULL )

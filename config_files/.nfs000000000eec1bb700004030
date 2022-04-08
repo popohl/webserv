@@ -25,13 +25,6 @@ server {
 		client_max_body_size 5Mib;
 	}
 
-	location /perl-cgi/ {
-		root ./srcs/testing/cgi_scripts/;
-		index forms.html envp.pl;
-		cgi pl /bin/perl;
-		allowed_method GET POST;
-	}
-
 	location /cgi/ {
 		root ./srcs/testing/cgi_scripts/;
 		index forms.html envp.py;
