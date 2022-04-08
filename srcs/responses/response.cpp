@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/07 13:40:27 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/08 10:36:46 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
@@ -201,6 +201,8 @@ std::vector<char> response::createFormattedResponse()
 	std::vector<char>raw;
 	createHeader();
 	size_t size = _header.length();
+	std::cout << "Size for reserve: " << size << std::endl;
+	std::cout << "body size" << _body.length() << std::endl;
 	if (_body.length())
 		size += _body.length();
 	else
@@ -321,9 +323,10 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 	}
 }
 
-void response::createAutoindexResponse()
+void response::createAutoindexResponse( std::string& filePath )
 {
-	_body = autoIndex(_rules.root);
+	_body = autoIndex(filePath);
+	std::cout << "Body size: " << _body.size() << std::endl;
 	setStatusLine(200);
 	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/html"));
 	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));

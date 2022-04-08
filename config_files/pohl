@@ -18,3 +18,12 @@ server {
 		redirect 301 www.archlinux.org;
 	}
 }
+
+server {
+	listen 9000;
+
+	autoindex on;
+	location / {
+		root ./www;
+	}
+}

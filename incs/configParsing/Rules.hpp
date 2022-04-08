@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:09:00 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/05 10:21:53 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 10:13:36 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ struct Rules
 
 	bool	isCgi( const std::string& uri ) const;
 	std::string	getPathFromLocation( std::string pathFromUrl ) const;
+	const std::string getServerName( void ) const;
 
 	std::string					locationPath;
 	std::string					root;

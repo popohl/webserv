@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 09:50:59 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/07 13:41:19 by pcharton         ###   ########.fr       //
+/*   Updated: 2022/04/08 10:01:59 by pohl             ###   ########.fr       */
 //                                                                            //
 // ************************************************************************** //
 
@@ -53,7 +53,7 @@ public:
 	void		setErrorMessage(int errorStatus, Rules & rules);
 	void		readWholeFile(std::vector<char> & store);
 
-	void		createAutoindexResponse();
+	void		createAutoindexResponse( std::string& filePath );
 	int			getStatus();
 	void		setStatusLine(int status);
 	void		printStatus();

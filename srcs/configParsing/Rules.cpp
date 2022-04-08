@@ -6,7 +6,7 @@
 /*   By: pohl <pohl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:10:41 by pohl              #+#    #+#             */
-/*   Updated: 2022/04/07 12:20:13 by pohl             ###   ########.fr       */
+/*   Updated: 2022/04/08 10:14:20 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,13 @@ bool	Rules::isMethodAllowed( std::string method ) const
 	std::string errorMessage = "Method not implemented: ";
 	errorMessage += method;
 	throw serverError(501, errorMessage.c_str());
+}
+
+const std::string Rules::getServerName( void ) const
+{
+	if (serverName.empty())
+		return "No server name";
+	return serverName[0];
 }
 
 std::ostream &	operator<<( std::ostream & ostr, Rules const & instance)

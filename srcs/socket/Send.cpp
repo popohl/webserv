@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:58:15 by fmonbeig          #+#    #+#             */
-/*   Updated: 2022/04/07 14:48:00 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/08 10:13:54 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	serverLog(SocketClient & client)
 	std::cout << "\e[1;37mStatus   :\e[0m \e[1;32m" << client._responseStatus << "\e[0m" << std::endl; // mettre en couleur
 
 	std::cout << "\e[1;33m######  SERVER RULES  ########\e[0m" << std::endl;
-	std::cout << "\e[1;37mServer Name: \e[0m" << rules.serverName[0] <<std::endl;
+	std::cout << "\e[1;37mServer Name: \e[0m" << rules.getServerName() <<std::endl;
 	std::cout << "\e[1;37mAutodindex: \e[0m";
 	if (rules.autoindex)
 		std::cout << "\e[1;32mON\e[0m" << std::endl;

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 15:04:18 by fmonbeig         ###   ########.fr       */
+/*   Updated: 2022/04/08 10:59:32 by pohl             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 #include <time.h>
 #include <unistd.h>
 #include "configParsing/Rules.hpp"
+#include <sys/types.h>
+#include <dirent.h>
 
 void		iRequest::printRequest()
 {
@@ -157,10 +159,9 @@ std::string iRequest::createFilePath( Rules& rules )
 {
 	//check each location for the vector
 	std::string filePath;
-	if ((*(getRequestURI().rbegin())) == '/')
-		filePath = testIndexFile(rules.root + getRequestURI(), rules.index);
-	else
-		filePath = rules.getPathFromLocation(getRequestURI());
+	filePath = rules.getPathFromLocation(getRequestURI());
+	if ((*(filePath.rbegin())) == '/')
+		filePath = testIndexFile(filePath, rules.index);
 	if (!filePath.length())
 		throw httpError(404, "Requested file not found");
 	return (filePath);
@@ -184,14 +185,12 @@ std::string iRequest::createFileFromCgi( Rules& rules,
 
 std::string iRequest::testIndexFile(std::string root, const std::vector<std::string> & indexList)
 {
-	std::string file;
 	for (std::vector<std::string>::const_iterator it = indexList.begin(); it != indexList.end(); it++)
 	{
-		file = root + *it;
-		if (fileExists(file))
-			break ;
+		if (fileExists(root + *it))
+			return root + *it;
 	}
-	return (file);
+	return (root);
 }
 
 ServerNode * iRequest::findServer()
@@ -221,6 +220,18 @@ getRequest::getRequest()
 getRequest::~getRequest()
 {}
 
+bool	isFolder( const char* filePath )
+{
+	DIR* directory = opendir(filePath);
+
+	if (directory)
+	{
+		closedir(directory);
+		return true;
+	}
+	return false;
+}
+
 response getRequest::createResponse() {
 	Rules rules;
 	response response;
@@ -236,35 +247,34 @@ response getRequest::createResponse() {
 		std::string newUri = getRequestURI().substr(rules.locationPath.size(), std::string::npos);
 		response.addFieldToHeaderMap(std::make_pair("Location", "https://" + rules.redirectUri + "/" + newUri));
 		response.setErrorMessage(rules.redirectCode, rules);
-		return response;
 	}
 	else
 	{
-		if (!isAutoindex(rules))
+		try
 		{
-			try
+			std::string filePath = createFilePath(rules);
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+			response.setStatusLine(200);
+			if (isFolder(filePath.c_str()))
 			{
-				std::string filePath = createFilePath(rules);
-				if (rules.isCgi(filePath))
-				{
-					response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-					response.setStatusLine(200);
-					response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
-					return response;
-				}
-				response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
-				response.tryToOpenFile(filePath);
-				response.setStatusLine(200);
+				if (*(filePath.rbegin()) != '/')
+					filePath.push_back('/');
+				if (rules.autoindex)
+					response.createAutoindexResponse(filePath);
+				else
+					response.setErrorMessage(403, rules);
+				return response;
 			}
-			catch (httpError& e) {
-				response.setErrorMessage(e.statusCode(), rules);
-			}
-			catch (std::exception& e) {
-				response.setErrorMessage(500, rules);
-			}
+			else if (rules.isCgi(filePath))
+				filePath = createFileFromCgi(rules, filePath, response);
+			response.tryToOpenFile(filePath);
 		}
-		else
-			response.createAutoindexResponse();
+		catch (httpError& e) {
+			response.setErrorMessage(e.statusCode(), rules);
+		}
+		catch (std::exception& e) {
+			response.setErrorMessage(500, rules);
+		}
 	}
 	return response;
 }
@@ -273,17 +283,6 @@ std::string getRequest::printType()
 {
 	return ("GET");
 }
-
-bool	getRequest::isAutoindex(const Rules & rules)
-{
-	if (getRequestURI() == "/"
-		&& !(testIndexFile(rules.root + "/", rules.index).length())
-		&& rules.autoindex)
-		return true;
-	else
-		return false;
-}
-
 
 postRequest::postRequest()
 {}
