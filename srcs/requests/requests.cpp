@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/09 16:33:13 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/09 16:43:31 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,7 +237,6 @@ response getRequest::createResponse() {
 	response response;
 	
 	rules.setValues(*findServer(), getRequestURI().c_str());
-	std::cout << "client max body size is " << rules.clientMaxBodySize << std::endl;
 	if (!rules.redirectCode)
 	{
 		try
