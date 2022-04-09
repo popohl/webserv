@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/08 11:26:44 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/09 16:38:56 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -18,8 +18,8 @@ const std::pair<int, std::string>responseStatus[] = {
 	std::make_pair(100, "Continue"),
 	std::make_pair(101, "Switching Protocols"),
 	std::make_pair(200, "OK"),
-	std::make_pair(201,"Created"),
-	std::make_pair(202,"Accepted"),
+	std::make_pair(201, "Created"),
+	std::make_pair(202, "Accepted"),
 	std::make_pair(203, "Non-Authoritative Information"),
 	std::make_pair(204, "No Content"),
 	std::make_pair(205, "Reset Content"),
@@ -307,7 +307,8 @@ void response::setStatusLine(int status)
 void response::setErrorMessage(int errorStatus, Rules &rules)
 {
 	setStatusLine(errorStatus);
-	if (rules.errorPage.find(errorStatus) != rules.errorPage.end())
+	if (rules.errorPage.find(errorStatus) != rules.errorPage.end()
+		&& fileExists(rules.root + "/" + rules.errorPage[errorStatus]))
 	{
 		tryToOpenFile(rules.root + "/" + rules.errorPage[errorStatus]);
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Location", rules.errorPage[errorStatus]));
@@ -317,7 +318,7 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 	{
 		_body += defaultErrorMessage(errorStatus);
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/plain"));
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));	
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
 	}
 }
 
@@ -328,8 +329,6 @@ void response::createAutoindexResponse( std::string& filePath )
 	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/html"));
 	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
 }
-
-
 
 std::string findStatus(int status)
 {
