@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/08 23:00:40 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/09 15:07:39 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,12 +238,11 @@ response getRequest::createResponse() {
 	
 	rules.setValues(*findServer(), getRequestURI().c_str());
 	std::cout << "client max body size is " << rules.clientMaxBodySize << std::endl;
-	if (_message.containsHostField()
-		&& rules.isMethodAllowed("GET")
-		&& !rules.redirectCode)
+	if (!rules.redirectCode)
 	{
 		try
 		{
+			checkRequestError(rules);
 			std::string filePath = createFilePath(rules);
 			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
 			response.setStatusLine(200);
@@ -268,19 +267,23 @@ response getRequest::createResponse() {
 			response.setErrorMessage(500, rules);
 		}
 	}
-	else if (rules.redirectCode != 0)
+	else
 	{
 		std::string newUri = getRequestURI().substr(rules.locationPath.size(), std::string::npos);
 		response.addFieldToHeaderMap(std::make_pair("Location", "https://" + rules.redirectUri + "/" + newUri));
 		response.setErrorMessage(rules.redirectCode, rules);
 	}
-	else if (!_message.containsHostField())
-		response.setErrorMessage(400, rules);
-	else if (!rules.isMethodAllowed(Rules::GET))
-		response.setErrorMessage(405, rules);
-	else
-		response.setErrorMessage(500, rules);
 	return response;
+}
+
+void		getRequest::checkRequestError(const Rules & rules)
+{
+	if (!_message.containsHostField())
+	{
+		throw httpError(400);
+	}
+	else if (!rules.isMethodAllowed(Rules::GET))
+		throw httpError(405);
 }
 
 std::string getRequest::printType()
@@ -299,45 +302,42 @@ response postRequest::createResponse()
 	response	response;
 	Rules rules;
 	rules.setValues(*findServer(), getRequestURI().c_str());
-		
-	if (_message.containsHostField()
-		&& rules.isMethodAllowed(Rules::POST)
-		&& (static_cast<int>(_message._body.size()) < rules.clientMaxBodySize))
+	try
 	{
-		try
+		checkRequestError(rules);
+		std::string filePath = createFilePath(rules);
+		if (rules.isCgi(filePath))
 		{
-			std::string filePath = createFilePath(rules);
-			if (rules.isCgi(filePath))
-			{
-				response.setStatusLine(200);
-				response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
-			}
-			else
-			{
-				filePath = rules.getPathFromLocation(getRequestURI());
-				createPostedFile(filePath);
-				response.tryToOpenFile(filePath);
-				response.setStatusLine(201);
-				response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
-			}
-			response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
+			response.setStatusLine(200);
+			response.tryToOpenFile(createFileFromCgi(rules, filePath, response));
 		}
-		catch (httpError& e) {
-			response.setErrorMessage(e.statusCode(), rules);
+		else
+		{
+			filePath = rules.getPathFromLocation(getRequestURI());
+			createPostedFile(filePath);
+			response.tryToOpenFile(filePath);
+			response.setStatusLine(201);
+			response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Location", getRequestURI()));
 		}
-		catch (std::exception& e) {
-			response.setErrorMessage(500, rules);
-		}
+		response.addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Date", date()));
 	}
-	else if (!_message.containsHostField())
-		response.setErrorMessage(400, rules);
-	else if (!rules.isMethodAllowed(Rules::POST))
-		response.setErrorMessage(405, rules);
-	else if (!(static_cast<int>(_message._body.size()) < rules.clientMaxBodySize))
-		response.setErrorMessage(413, rules);
-	else
+	catch (httpError& e) {
+		response.setErrorMessage(e.statusCode(), rules);
+	}
+	catch (std::exception& e) {
 		response.setErrorMessage(500, rules);
+	}
 	return (response);
+}
+
+void	postRequest::checkRequestError(const Rules & rules)
+{
+	if (!_message.containsHostField())
+		throw httpError(400);
+	else if (!rules.isMethodAllowed(Rules::POST))
+		throw httpError(405);
+	else if (!(static_cast<int>(_message._body.size()) < rules.clientMaxBodySize))
+		throw httpError(413);
 }
 
 void	postRequest::createPostedFile(const std::string & path)
@@ -370,20 +370,31 @@ response deleteRequest::createResponse() {
 	Rules rules;
 	rules.setValues(*findServer(), getRequestURI().c_str());
 
-	if (!_message.containsHostField())
-		response.setErrorMessage(400, rules);
-	else if (!rules.isMethodAllowed(Rules::DELETE))
-		response.setErrorMessage(405, rules);
-	else
+	try
 	{
+		checkRequestError(rules);
 		std::string filePath = rules.getPathFromLocation(getRequestURI());
 		if (!remove(filePath.c_str()))
 			response.setStatusLine(204);
 		else
 			response.setErrorMessage(200, rules);
+		response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
 	}
-	response.addFieldToHeaderMap(std::make_pair<std::string, std::string>("Date", date()));
+	catch (httpError& e) {
+		response.setErrorMessage(e.statusCode(), rules);
+	}
+	catch (std::exception& e) {
+		response.setErrorMessage(500, rules);
+	}
 	return response;
+}
+
+void	deleteRequest::checkRequestError(const Rules & rules)
+{
+	if (!_message.containsHostField())
+		throw httpError(400);
+	else if (!rules.isMethodAllowed(Rules::DELETE))
+		throw httpError(405);
 }
 
 errorRequest::errorRequest()

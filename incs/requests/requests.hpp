@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/08 21:54:48 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/09 14:56:14 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,9 @@ public:
 	response	createResponse();
 	std::string	createResponseBody();
 	std::string printType();
+
+private:
+	void		checkRequestError(const Rules & rules);
 };
 
 class postRequest : public iRequest
@@ -77,6 +80,7 @@ class postRequest : public iRequest
 
 private:
 	void	createPostedFile(const std::string &path);
+	void		checkRequestError(const Rules & rules);
 };
 
 class deleteRequest : public iRequest
@@ -87,6 +91,8 @@ public:
 
 	response createResponse();
 	std::string printType();
+private:
+	void		checkRequestError(const Rules & rules);
 };
 
 class errorRequest : public iRequest

@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/08 20:35:57 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/09 15:20:11 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,7 +315,7 @@ bool isHeaderEnd(const char *input)
 
 bool requestBase::containsHostField(void)
 {
-	if (_header.find("Host") != _header.end())
+	if (!_header.empty() && (_header["Host"].size()))
 		return (true);
 	else
 		return (false);
