@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 15:18:45 by pcharton          #+#    #+#             */
-//   Updated: 2022/04/09 16:43:31 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/09 18:09:11 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ bool iRequest::methodIsValid(const std::string &method)
 
 bool iRequest::requestURIIsValid(const std::string &requestURI)
 {
-	if (*requestURI.begin() == '/')
+	if ((*requestURI.begin() == '/') && (requestURI.length() < 2048))
 		return (true);
 	else
 		return (false);
@@ -406,7 +406,9 @@ response errorRequest::createResponse()
 	Rules rules;
 	rules.setValues(*findServer(), getRequestURI().c_str());
 
-	if (iRequest::requestURIIsValid(getRequestURI()) && iRequest::httpVersionIsValid(_httpVersion))
+	if (getRequestURI().length() >= 2048)
+		response.setErrorMessage(413, rules);
+	else if (iRequest::requestURIIsValid(getRequestURI()) && iRequest::httpVersionIsValid(_httpVersion))
 		response.setErrorMessage(405, rules);
 	else if (!requestURIIsValid(getRequestURI()))
 		response.setErrorMessage(400, rules);

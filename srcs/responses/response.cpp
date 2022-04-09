@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-//   Updated: 2022/04/09 16:38:56 by pcharton         ###   ########.fr       //
+//   Updated: 2022/04/09 17:02:43 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -381,69 +381,3 @@ std::string to_string(int n)
 	tmp >> result;
 	return (result);
 }
-
-/*
-
-void response::tryToOpenAndReadFile(std::string filePath)
-{
-	std::string body;
-	char buffer[1048];
-	memset(&buffer[0], 0, 1048);
-
-	//improve open and read
-	std::ifstream file;
-	file.open(filePath.c_str(), std::ios::in | std::ios::binary);
-	if (file.good())
-	{
-		std::streamsize bufferSize = 1048;
-		try {
-			do {
-				bufferSize = file.readsome(&buffer[0], bufferSize);
-				body += std::string(buffer);
-				memset(&buffer[0], 0, 1048);
-			} while (bufferSize == 1048);
-		}
-		catch (std::exception &e) {
-			file.close();
-			return;
-		}
-		file.close();
-	}
-	else
-		throw httpError(403);
-	_body = body;
-	if (file.good())
-	{
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
-	}
-}
-
-size_t response::continueReadingFile()
-{
-	size_t	fileSize = getResponseFileSize();
-	size_t	currentPos = _file.tellg();
-	size_t	numberOfBytesToRead = fileSize - currentPos;
-
-	if (numberOfBytesToRead > 512)
-		numberOfBytesToRead = 512;
-	_file.read(_buffer, numberOfBytesToRead);
-	if (_file.tellg() == static_cast<int>(fileSize))
-		_hasBeenFullySent = true;
-	return (numberOfBytesToRead);
-}
-
-size_t response::fillSendBuffer()
-{
-	size_t bufferSize = 0;
-	if (_header.length())
-	{
-		bufferSize = _header.copy(_buffer, RESPONSE_BUFFER_SIZE, 0);
-		_header.erase(0, bufferSize);
-	}
-	else
-		bufferSize = continueReadingFile();
-	return (bufferSize);
-
-}
-*/
