@@ -6,7 +6,7 @@
 /*   By: fmonbeig <fmonbeig@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 16:53:04 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/08 11:26:44 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/09 15:20:11 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,31 +43,36 @@ void checkLineEnd(const std::string &input)
 
 requestBase::requestBase() : _headerFinished(false), _bodyFinished(false), _status(), _unfinishedData(),  _header(), _bodySize(0), _bodyExpectedSize(0), _body() {}
 
-bool isbullshit( std::vector<char >& data)
+void	removeNonPrintableCharacters( std::vector<char >& data)
 {
-	for (std::vector<char>::iterator it = data.begin();
-		it != data.end();
-		it++)
+	std::vector<char>::iterator it = data.begin();
+	while (it != data.end())
 	{
-		if (iscntrl(*it))
-			return (true);
+		size_t toErase = 0;
+		if (!isprint(*it) && !isspace(*it))
+		{
+			size_t position = it - data.begin();
+			while (!isprint(*(it + toErase))
+				   && !isspace(*(it + toErase))
+				   && (it + toErase) != data.end())
+				toErase++;
+			data.erase(it, it + toErase);
+			if (position <  data.size())
+				it = data.begin() + position;
+			else
+				it = data.end();
+		}
+		else
+			it++;
 	}
-	return (false);
-
 }
 
 void requestBase::parseRequest(std::vector<char> &data)
 {
-	if (isbullshit(data))
-	{
-		data.clear();
-		_headerFinished = true;
-		_bodyFinished = true;
-		return;
-	}
 
-	if (!_headerFinished)
+	if (!_headerFinished && data.size())
 	{
+		removeNonPrintableCharacters(data);
 		std::string input(data.begin(), data.end());
 		size_t		before = input.length();
 
@@ -162,8 +167,16 @@ void requestBase::parseBody(std::vector<char> & data)
 	std::map<std::string, std::string>::iterator notFound = _header.end();
 	if (_header.find("Transfer-Encoding") != notFound)
 	{
+		//does not work if file is bigger than recv buffer
 		if (_header["Transfer-Encoding"] == "chunked")
-			processChunk(data);
+		{
+			while (!data.empty()
+				&& !_bodyFinished)
+				chunkedTransferEncodingRoutine(data);
+			if (_chunksList.size() && _chunksList.back().isLastChunk()
+				&& _chunksList.back()._sizeDelimiterFound)
+				transformChunkListIntoData();
+		}
 	}
 	else if	(_header.find("Content-Length") != notFound)
 	{
@@ -200,54 +213,128 @@ size_t	requestBase::findCRLFPositionInData(const std::vector<char> & data)
 	return index;
 }
 
-void	requestBase::processChunk(std::vector<char> & data)
+void	requestBase::chunkedTransferEncodingRoutine(std::vector<char> & data)
 {
-	if (_chunksList.empty() || _chunksList.back())
-		_chunksList.push_back(eatChunkSize(data));
-	/* all broken, fix it by changing string to vec please
-	if (_chunksList.back())
+	if (_chunksList.empty())
 	{
-		std::string chunk(line, 0, line.find("\r\n") - 1);
-		_body.insert(_body.end(), chunk.begin(), chunk.end());
-		line.erase(0, line.find("\r\n") + 2);
+		_chunksList.push_back(chunk());
+		chunk & current = _chunksList.back();
+		current.eatChunkSize(data);
+		current.chunkProcedure(data);
+	}
+	else if (!(_chunksList.back().isLastChunk()))
+	{
+		if (!_chunksList.back()._chunkIsDone)
+		{
+			chunk & current = _chunksList.back();
+			current.chunkProcedure(data);
+		}
+		else
+		{
+			_chunksList.push_back(chunk());
+			chunk & current = _chunksList.back();
+			current.eatChunkSize(data);
+			current.chunkProcedure(data);
+		}
 	}
 	else
 	{
-		if (line.length())
+		if (_chunksList.back()._sizeDelimiterFound)
 		{
-			if (_unfinishedField.length())
-			{
-				line.insert(0, _unfinishedField);
-				_unfinishedField.clear();
-			}
-			std::string tmp = removeOneHeaderLineFromInput(line);
-			if (lineIsHeaderEnd(tmp))
-			{
-				_bodyFinished = true;
-				_bodyExpectedSize = 0;
-				_headerFinished = false;
-				parseHeader(line);
-			}
-			else
-				_unfinishedField = tmp + line;
+			_bodyFinished = true;
+			_bodyExpectedSize = 0;
+			_headerFinished = false;
+			std::string header(data.begin(), data.end());
+			parseHeader(header);	
+		}
+		else
+		{
+			chunk & current = _chunksList.back();
+			current.eatCRLF(data);
 		}
 	}
-	*/
 }
 
-size_t requestBase::eatChunkSize(std::vector<char> & data)
+void	requestBase::transformChunkListIntoData()
+{
+	size_t totalSize = 0;
+	for (std::deque<chunk>::iterator it = _chunksList.begin();
+		it != _chunksList.end(); it++)
+		totalSize += it->_chunkSize;
+	_body.reserve(_bodySize + totalSize);
+	for (std::deque<chunk>::iterator it = _chunksList.begin();
+		it != _chunksList.end() && it->_chunkSize; it = _chunksList.begin())
+		{
+			_body.insert(_body.end(), it->_chunkData.begin(), it->_chunkData.end());
+			_chunksList.erase(_chunksList.begin());
+		}
+}
+
+void	chunk::chunkProcedure(std::vector<char> & data)
+{
+	if (!_sizeDelimiterFound && eatCRLF(data))
+		_sizeDelimiterFound = true;
+	if (_sizeDelimiterFound && _chunkSize)
+		tryToEatChunkData(data);
+	if (_sizeDelimiterFound && _chunkDelimiterFound && _chunkHasBeenProcessed)
+		_chunkIsDone = true;
+}
+
+bool	chunk::eatCRLF(std::vector<char> & data)
+{
+	if ((data.size() >= 2) && (data[0] == '\r') && (data[1] == '\n'))
+	{
+		data.erase(data.begin(), data.begin() + 2);
+		return (true);
+	}
+	else
+		return (false);
+}	
+
+void	chunk::tryToEatChunkData(std::vector<char> & data)
+{
+	if (_chunkData.capacity() < _chunkSize)
+		_chunkData.reserve(_chunkSize);
+	size_t	bytesToProcess = _chunkSize - _chunkData.size();
+	std::vector<char>::iterator ite;
+	if (data.size() >= bytesToProcess)
+		ite = data.begin() + bytesToProcess;
+	else
+		ite = data.end();
+	_chunkData.insert(_chunkData.end(), data.begin(), ite);
+	data.erase(data.begin(), ite);
+	if (_chunkSize == _chunkData.size())
+		_chunkHasBeenProcessed = true;
+	if (_chunkHasBeenProcessed && eatCRLF(data))
+		_chunkDelimiterFound = true;
+}
+
+void chunk::eatChunkSize(std::vector<char> & data)
 {
 	std::string chunkSize;
 	for (std::vector<char>::const_iterator it = data.begin();
-		 isdigit(*it) && it != data.end();
+		 isxdigit(*it) && it != data.end();
 		 it++)
 		chunkSize += *it;
+	
 	std::stringstream superConverter;
-	superConverter << chunkSize;
-	size_t result;
-	superConverter >> result;
+	std::cout << "chunkSize is " << chunkSize << "of size " << chunkSize.size() << std::endl;
+	superConverter << std::hex << chunkSize;
+	superConverter >> _chunkSize;
+	std::cout << "converted size is " << _chunkSize << std::endl;
 	data.erase(data.begin(), data.begin() + chunkSize.length());
-	return (result);
+	if (eatCRLF(data))
+		_sizeDelimiterFound = true;
+	if (!_chunkSize && _sizeDelimiterFound)
+		_chunkIsDone = true;
+}
+
+bool	chunk::isLastChunk()
+{
+	if (!_chunkSize)
+		return (true);
+	else
+		return (false);
 }
 
 std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)
@@ -274,7 +361,7 @@ bool isHeaderEnd(const char *input)
 
 bool requestBase::containsHostField(void)
 {
-	if (_header.find("Host") != _header.end())
+	if (!_header.empty() && (_header["Host"].size()))
 		return (true);
 	else
 		return (false);
@@ -304,4 +391,3 @@ size_t requestBase::findBodyLength(void)
 	else
 		return (0);
 }
-

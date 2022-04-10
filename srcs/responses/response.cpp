@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/25 11:44:58 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/08 11:26:44 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/09 17:02:43 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -18,8 +18,8 @@ const std::pair<int, std::string>responseStatus[] = {
 	std::make_pair(100, "Continue"),
 	std::make_pair(101, "Switching Protocols"),
 	std::make_pair(200, "OK"),
-	std::make_pair(201,"Created"),
-	std::make_pair(202,"Accepted"),
+	std::make_pair(201, "Created"),
+	std::make_pair(202, "Accepted"),
 	std::make_pair(203, "Non-Authoritative Information"),
 	std::make_pair(204, "No Content"),
 	std::make_pair(205, "Reset Content"),
@@ -307,9 +307,10 @@ void response::setStatusLine(int status)
 void response::setErrorMessage(int errorStatus, Rules &rules)
 {
 	setStatusLine(errorStatus);
-	if (rules.errorPage.find(errorStatus) != rules.errorPage.end())
+	if (rules.errorPage.find(errorStatus) != rules.errorPage.end()
+		&& fileExists(rules.errorPage[errorStatus]))
 	{
-		tryToOpenFile(rules.root + "/" + rules.errorPage[errorStatus]);
+		tryToOpenFile(rules.errorPage[errorStatus]);
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Location", rules.errorPage[errorStatus]));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Location", rules.errorPage[errorStatus]));
 	}
@@ -317,7 +318,7 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 	{
 		_body += defaultErrorMessage(errorStatus);
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/plain"));
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));	
+		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
 	}
 }
 
@@ -328,8 +329,6 @@ void response::createAutoindexResponse( std::string& filePath )
 	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", "text/html"));
 	addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(_body.length())));
 }
-
-
 
 std::string findStatus(int status)
 {
@@ -382,69 +381,3 @@ std::string to_string(int n)
 	tmp >> result;
 	return (result);
 }
-
-/*
-
-void response::tryToOpenAndReadFile(std::string filePath)
-{
-	std::string body;
-	char buffer[1048];
-	memset(&buffer[0], 0, 1048);
-
-	//improve open and read
-	std::ifstream file;
-	file.open(filePath.c_str(), std::ios::in | std::ios::binary);
-	if (file.good())
-	{
-		std::streamsize bufferSize = 1048;
-		try {
-			do {
-				bufferSize = file.readsome(&buffer[0], bufferSize);
-				body += std::string(buffer);
-				memset(&buffer[0], 0, 1048);
-			} while (bufferSize == 1048);
-		}
-		catch (std::exception &e) {
-			file.close();
-			return;
-		}
-		file.close();
-	}
-	else
-		throw httpError(403);
-	_body = body;
-	if (file.good())
-	{
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Type", findContentType(filePath)));
-		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Length", to_string(getResponseFileSize())));
-	}
-}
-
-size_t response::continueReadingFile()
-{
-	size_t	fileSize = getResponseFileSize();
-	size_t	currentPos = _file.tellg();
-	size_t	numberOfBytesToRead = fileSize - currentPos;
-
-	if (numberOfBytesToRead > 512)
-		numberOfBytesToRead = 512;
-	_file.read(_buffer, numberOfBytesToRead);
-	if (_file.tellg() == static_cast<int>(fileSize))
-		_hasBeenFullySent = true;
-	return (numberOfBytesToRead);
-}
-
-size_t response::fillSendBuffer()
-{
-	size_t bufferSize = 0;
-	if (_header.length())
-	{
-		bufferSize = _header.copy(_buffer, RESPONSE_BUFFER_SIZE, 0);
-		_header.erase(0, bufferSize);
-	}
-	else
-		bufferSize = continueReadingFile();
-	return (bufferSize);
-
-}
-*/

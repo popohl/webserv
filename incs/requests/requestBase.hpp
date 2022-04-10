@@ -6,7 +6,7 @@
 //   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2022/03/17 16:49:25 by pcharton          #+#    #+#             //
-/*   Updated: 2022/04/07 11:14:07 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/08 19:37:56 by pcharton         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -42,17 +42,23 @@ public:
 	virtual const char * what () const throw();
 };
 
+struct chunk
+{
+	bool				_sizeDelimiterFound;
+	bool				_chunkDelimiterFound;
+	bool				_chunkHasBeenProcessed;
+	bool				_chunkIsDone;
+	size_t				_chunkSize;
+	std::vector<char>	_chunkData;
 
-struct requestHeaderToken {
-
-	requestHeaderToken();
-	requestHeaderToken(const std::pair <std::string, std::string> & rhs);
-
-	std::pair<std::string, std::string> _token;
+	void				chunkProcedure(std::vector<char> & data);
+	void				eatChunkSize(std::vector<char> & data);
+	bool				eatCRLF(std::vector<char> & data);
+	void				tryToEatChunkData(std::vector<char> & data);
+	bool				isLastChunk();
 };
 
-requestHeaderToken parseHost(std::string);
-std::vector<requestHeaderToken> parseRequestHeader(const char *input);
+std::vector<char> transformChunkListIntoData(std::deque<chunk> & list);
 
 struct requestBase {
 
@@ -78,12 +84,16 @@ private:
 
 	void updateResponseStatus(void);
 	size_t	findBodyLength(void);
-
+	
 	//chunked transfer utils
 
-	std::deque<size_t> _chunksList;
-	size_t	eatChunkSize(std::vector<char> & data);
+	std::deque<chunk> _chunksList;
+
 	void	processChunk(std::vector<char> & data);
+
+	void	chunkedTransferEncodingRoutine(std::vector<char> & data);
+	void 	transformChunkListIntoData();
+
 	size_t	dataContainsCRLF(const std::vector<char> & data);
 	size_t	findCRLFPositionInData(const std::vector<char> & data);
 	
@@ -94,8 +104,5 @@ private:
 };
 
 bool isHeaderEnd(const char *input);
-
-
-//requestHeaderToken::field findField(const char *);
 
 #endif

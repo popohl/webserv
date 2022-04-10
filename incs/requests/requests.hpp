@@ -6,7 +6,7 @@
 /*   By: pcharton <pcharton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 10:43:44 by pcharton          #+#    #+#             */
-/*   Updated: 2022/04/07 22:29:44 by pohl             ###   ########.fr       */
+//   Updated: 2022/04/09 14:56:14 by pcharton         ###   ########.fr       //
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,11 @@ protected:
 	std::string createFilePath( Rules& rules );
 	std::string	testIndexFile(std::string root, const std::vector<std::string> & indexList);
 	std::string createFileFromCgi( Rules& rules, std::string requestedFilePath, response& response );
-
+	
 	static bool	methodIsValid(const std::string & method);
 	static bool	requestURIIsValid(const std::string & requestURI);
 	static bool	httpVersionIsValid(const std::string & httpVersion);
-
+	
 private:
 	static iRequest * allocateRequest(const std::string & method, const std::string & requestURI, const std::string & httpVersion);
 	static std::string eatWord(std::string & line);
@@ -64,6 +64,9 @@ public:
 	response	createResponse();
 	std::string	createResponseBody();
 	std::string printType();
+
+private:
+	void		checkRequestError(const Rules & rules);
 };
 
 class postRequest : public iRequest
@@ -76,7 +79,8 @@ class postRequest : public iRequest
 	std::string printType();
 
 private:
-	std::string createPostedFilePath(const std::string & root, const std::string & requestURI);
+	void	createPostedFile(const std::string &path);
+	void		checkRequestError(const Rules & rules);
 };
 
 class deleteRequest : public iRequest
@@ -87,6 +91,8 @@ public:
 
 	response createResponse();
 	std::string printType();
+private:
+	void		checkRequestError(const Rules & rules);
 };
 
 class errorRequest : public iRequest
