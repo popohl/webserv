@@ -43,17 +43,6 @@ public:
 };
 
 
-struct requestHeaderToken {
-
-	requestHeaderToken();
-	requestHeaderToken(const std::pair <std::string, std::string> & rhs);
-
-	std::pair<std::string, std::string> _token;
-};
-
-requestHeaderToken parseHost(std::string);
-std::vector<requestHeaderToken> parseRequestHeader(const char *input);
-
 struct requestBase {
 
 	requestBase();
@@ -108,7 +97,6 @@ struct chunk
 	void				eatChunkSize(std::vector<char> & data);
 	void				eatCRLF(std::vector<char> & data);
 	void				tryToEatChunkData(std::vector<char> & data);
-
 };
 
 std::vector<char> transformChunkListIntoData(std::deque<chunk> & list);
