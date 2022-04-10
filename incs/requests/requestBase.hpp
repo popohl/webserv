@@ -97,7 +97,19 @@ private:
 
 bool isHeaderEnd(const char *input);
 
+struct chunk
+{
+	bool				_sizeDelimiterFound;
+	bool				_chunkDelimiterFound;
+	bool				_chunkIsDone;
+	size_t				_chunkSize;
+	std::vector<char>	_chunkData;
 
-//requestHeaderToken::field findField(const char *);
+	void				eatChunkSize(std::vector<char> & data);
+	void				eatCRLF(std::vector<char> & data);
+	void				tryToEatChunkData(std::vector<char> & data);
 
+};
+
+std::vector<char> transformChunkListIntoData(std::deque<chunk> & list);
 #endif
