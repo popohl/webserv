@@ -168,26 +168,12 @@ void requestBase::parseBody(std::vector<char> & data)
 	if (_header.find("Transfer-Encoding") != notFound)
 	{
 		//does not work if file is bigger than recv buffer
-/*		if (_header["Transfer-Encoding"] == "chunked")
+		if (_header["Transfer-Encoding"] == "chunked")
 		{
-			if (!_unfinishedData.empty())
-			{
-				data.insert(data.begin(), _unfinishedData.begin(), _unfinishedData.end());
-				_unfinishedData.clear();
-			}
-
-			while (!_bodyFinished && !data.empty())
-			{
-				if (_chunksList.empty() || _chunksList.back())
-					_chunksList.push_back(eatChunkSize(data));
-				std::cout << " before chunking " << data.size() << std::endl;
-				processChunk(data);
-				if (_chunksList.back() > data.size())
-					break
-				std::cout << data.size() << std::endl;
-			}
+			while (!data.empty()
+				&& !_bodyFinished)
+				chunkedTransferEncodingRoutine(data);
 		}
-*/
 	}
 	else if	(_header.find("Content-Length") != notFound)
 	{
@@ -224,52 +210,88 @@ size_t	requestBase::findCRLFPositionInData(const std::vector<char> & data)
 	return index;
 }
 
-void	requestBase::processChunk(std::vector<char> & data)
+void	requestBase::chunkedTransferEncodingRoutine(std::vector<char> & data)
 {
-
-	if (_chunksList.back())
+	if (_chunksList.empty())
 	{
-		eatCRLF(data);
-		_body.insert(_body.end(), data.begin(), data.begin() + _chunksList.back());
-		std::cout << "data size " << data.size() << std::endl;
-		if (data.size() > _chunksList.back())
+		_chunksList.push_back(chunk());
+		chunk & current = _chunksList.back();
+		current.eatChunkSize(data);
+		current.chunkProcedure(data);
+	}
+	else if (!(_chunksList.back().isLastChunk()))
+	{
+		if (!_chunksList.back()._chunkIsDone)
 		{
-			data.erase(data.begin(), data.begin() + _chunksList.back());
-			eatCRLF(data);
+			chunk & current = _chunksList.back();
+			current.chunkProcedure(data);
 		}
 		else
 		{
-			_chunksList.back() -= data.size();
-			data.clear();
-
+			_chunksList.push_back(chunk());
+			chunk & current = _chunksList.back();
+			current.eatChunkSize(data);
+			current.chunkProcedure(data);
 		}
-				
-
 	}
 	else
 	{
-		if ((data.size() >= 2) && data[0] == '\r' && data[1] == '\n')
+		if (_chunksList.back()._sizeDelimiterFound)
 		{
-			std::cout << "last chunk found " << std::endl;
-//			data.erase(data.begin(), data.begin() + 2);
 			_bodyFinished = true;
 			_bodyExpectedSize = 0;
 			_headerFinished = false;
 			std::string header(data.begin(), data.end());
-			parseHeader(header);
+			parseHeader(header);	
 		}
 		else
-			_unfinishedData = data;			
-	}		
+		{
+			chunk & current = _chunksList.back();
+			current.eatCRLF(data);
+		}
+	}
 }
 
-void	requestBase::eatCRLF(std::vector<char> & data)
+void	chunk::chunkProcedure(std::vector<char> & data)
+{
+	if (!_sizeDelimiterFound && eatCRLF(data))
+		_sizeDelimiterFound = true;
+	if (_sizeDelimiterFound && _chunkSize)
+		tryToEatChunkData(data);
+	if (_sizeDelimiterFound && _chunkDelimiterFound && _chunkHasBeenProcessed)
+		_chunkIsDone = true;
+}
+
+bool	chunk::eatCRLF(std::vector<char> & data)
 {
 	if ((data.size() >= 2) && (data[0] == '\r') && (data[1] == '\n'))
+	{
 		data.erase(data.begin(), data.begin() + 2);
+		return (true);
+	}
+	else
+		return (false);
 }	
 
-size_t requestBase::eatChunkSize(std::vector<char> & data)
+void	chunk::tryToEatChunkData(std::vector<char> & data)
+{
+	if (_chunkData.capacity() < _chunkSize)
+		_chunkData.reserve(_chunkSize);
+	size_t	bytesToProcess = _chunkSize - _chunkData.size();
+	std::vector<char>::iterator ite;
+	if (data.size() >= bytesToProcess)
+		ite = data.begin() + bytesToProcess;
+	else
+		ite = data.end();
+	_chunkData.insert(_chunkData.end(), data.begin(), ite);
+	data.erase(data.begin(), ite);
+	if (_chunkSize == _chunkData.size())
+		_chunkHasBeenProcessed = true;
+	if (_chunkHasBeenProcessed && eatCRLF(data))
+		_chunkDelimiterFound = true;
+}
+
+void chunk::eatChunkSize(std::vector<char> & data)
 {
 	std::string chunkSize;
 	for (std::vector<char>::const_iterator it = data.begin();
@@ -280,15 +302,21 @@ size_t requestBase::eatChunkSize(std::vector<char> & data)
 	std::stringstream superConverter;
 	std::cout << "chunkSize is " << chunkSize << "of size " << chunkSize.size() << std::endl;
 	superConverter << std::hex << chunkSize;
-	size_t result;
-	superConverter >> result;
-	std::cout << "converted size is " << result << std::endl;
+	superConverter >> _chunkSize;
+	std::cout << "converted size is " << _chunkSize << std::endl;
 	data.erase(data.begin(), data.begin() + chunkSize.length());
-/*
-	if ((data.size() > 2) && (data[0] == '\r') && (data[1] == '\n'))
-			data.erase(data.begin(), data.begin() + 2);
-*/
-	return (result);
+	if (eatCRLF(data))
+		_sizeDelimiterFound = true;
+	if (!_chunkSize && _sizeDelimiterFound)
+		_chunkIsDone = true;
+}
+
+bool	chunk::isLastChunk()
+{
+	if (!_chunkSize)
+		return (true);
+	else
+		return (false);
 }
 
 std::pair<std::string, std::string>requestBase::splitIntoPair(std::string line)

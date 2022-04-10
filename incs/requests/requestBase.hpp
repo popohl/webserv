@@ -42,6 +42,23 @@ public:
 	virtual const char * what () const throw();
 };
 
+struct chunk
+{
+	bool				_sizeDelimiterFound;
+	bool				_chunkDelimiterFound;
+	bool				_chunkHasBeenProcessed;
+	bool				_chunkIsDone;
+	size_t				_chunkSize;
+	std::vector<char>	_chunkData;
+
+	void				chunkProcedure(std::vector<char> & data);
+	void				eatChunkSize(std::vector<char> & data);
+	bool				eatCRLF(std::vector<char> & data);
+	void				tryToEatChunkData(std::vector<char> & data);
+	bool				isLastChunk();
+};
+
+std::vector<char> transformChunkListIntoData(std::deque<chunk> & list);
 
 struct requestBase {
 
@@ -67,14 +84,14 @@ private:
 
 	void updateResponseStatus(void);
 	size_t	findBodyLength(void);
-	void	eatCRLF(std::vector<char> & data);
 	
 	//chunked transfer utils
 
-	std::deque<size_t> _chunksList;
+	std::deque<chunk> _chunksList;
 
-	size_t	eatChunkSize(std::vector<char> & data);
 	void	processChunk(std::vector<char> & data);
+
+	void	chunkedTransferEncodingRoutine(std::vector<char> & data);
 	size_t	dataContainsCRLF(const std::vector<char> & data);
 	size_t	findCRLFPositionInData(const std::vector<char> & data);
 	
@@ -85,19 +102,6 @@ private:
 };
 
 bool isHeaderEnd(const char *input);
-
-struct chunk
-{
-	bool				_sizeDelimiterFound;
-	bool				_chunkDelimiterFound;
-	bool				_chunkIsDone;
-	size_t				_chunkSize;
-	std::vector<char>	_chunkData;
-
-	void				eatChunkSize(std::vector<char> & data);
-	void				eatCRLF(std::vector<char> & data);
-	void				tryToEatChunkData(std::vector<char> & data);
-};
 
 std::vector<char> transformChunkListIntoData(std::deque<chunk> & list);
 #endif
