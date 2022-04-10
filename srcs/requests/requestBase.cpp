@@ -173,6 +173,9 @@ void requestBase::parseBody(std::vector<char> & data)
 			while (!data.empty()
 				&& !_bodyFinished)
 				chunkedTransferEncodingRoutine(data);
+			if (_chunksList.size() && _chunksList.back().isLastChunk()
+				&& _chunksList.back()._sizeDelimiterFound)
+				transformChunkListIntoData();
 		}
 	}
 	else if	(_header.find("Content-Length") != notFound)
@@ -250,6 +253,21 @@ void	requestBase::chunkedTransferEncodingRoutine(std::vector<char> & data)
 			current.eatCRLF(data);
 		}
 	}
+}
+
+void	requestBase::transformChunkListIntoData()
+{
+	size_t totalSize = 0;
+	for (std::deque<chunk>::iterator it = _chunksList.begin();
+		it != _chunksList.end(); it++)
+		totalSize += it->_chunkSize;
+	_body.reserve(_bodySize + totalSize);
+	for (std::deque<chunk>::iterator it = _chunksList.begin();
+		it != _chunksList.end() && it->_chunkSize; it = _chunksList.begin())
+		{
+			_body.insert(_body.end(), it->_chunkData.begin(), it->_chunkData.end());
+			_chunksList.erase(_chunksList.begin());
+		}
 }
 
 void	chunk::chunkProcedure(std::vector<char> & data)

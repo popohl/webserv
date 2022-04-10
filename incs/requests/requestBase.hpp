@@ -92,6 +92,8 @@ private:
 	void	processChunk(std::vector<char> & data);
 
 	void	chunkedTransferEncodingRoutine(std::vector<char> & data);
+	void 	transformChunkListIntoData();
+
 	size_t	dataContainsCRLF(const std::vector<char> & data);
 	size_t	findCRLFPositionInData(const std::vector<char> & data);
 	
@@ -103,5 +105,4 @@ private:
 
 bool isHeaderEnd(const char *input);
 
-std::vector<char> transformChunkListIntoData(std::deque<chunk> & list);
 #endif
