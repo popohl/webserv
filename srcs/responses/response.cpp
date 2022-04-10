@@ -308,9 +308,9 @@ void response::setErrorMessage(int errorStatus, Rules &rules)
 {
 	setStatusLine(errorStatus);
 	if (rules.errorPage.find(errorStatus) != rules.errorPage.end()
-		&& fileExists(rules.root + "/" + rules.errorPage[errorStatus]))
+		&& fileExists(rules.errorPage[errorStatus]))
 	{
-		tryToOpenFile(rules.root + "/" + rules.errorPage[errorStatus]);
+		tryToOpenFile(rules.errorPage[errorStatus]);
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Content-Location", rules.errorPage[errorStatus]));
 		addFieldToHeaderMap(std::make_pair<std::string, std::string> ("Location", rules.errorPage[errorStatus]));
 	}
